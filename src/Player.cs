@@ -25,7 +25,7 @@ namespace ReiseZumGrundDesSees
 
 			// [...]
 
-			return new UpdateDelegate((ref GameState _state) =>
+			return (ref GameState _state) =>
 			{
 				// Hier Variablen ändern - direkt, oder über _state.Player ...
 				if (_inputEvents.HasFlag(InputEvent.MoveForwards))
@@ -47,7 +47,7 @@ namespace ReiseZumGrundDesSees
 				{
 					Position.X -= 0.016f;
 				}
-			});
+			};
         }
 
     }
