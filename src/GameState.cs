@@ -22,13 +22,13 @@ namespace ReiseZumGrundDesSees
 				baseState = s;
 			}
 
-			public float CamX => baseState.Camera.xPos;
-			public float CamY => baseState.Camera.yPos;
-			public float CamZ => baseState.Camera.zPos;
+			public float CamX => baseState.Camera.Position.X;
+			public float CamY => baseState.Camera.Position.Y;
+			public float CamZ => baseState.Camera.Position.Z;
 
-			public float PlayerX => baseState.Player.xPos;
-			public float PlayerY => baseState.Player.yPos;
-			public float PlayerZ => baseState.Player.zPos;
+			public float PlayerX => baseState.Player.Position.X;
+			public float PlayerY => baseState.Player.Position.Y;
+			public float PlayerZ => baseState.Player.Position.Z;
 
 			public WorldBlock GetBlock(int x, int y, int z) => baseState.World.Blocks[x, y, z];
 		}
@@ -37,6 +37,6 @@ namespace ReiseZumGrundDesSees
 	delegate void UpdateDelegate(ref GameState gs);
 	interface IUpdateable
 	{
-		UpdateDelegate Update(GameState.View _state, InputManager.InputEvent _inputEvents, double _passedTime);
+		UpdateDelegate Update(GameState.View _state, InputEvent _inputEvents, double _passedTime);
 	}
 }
