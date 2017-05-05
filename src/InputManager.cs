@@ -13,8 +13,19 @@ namespace ReiseZumGrundDesSees
 			throw new NotImplementedException();
 		}
 	}
+
+	struct InputEventArgs
+	{
+		public readonly InputEventList Events;
+
+		public InputEventArgs(InputEventList _events)
+		{
+			Events = _events;
+		}
+	}
+
 	[Flags]
-	public enum InputEvent
+	public enum InputEventList
 	{
 		MoveForwards = 1,
 		MoveLeft = 2,

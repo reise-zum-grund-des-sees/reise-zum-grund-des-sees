@@ -19,7 +19,7 @@ namespace ReiseZumGrundDesSees
             Position = _position;
         }
 
-        public UpdateDelegate Update(GameState.View _stateView, InputEvent _inputEvents, double _passedTime)
+        public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)
 		{
 			// Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
@@ -28,22 +28,22 @@ namespace ReiseZumGrundDesSees
 			return (ref GameState _state) =>
 			{
 				// Hier Variablen ändern - direkt, oder über _state.Player ...
-				if (_inputEvents.HasFlag(InputEvent.MoveForwards))
+				if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
 				{
 					Position.Z += 0.016f;
 				}
 
-				if (_inputEvents.HasFlag(InputEvent.MoveLeft))
+				if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
 				{
 					Position.X += 0.016f;
 				}
 
-				if (_inputEvents.HasFlag(InputEvent.MoveBackwards))
+				if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
 				{
 					Position.Z -= 0.016f;
 				}
 
-				if (_inputEvents.HasFlag(InputEvent.MoveRight))
+				if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
 				{
 					Position.X -= 0.016f;
 				}
