@@ -12,14 +12,13 @@ namespace ReiseZumGrundDesSees
 		{
 			throw new NotImplementedException();
 		}
-
-		[Flags]
-		public enum InputEvent
-		{
-			MoveForwards = 1,
-			MoveLeft = 2,
-			MoveRight = 4,
-			MoveBackwards = 8
-		}
+	}
+	[Flags]
+	public enum InputEvent
+	{
+		MoveForwards = 1,
+		MoveLeft = 2,
+		MoveRight = 4,
+		MoveBackwards = 8
 	}
 }
