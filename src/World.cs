@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-	class World
+	class World : IUpdateable
 	{
 		public World(string _filepath)
 		{
@@ -29,6 +29,11 @@ namespace ReiseZumGrundDesSees
 					throw new NotImplementedException();
 				}
 			}
+		}
+
+		public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

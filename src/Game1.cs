@@ -30,6 +30,7 @@ namespace ReiseZumGrundDesSees
 		protected override void Initialize()
 		{
 			// TODO: Add your initialization logic here
+			InputManager = new InputManager();
 
 			base.Initialize();
 		}
@@ -62,6 +63,17 @@ namespace ReiseZumGrundDesSees
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
+			InputEventArgs _args = InputManager.Update();
+			GameState.View _gameStateView = new GameState.View(GameState);
+
+			UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+			UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+			UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+
+			_cameraUpdate(ref GameState);
+			_playerUpdate(ref GameState);
+			_worldUpdate(ref GameState);
+
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
 
