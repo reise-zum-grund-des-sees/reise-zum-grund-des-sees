@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -7,13 +8,17 @@ namespace ReiseZumGrundDesSees
 	/// <summary>
 	/// This is the main type for your game.
 	/// </summary>
-	public class Game1 : Game
+	public class Game1 : Game, IMenuCallback
 	{
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 
 		GameState GameState;
 		InputManager InputManager;
+
+		MainMenu MainMenu;
+
+		GameFlags GameMode;
 
 		public Game1()
 		{
@@ -30,6 +35,7 @@ namespace ReiseZumGrundDesSees
 		protected override void Initialize()
 		{
 			// TODO: Add your initialization logic here
+			GameMode = GameFlags.Menu;
 			InputManager = new InputManager();
 
 			base.Initialize();
@@ -45,6 +51,7 @@ namespace ReiseZumGrundDesSees
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
+			MainMenu = new MainMenu(this.Content);
 		}
 
 		/// <summary>
@@ -64,15 +71,23 @@ namespace ReiseZumGrundDesSees
 		protected override void Update(GameTime gameTime)
 		{
 			InputEventArgs _args = InputManager.Update();
-			GameState.View _gameStateView = new GameState.View(GameState);
 
-			UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-			UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-			UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+			if (GameMode.HasFlag(GameFlags.GameRunning))
+			{
+				GameState.View _gameStateView = new GameState.View(GameState);
 
-			_cameraUpdate(ref GameState);
-			_playerUpdate(ref GameState);
-			_worldUpdate(ref GameState);
+				UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+				UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+				UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+
+				_cameraUpdate(ref GameState);
+				_playerUpdate(ref GameState);
+				_worldUpdate(ref GameState);
+			}
+			else if (GameMode.HasFlag(GameFlags.Menu))
+			{
+				MainMenu.Update(_args, this);
+			}
 
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
@@ -102,6 +117,33 @@ namespace ReiseZumGrundDesSees
 			*/
 
 			base.Draw(gameTime);
+		}
+
+		// Menu Callbacks
+
+		public void StartNewGame()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void LoadGame(string _path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveGame(string _path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ShowCredits()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ExitGame()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
