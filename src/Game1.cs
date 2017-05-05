@@ -12,6 +12,9 @@ namespace ReiseZumGrundDesSees
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 
+		GameState GameState;
+		InputManager InputManager;
+
 		public Game1()
 		{
 			graphics = new GraphicsDeviceManager(this);
@@ -76,6 +79,15 @@ namespace ReiseZumGrundDesSees
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
 			// TODO: Add your drawing code here
+
+			/*
+
+			Matrix m = GameState.Camera.CalculateViewMatrix;
+
+			Render.Player(m, GameState.Player);
+			Render.World(m, GameState.World);
+
+			*/
 
 			base.Draw(gameTime);
 		}
