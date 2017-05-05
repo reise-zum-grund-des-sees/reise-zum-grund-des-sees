@@ -14,6 +14,13 @@ namespace ReiseZumGrundDesSees
 		public readonly Player Player;
 		public readonly World World;
 
+		public GameState(World _world, Player _player, Camera _camera)
+		{
+			World = _world;
+			Player = _player;
+			Camera = _camera;
+		}
+
 		public struct View
 		{
 			private GameState baseState;
