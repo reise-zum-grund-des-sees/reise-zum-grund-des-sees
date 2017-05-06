@@ -57,13 +57,13 @@ namespace ReiseZumGrundDesSees
 	[Flags]
 	public enum InputEventList
 	{
-		MoveForwards = 1,
-		MoveLeft = 2,
-		MoveRight = 4,
-		MoveBackwards = 8,
+		MoveForwards = 0x01,
+		MoveLeft = 0x02,
+		MoveRight = 0x04,
+		MoveBackwards = 0x08,
 
-		MouseLeftClick = 0xF0,
-		MouseRightClick = 0xF1,
-		MouseMiddleClick = 0xF2
+		MouseLeftClick = 0x10,
+		MouseRightClick = 0x20,
+		MouseMiddleClick = 0x40
 	}
 }
