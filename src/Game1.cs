@@ -72,7 +72,7 @@ namespace ReiseZumGrundDesSees
 		{
 			InputEventArgs _args = InputManager.Update();
 
-			if (GameMode.HasFlag(GameFlags.GameRunning))
+			/*if (GameMode.HasFlag(GameFlags.GameRunning))
 			{
 				GameState.View _gameStateView = new GameState.View(GameState);
 
@@ -87,7 +87,7 @@ namespace ReiseZumGrundDesSees
 			else if (GameMode.HasFlag(GameFlags.Menu))
 			{
 				MainMenu.Update(_args, this);
-			}
+			}*/
 
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();

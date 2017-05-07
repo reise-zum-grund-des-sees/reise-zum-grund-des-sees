@@ -14,7 +14,7 @@ namespace ReiseZumGrundDesSees
 		private Point PreviousMousePosition;
 		public InputEventArgs Update()
 		{
-			InputEventList _eventList = 0;
+			InputEventList _eventList = InputEventList.None;
 
 			KeyboardState _keyboardState = Keyboard.GetState();
 
@@ -52,11 +52,15 @@ namespace ReiseZumGrundDesSees
 			MousePosition = _mousePos;
 			MouseMovement = _mouseMov;
 		}
+
+		public override string ToString() => $"Event: { Events }\r\nMousePosition: { MousePosition }\r\nMouseMovement: { MouseMovement }";
 	}
 
 	[Flags]
 	public enum InputEventList
 	{
+		None = 0,
+
 		MoveForwards = 0x01,
 		MoveLeft = 0x02,
 		MoveRight = 0x04,
