@@ -37,7 +37,7 @@ namespace ReiseZumGrundDesSees
 			// TODO: Add your initialization logic here
 			GameMode = GameFlags.GameRunning;
 			InputManager = new InputManager();
-            GameState = new GameState(new World("map.txt"), new Player(Content ,new Vector3(0,0,0)), new Camera());  //vorrübergehend GameState festsetzen
+            GameState = new GameState(new World(16, 16, 16, 4, 4), new Player(Content ,new Vector3(0,0,0)), new Camera());  //vorrübergehend GameState festsetzen
             base.Initialize();
 		}
 
