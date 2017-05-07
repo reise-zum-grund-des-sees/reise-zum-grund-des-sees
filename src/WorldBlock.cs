@@ -8,6 +8,7 @@ namespace ReiseZumGrundDesSees
 {
 	enum WorldBlock : byte
 	{
+		None,
 		Wall, // add more wall types?
 		Water,
 		Lever,

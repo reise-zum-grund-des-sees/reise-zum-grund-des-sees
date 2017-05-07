@@ -12,7 +12,7 @@ namespace ReiseZumGrundDesSees
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] _args)
         {
             using (var game = new Game1())
                 game.Run();
