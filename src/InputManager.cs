@@ -9,65 +9,69 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ReiseZumGrundDesSees
 {
-	class InputManager
-	{
-		private Point PreviousMousePosition;
-		public InputEventArgs Update()
-		{
-			InputEventList _eventList = InputEventList.None;
+    class InputManager
+    {
+        private Point PreviousMousePosition;
+        public InputEventArgs Update()
+        {
+            InputEventList _eventList = InputEventList.None;
 
-			KeyboardState _keyboardState = Keyboard.GetState();
+            KeyboardState _keyboardState = Keyboard.GetState();
 
-			if (_keyboardState.IsKeyDown(Keys.W)) _eventList |= InputEventList.MoveForwards;
-			if (_keyboardState.IsKeyDown(Keys.A)) _eventList |= InputEventList.MoveLeft;
-			if (_keyboardState.IsKeyDown(Keys.S)) _eventList |= InputEventList.MoveBackwards;
-			if (_keyboardState.IsKeyDown(Keys.D)) _eventList |= InputEventList.MoveRight;
+            if (_keyboardState.IsKeyDown(Keys.W)) _eventList |= InputEventList.MoveForwards;
+            if (_keyboardState.IsKeyDown(Keys.A)) _eventList |= InputEventList.MoveLeft;
+            if (_keyboardState.IsKeyDown(Keys.S)) _eventList |= InputEventList.MoveBackwards;
+            if (_keyboardState.IsKeyDown(Keys.D)) _eventList |= InputEventList.MoveRight;
 
-			MouseState _mouseState = Mouse.GetState();
+            MouseState _mouseState = Mouse.GetState();
 
-			if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
-			if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
-			if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
+            if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
+            if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
+            if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
 
-			InputEventArgs _args = new InputEventArgs(_eventList,
-				new Point(_mouseState.X, _mouseState.Y),
-				new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y));
+            if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
 
-			PreviousMousePosition.X = _mouseState.X;
-			PreviousMousePosition.Y = _mouseState.Y;
+            InputEventArgs _args = new InputEventArgs(_eventList,
+                new Point(_mouseState.X, _mouseState.Y),
+                new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y));
 
-			return _args;
-		}
-	}
+            PreviousMousePosition.X = _mouseState.X;
+            PreviousMousePosition.Y = _mouseState.Y;
 
-	struct InputEventArgs
-	{
-		public readonly InputEventList Events;
-		public readonly Point MousePosition;
-		public readonly Point MouseMovement;
+            return _args;
+        }
+    }
 
-		public InputEventArgs(InputEventList _events, Point _mousePos, Point _mouseMov)
-		{
-			Events = _events;
-			MousePosition = _mousePos;
-			MouseMovement = _mouseMov;
-		}
+    struct InputEventArgs
+    {
+        public readonly InputEventList Events;
+        public readonly Point MousePosition;
+        public readonly Point MouseMovement;
 
-		public override string ToString() => $"Event: { Events }\r\nMousePosition: { MousePosition }\r\nMouseMovement: { MouseMovement }";
-	}
+        public InputEventArgs(InputEventList _events, Point _mousePos, Point _mouseMov)
+        {
+            Events = _events;
+            MousePosition = _mousePos;
+            MouseMovement = _mouseMov;
+        }
 
-	[Flags]
-	public enum InputEventList
-	{
-		None = 0,
+        public override string ToString() => $"Event: { Events }\r\nMousePosition: { MousePosition }\r\nMouseMovement: { MouseMovement }";
+    }
 
-		MoveForwards = 0x01,
-		MoveLeft = 0x02,
-		MoveRight = 0x04,
-		MoveBackwards = 0x08,
+    [Flags]
+    public enum InputEventList
+    {
+        None = 0,
 
-		MouseLeftClick = 0x10,
-		MouseRightClick = 0x20,
-		MouseMiddleClick = 0x40
-	}
+        MoveForwards = 0x01,
+        MoveLeft = 0x02,
+        MoveRight = 0x04,
+        MoveBackwards = 0x08,
+
+        MouseLeftClick = 0x10,
+        MouseRightClick = 0x20,
+        MouseMiddleClick = 0x40,
+
+        Jump = 0x50
+    }
 }

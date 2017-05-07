@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
@@ -17,14 +18,14 @@ namespace ReiseZumGrundDesSees
 
 		public static void Player(Matrix m, Player _player)
 		{
-			throw new NotImplementedException();
-			/*
+			//throw new NotImplementedException();
+			
             foreach (ModelMesh mesh in _player.model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
 
-                    effect.World = Matrix.CreateTranslation(_player.pos);
+                    effect.World = Matrix.CreateTranslation(_player.Position);
 
                     effect.View = m;
 
@@ -34,7 +35,7 @@ namespace ReiseZumGrundDesSees
 
                 mesh.Draw();
             }
-			*/
+			
 		}
 
 		// ...

@@ -35,10 +35,10 @@ namespace ReiseZumGrundDesSees
 		protected override void Initialize()
 		{
 			// TODO: Add your initialization logic here
-			GameMode = GameFlags.Menu;
+			GameMode = GameFlags.GameRunning;
 			InputManager = new InputManager();
-
-			base.Initialize();
+            GameState = new GameState(new World("map.txt"), new Player(Content ,new Vector3(0,0,0)), new Camera());  //vorrübergehend GameState festsetzen
+            base.Initialize();
 		}
 
 		/// <summary>
@@ -72,22 +72,24 @@ namespace ReiseZumGrundDesSees
 		{
 			InputEventArgs _args = InputManager.Update();
 
-			/*if (GameMode.HasFlag(GameFlags.GameRunning))
+			if (GameMode.HasFlag(GameFlags.GameRunning))
 			{
+               
 				GameState.View _gameStateView = new GameState.View(GameState);
-
-				UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+			
 				UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-				UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                // UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
 
-				_cameraUpdate(ref GameState);
-				_playerUpdate(ref GameState);
-				_worldUpdate(ref GameState);
+                _playerUpdate(ref GameState);
+                _cameraUpdate(ref GameState);
+				
+				//_worldUpdate(ref GameState);
 			}
 			else if (GameMode.HasFlag(GameFlags.Menu))
 			{
 				MainMenu.Update(_args, this);
-			}*/
+			}
 
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
@@ -107,14 +109,14 @@ namespace ReiseZumGrundDesSees
 
 			// TODO: Add your drawing code here
 
-			/*
+			
 
-			Matrix m = GameState.Camera.CalculateViewMatrix;
+			Matrix m = GameState.Camera.CalculateViewMatrix();
 
 			Render.Player(m, GameState.Player);
-			Render.World(m, GameState.World);
+			//Render.World(m, GameState.World);
 
-			*/
+			
 
 			base.Draw(gameTime);
 		}
