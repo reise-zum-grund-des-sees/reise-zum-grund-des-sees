@@ -27,7 +27,7 @@ namespace ReiseZumGrundDesSees
             FensterBreite = Width;
             FensterHoehe = Height;
             Offset = new Vector2(-Width/2 / Bewegungssensivitaet - 0.3f, 0);
-          
+          //test
         }
         public Matrix CalculateViewMatrix()
         {
