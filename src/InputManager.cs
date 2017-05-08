@@ -23,19 +23,20 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.S)) _eventList |= InputEventList.MoveBackwards;
             if (_keyboardState.IsKeyDown(Keys.D)) _eventList |= InputEventList.MoveRight;
 			if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
+            if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
 
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
             if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
             if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
-
-            if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
-
+            
             InputEventArgs _args = new InputEventArgs(_eventList,
-                new Point(_mouseState.X, _mouseState.Y),
+                new Point(_mouseState.X, _mouseState.Y),             
                 new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y));
 
+           // Mouse.SetPosition(800 / 2, 480 / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+            _mouseState = Mouse.GetState();
             PreviousMousePosition.X = _mouseState.X;
             PreviousMousePosition.Y = _mouseState.Y;
 
@@ -73,6 +74,7 @@ namespace ReiseZumGrundDesSees
         MouseRightClick = 0x20,
         MouseMiddleClick = 0x40,
 
-        Jump = 0x80
+        Jump = 0x80,
+        Sprint = 0x12
     }
 }

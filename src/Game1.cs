@@ -24,7 +24,8 @@ namespace ReiseZumGrundDesSees
 		{
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
-		}
+            //graphics.IsFullScreen = true;
+        }
 
 		/// <summary>
 		/// Allows the game to perform any initialization it needs to before starting to run.
@@ -36,8 +37,12 @@ namespace ReiseZumGrundDesSees
 		{
 			// TODO: Add your initialization logic here
 			GameMode = GameFlags.GameRunning;
-			InputManager = new InputManager();
-            GameState = new GameState(new World(16, 16, 16, 4, 4), new Player(Content ,new Vector3(0,0,0)), new Camera());  //vorrübergehend GameState festsetzen
+			InputManager = new InputManager();     
+            GameState = new GameState(new World(16, 16, 16, 4, 4), new Player(Content ,new Vector3(5,6,5)), new Camera(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height));  //vorrübergehend GameState festsetzen
+            Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+            
+
+            //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
             base.Initialize();
 		}
 
@@ -80,7 +85,7 @@ namespace ReiseZumGrundDesSees
 				UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 // UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-
+               
                 _playerUpdate(ref GameState);
                 _cameraUpdate(ref GameState);
 				
