@@ -75,6 +75,6 @@ namespace ReiseZumGrundDesSees
         MouseMiddleClick = 0x40,
 
         Jump = 0x80,
-        Sprint = 0x12
+        Sprint = 0x100
     }
 }
