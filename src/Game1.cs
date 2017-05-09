@@ -140,6 +140,7 @@ namespace ReiseZumGrundDesSees
                     _dialog.ShowDialog();
 
                     GameState = new GameState(new World(_dialog.SelectedPath), GameState.Player, GameState.Camera);
+                    GameState.World.GenerateVertices(GraphicsDevice);
                 }
                 else if (kb.IsKeyDown(Keys.E) && keyPressedPause)
                 {
