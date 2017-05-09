@@ -15,15 +15,21 @@ namespace ReiseZumGrundDesSees
         private readonly GraphicsDevice graphicsDevice;
 
         private readonly BasicEffect worldEffect;
-        private readonly RasterizerState ClockwiseCullMode;
+        private readonly RasterizerState ClockwiseCullMode, NoCullMode;
+
+        private readonly Model worldEditorCursor;
 
         public Render(GraphicsDevice _graphicsDevice, ContentManager _content)
         {
             graphicsDevice = _graphicsDevice;
             Texture2D blocktexture = _content.Load<Texture2D>("blocktexture");
+            worldEditorCursor = _content.Load<Model>("cursor");
 
             ClockwiseCullMode = new RasterizerState();
             ClockwiseCullMode.CullMode = CullMode.CullClockwiseFace;
+
+            NoCullMode = new RasterizerState();
+            NoCullMode.CullMode = CullMode.None;
 
             worldEffect = new BasicEffect(graphicsDevice);
             worldEffect.VertexColorEnabled = true;
@@ -31,6 +37,25 @@ namespace ReiseZumGrundDesSees
             worldEffect.Texture = blocktexture;
         }
 
+        public void WorldEditor(WorldEditor _editor, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
+        {
+            graphicsDevice.RasterizerState = NoCullMode;
+            foreach (ModelMesh mesh in worldEditorCursor.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    Vector3 _blockPosition = new Vector3((int)_editor.Position.X + 0.5f, (int)_editor.Position.Y + 0.5f, (int)_editor.Position.Z + 0.5f);
+                    effect.World = Matrix.CreateTranslation(_blockPosition);
+
+                    effect.View = _viewMatrix;
+                    effect.Projection = _perspectiveMatrix;
+
+                }
+
+                mesh.Draw();
+            }
+        }
 
         public void World(World _world, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
@@ -61,6 +86,7 @@ namespace ReiseZumGrundDesSees
         {
             //throw new NotImplementedException();
 
+            graphicsDevice.RasterizerState = NoCullMode;
             foreach (ModelMesh mesh in _player.model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)

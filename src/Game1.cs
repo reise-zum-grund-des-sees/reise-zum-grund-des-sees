@@ -25,6 +25,7 @@ namespace ReiseZumGrundDesSees
 		GameFlags GameMode;
 
         BasicEffect effect;
+        WorldEditor editor;
 
 		public Game1()
 		{
@@ -44,14 +45,16 @@ namespace ReiseZumGrundDesSees
             this.graphics.PreferredBackBufferHeight = 1080;
             this.graphics.PreferredBackBufferWidth = 1920;
             this.graphics.ApplyChanges();
-            this.graphics.ToggleFullScreen();
+            //this.graphics.ToggleFullScreen();
 			// TODO: Add your initialization logic here
 			GameMode = GameFlags.GameRunning;
 			InputManager = new InputManager();
-            GameState = new GameState(new World(16, 16, 16, 3, 3), new Player(Content ,new Vector3(24, 1, 24)), new Camera(false));  //vorrübergehend GameState festsetzen
+            GameState = new GameState(new World(16, 64, 16, 3, 3), new Player(Content, new Vector3(24, 32, 24)), new Camera(false));  //vorrübergehend GameState festsetzen
             GameState.World.GenerateTestWorld();
             GameState.World.GenerateVertices(GraphicsDevice);
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+
+            editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice);
 
             effect = new BasicEffect(GraphicsDevice);
             
@@ -85,20 +88,20 @@ namespace ReiseZumGrundDesSees
 			// TODO: Unload any non ContentManager content here
 		}
 
-		/// <summary>
-		/// Allows the game to run logic such as updating the world,
-		/// checking for collisions, gathering input, and playing audio.
-		/// </summary>
-		/// <param name="gameTime">Provides a snapshot of timing values.</param>
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        bool keyPressedPause = true;
 		protected override void Update(GameTime gameTime)
 		{
 			InputEventArgs _args = InputManager.Update(Window.ClientBounds);
 
-			if (GameMode.HasFlag(GameFlags.GameRunning))
+			if (GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
 			{
-               
 				GameState.View _gameStateView = new GameState.View(GameState);
-			
+
 				UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 // UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
@@ -108,10 +111,44 @@ namespace ReiseZumGrundDesSees
 				
 				//_worldUpdate(ref GameState);
 			}
-			else if (GameMode.HasFlag(GameFlags.Menu))
+			if (GameMode.HasFlag(GameFlags.Menu))
 			{
 				MainMenu.Update(_args, this);
 			}
+            if (GameMode.HasFlag(GameFlags.EditorMode))
+            {
+				GameState.View _gameStateView = new GameState.View(GameState);
+                UpdateDelegate _editorUpdate = editor.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                _editorUpdate(ref GameState);
+            }
+
+            KeyboardState kb = Keyboard.GetState();
+            if (kb.IsKeyDown(Keys.LeftControl))
+            {
+                if (kb.IsKeyDown(Keys.S))
+                {
+                    System.Windows.Forms.FolderBrowserDialog _dialog = new System.Windows.Forms.FolderBrowserDialog();
+                    _dialog.SelectedPath = Environment.CurrentDirectory;
+                    _dialog.ShowDialog();
+
+                    GameState.World.Save(_dialog.SelectedPath);
+                }
+                else if (kb.IsKeyDown(Keys.L))
+                {
+                    System.Windows.Forms.FolderBrowserDialog _dialog = new System.Windows.Forms.FolderBrowserDialog();
+                    _dialog.SelectedPath = Environment.CurrentDirectory;
+                    _dialog.ShowDialog();
+
+                    GameState = new GameState(new World(_dialog.SelectedPath), GameState.Player, GameState.Camera);
+                }
+                else if (kb.IsKeyDown(Keys.E) && keyPressedPause)
+                {
+                    GameMode ^= GameFlags.EditorMode;
+                }
+            }
+
+            if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
+            else keyPressedPause = false;
 
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
@@ -135,6 +172,9 @@ namespace ReiseZumGrundDesSees
 
 			Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
             Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
+
+            if (GameMode.HasFlag(GameFlags.EditorMode))
+                renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
 
             renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
             renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);

@@ -11,7 +11,6 @@ namespace ReiseZumGrundDesSees
 {
     class VertexGenerator
     {
-        public static Random rnd = new Random();
         public static VertexPositionColorTexture[] GenerateVertices(ref WorldRegion _region)
         {
             int _sizeX = _region.Blocks.GetLength(0);
@@ -47,6 +46,7 @@ namespace ReiseZumGrundDesSees
                                 };
 
                                 int r;
+                                Random rnd = new Random(x * 16 * 16 + y * 16 + z);
 
                                 // FRONT
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 0));

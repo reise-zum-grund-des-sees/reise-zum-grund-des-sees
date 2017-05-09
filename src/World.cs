@@ -84,9 +84,9 @@ namespace ReiseZumGrundDesSees
             for (int x = 0; x < RegionSizeX * RegionsCountX; x++)
                 for (int y = 0; y < RegionSizeY; y++)
                     for (int z = 0; z < RegionSizeZ * RegionsCountZ; z++)
-                        if (y == 0)
+                        if (y == 31)
                             Blocks[x, y, z] = WorldBlock.Wall;
-                        else if (y == 1)
+                        else if (y == 32)
                             Blocks[x, y, z] = (rnd.Next(0, 20) == 1) ? WorldBlock.Wall : WorldBlock.None;
         }
 
@@ -114,10 +114,11 @@ namespace ReiseZumGrundDesSees
             WorldRegion _region = Regions[_regionX, _regionZ];
             List<VertexPositionColorTexture> _vertices = new List<VertexPositionColorTexture>();
 
-
             Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(ref _region);
             if (Vertices[_regionX, _regionZ].Length != 0)
             {
+                if (VertexBuffers[_regionX, _regionZ] != null)
+                    VertexBuffers[_regionX, _regionZ].Dispose();
                 VertexBuffers[_regionX, _regionZ] = new VertexBuffer(_device, VertexPositionColorTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
                 VertexBuffers[_regionX, _regionZ].SetData(Vertices[_regionX, _regionZ]);
             }
