@@ -13,12 +13,13 @@ namespace ReiseZumGrundDesSees
 	class Player : IUpdateable
 	{
         public Vector3 Position;
-        public Model model;
+        public Model Model;
         bool Jump1;
         bool Jump2;
         double CurrentJumpTime;
         double BlickTime;
         public int Blickrichtung;
+        List<LeichterBlock> LeichteBlöcke;
         public Player(ContentManager contentManager, Vector3 _position)
         {
             Position = _position;
@@ -27,7 +28,8 @@ namespace ReiseZumGrundDesSees
             CurrentJumpTime = 0;
             Blickrichtung = 0;
             BlickTime = 0;
-            model = contentManager.Load<Model>("spielfigur");
+            LeichteBlöcke = new List<LeichterBlock>();
+            Model = contentManager.Load<Model>("spielfigur");
         }
        
         public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)
@@ -78,7 +80,7 @@ namespace ReiseZumGrundDesSees
             }
             if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ - hitbox)) == WorldBlock.Wall)
             {
-                Kollision[2] = 1;
+                Kollision[2] = 1;//Rechts
             }
             if (_stateView.GetBlock((int)(_stateView.PlayerX - hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
             {
@@ -86,25 +88,38 @@ namespace ReiseZumGrundDesSees
             }
             if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
             {
-                Kollision[3] = 1;
+                Kollision[3] = 1;//links
             }
-       
-
-            //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
-            if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY), (int)_stateView.PlayerZ) != WorldBlock.Wall)
+            for (int i = 0; i < LeichteBlöcke.Count; i++)
             {
-                Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
-               
+                //TODO: hier 4 Seitenkollision
+           
             }
-            if(_stateView.GetBlock((int)_stateView.PlayerX, (int)_stateView.PlayerY, (int)_stateView.PlayerZ) == WorldBlock.Wall) {
-               Jump1 = false; // setze Sprung zurück
-                  Jump2 = false; // setze Sprung zurück
-                CurrentJumpTime = 0;
-            }
-          
+
             return (ref GameState _state) =>
 			{
                 // Hier Variablen ändern - direkt, oder über _state.Player ...
+                //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
+                if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY), (int)_stateView.PlayerZ) != WorldBlock.Wall)
+                {
+                    Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                   
+                }
+                else{
+                    for (int i = 0; i < LeichteBlöcke.Count; i++)
+                    {
+                        //TODO: hier Kollision nach unten
+                    }
+                    }
+                if (_stateView.GetBlock((int)_stateView.PlayerX, (int)_stateView.PlayerY, (int)_stateView.PlayerZ) == WorldBlock.Wall)
+                {
+                    Jump1 = false; // setze Sprung zurück
+                    Jump2 = false; // setze Sprung zurück
+                    CurrentJumpTime = 0;
+                }
+
+
+               
                 if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
                 {
                     Jump1 = true;
@@ -119,8 +134,10 @@ namespace ReiseZumGrundDesSees
                    
                     if (CurrentJumpTime < 500) //Zeit, wann nach Sprung 1, Sprung 2 bereit ist
                     {
-                      
-                        Position.Y += 0.082f;//Sprunghöhe 2
+                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1), (int)_stateView.PlayerZ) != WorldBlock.Wall)//TODO: und drüber kein Leichter Block FEHLT
+                            Position.Y += 0.082f;//Sprunghöhe 2
+                        else
+                            CurrentJumpTime = 500;
                     }
                     
                     if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump2 == false && CurrentJumpTime > 300)//Doppelsprung
@@ -153,8 +170,18 @@ namespace ReiseZumGrundDesSees
                     {
                         Position.X -= 0.016f * sprint;
                     }
-                
-			};
+
+                if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && LeichterBlock.Maximalanzahl > LeichterBlock.Anzahl)
+                {
+                    LeichteBlöcke.Add(new LeichterBlock(this));
+                }
+                for(int i = 0; i <LeichteBlöcke.Count; i++)
+                {
+                    if (LeichteBlöcke.ElementAt(i).AktuelleDauer > LeichterBlock.MaximialDauer)
+                        LeichteBlöcke.RemoveAt(i);
+                }
+
+            };
         }
 
     }

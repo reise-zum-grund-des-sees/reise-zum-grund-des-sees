@@ -44,7 +44,7 @@ namespace ReiseZumGrundDesSees
         {
             //throw new NotImplementedException();
 
-            foreach (ModelMesh mesh in _player.model.Meshes)
+            foreach (ModelMesh mesh in _player.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
@@ -61,7 +61,10 @@ namespace ReiseZumGrundDesSees
             }
 
         }
-
+        public static void LeichterBlock(Matrix m, LeichterBlock[] _leichterblock)
+        {
+            throw new NotImplementedException(); // benötige Block mit Größe 1x1x1? und Mittelpunkt in 0.5x0.5x0.5
+        }
         // ...
     }
 }

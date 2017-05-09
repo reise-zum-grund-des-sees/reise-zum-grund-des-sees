@@ -49,6 +49,7 @@
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="InputManager.cs" />
+    <Compile Include="LeichterBlock.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
