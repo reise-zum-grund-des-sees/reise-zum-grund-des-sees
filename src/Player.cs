@@ -24,7 +24,7 @@ namespace ReiseZumGrundDesSees
             Jump1 = false;
             Jump2 = false;
             CurrentJumpTime = 0;
-            model = contentManager.Load<Model>("Block");
+            model = contentManager.Load<Model>("spielfigur");
         }
        
         public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)

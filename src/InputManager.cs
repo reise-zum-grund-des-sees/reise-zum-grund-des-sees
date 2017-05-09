@@ -22,7 +22,7 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.A)) _eventList |= InputEventList.MoveLeft;
             if (_keyboardState.IsKeyDown(Keys.S)) _eventList |= InputEventList.MoveBackwards;
             if (_keyboardState.IsKeyDown(Keys.D)) _eventList |= InputEventList.MoveRight;
-			if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
+            if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
             if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
 
             MouseState _mouseState = Mouse.GetState();
