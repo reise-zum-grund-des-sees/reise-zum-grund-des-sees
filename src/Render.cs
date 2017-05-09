@@ -11,9 +11,11 @@ namespace ReiseZumGrundDesSees
 {
     static class Render
     {
-        public static void World(Matrix m, World _world, BasicEffect _effect, GraphicsDevice _device)
+        public static void World(Matrix m, World _world, BasicEffect _effect, GraphicsDevice _device, Texture2D _texture)
         {
             _effect.VertexColorEnabled = true;
+            _effect.TextureEnabled = true;
+            _effect.Texture = _texture;
 
             int maxX = _world.Vertices.GetLength(0);
             int maxZ = _world.Vertices.GetLength(1);

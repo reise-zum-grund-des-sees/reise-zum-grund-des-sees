@@ -16,6 +16,8 @@ namespace ReiseZumGrundDesSees
 		GameState GameState;
 		InputManager InputManager;
 
+        Texture2D blocktexture;
+
 		MainMenu MainMenu;
 
 		GameFlags GameMode;
@@ -60,6 +62,8 @@ namespace ReiseZumGrundDesSees
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            blocktexture = Content.Load<Texture2D>("blocktexture");
 
 			// TODO: use this.Content to load your game content here
 			MainMenu = new MainMenu(this.Content);
@@ -125,7 +129,7 @@ namespace ReiseZumGrundDesSees
 			Matrix m = GameState.Camera.CalculateViewMatrix();
 
 			Render.Player(m, GameState.Player);
-            Render.World(m, GameState.World, effect, GraphicsDevice);
+            Render.World(m, GameState.World, effect, GraphicsDevice, blocktexture);
 
 			
 
