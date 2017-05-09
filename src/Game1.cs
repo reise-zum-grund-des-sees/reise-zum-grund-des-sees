@@ -81,7 +81,7 @@ namespace ReiseZumGrundDesSees
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			InputEventArgs _args = InputManager.Update();
+			InputEventArgs _args = InputManager.Update(Window.ClientBounds);
 
 			if (GameMode.HasFlag(GameFlags.GameRunning))
 			{
