@@ -1,3 +1,13 @@
+# Steuerung
+
+Strg+M Toggle Welt-Editor-Mode
+Strg+S Save World
+Strg+L Load World
+Q Down
+E Up
+Left Mouse Click: Set Block
+Right Mouse Click: Remove Block
+
 # Blender
 
 Um in Blender Objekte in die richtige Größe zu bekommen muss man 'n' drücken, um die Eigenschaften angezeigt zu bekommen und nach dem Ändern Strg+A drücken und Position, Skalierung und Rotation anwenden.
