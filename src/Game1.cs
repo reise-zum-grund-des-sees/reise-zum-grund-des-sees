@@ -108,9 +108,13 @@ namespace ReiseZumGrundDesSees
                
                 _playerUpdate(ref GameState);
                 _cameraUpdate(ref GameState);
-				
-				//_worldUpdate(ref GameState);
-			}
+
+                //_worldUpdate(ref GameState);
+                for (int i = 0; i < Player.LeichteBlöcke.Count; i++)
+                {
+                    Player.LeichteBlöcke[i].Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                }
+            }
 			if (GameMode.HasFlag(GameFlags.Menu))
 			{
 				MainMenu.Update(_args, this);
@@ -179,10 +183,10 @@ namespace ReiseZumGrundDesSees
 
             renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
             renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
+            renderer.LeichterBlock(Player.LeichteBlöcke, ref _viewMatrix, ref _perspectiveMatrix);
+            
 
-			
-
-			base.Draw(gameTime);
+            base.Draw(gameTime);
 		}
 
 		// Menu Callbacks
