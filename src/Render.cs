@@ -92,7 +92,7 @@ namespace ReiseZumGrundDesSees
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateTranslation(_player.Position);
+                    effect.World = Matrix.CreateRotationY(MathHelper.ToRadians(45*_player.Blickrichtung))* Matrix.CreateTranslation(_player.Position);
 
                     effect.View = _viewMatrix;
                     effect.Projection = _perspectiveMatrix;

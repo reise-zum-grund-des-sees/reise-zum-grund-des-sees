@@ -13,61 +13,113 @@ namespace ReiseZumGrundDesSees
 	class Player : IUpdateable
 	{
         public Vector3 Position;
-        public Model model;
+        public Model Model;
         bool Jump1;
         bool Jump2;
         double CurrentJumpTime;
-
+        double BlickTime;
+        public int Blickrichtung;
+        List<LeichterBlock> LeichteBlöcke;
         public Player(ContentManager contentManager, Vector3 _position)
         {
             Position = _position;
             Jump1 = false;
             Jump2 = false;
             CurrentJumpTime = 0;
-            model = contentManager.Load<Model>("spielfigur");
+            Blickrichtung = 0;
+            BlickTime = 0;
+            LeichteBlöcke = new List<LeichterBlock>();
+            Model = contentManager.Load<Model>("spielfigur");
         }
        
         public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)
 		{
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
-            int[] Kollision = new int[8];//für jede Mögliche Richtung Kollsion
-            float hitbox=0.2f;
-            // Wenn Kolision
-            //Verhältnis vorher berechnen, momentane Blockgröße 1x1x1
-            if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY+0.05f), (int)_stateView.PlayerZ) == WorldBlock.Wall)
+            int[] Kollision = new int[4];//für jede Mögliche Richtung Kollsion
+            float hitbox=0.5f;
+            
+            float sprint = 1;
+            if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
+
+            //Blickrichtung   
+            BlickTime += _passedTime; //Um Blöcke in 8 Richtungen setzen zu können
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100) //hier die Zeit zwischen seitliche Inputs
+                Blickrichtung = 6;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
+                Blickrichtung = 2;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && BlickTime > 100)
+                Blickrichtung = 0;          
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
+                Blickrichtung = 4;
+                       
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            { 
+                Blickrichtung = 7;
+                BlickTime = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            { 
+                Blickrichtung = 3;
+                BlickTime = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            { 
+                Blickrichtung = 1;
+                BlickTime = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            { 
+                Blickrichtung = 5;
+                BlickTime = 0;
+            }
+            //Kollision 4 Richtungen
+            if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY+0.05f), (int)(_stateView.PlayerZ + hitbox)) == WorldBlock.Wall)
             {
                 Kollision[0] = 1;
             }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX - hitbox), (int)(_stateView.PlayerY + 0.05f), (int)_stateView.PlayerZ) == WorldBlock.Wall)
+            if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ - hitbox)) == WorldBlock.Wall)
             {
-                Kollision[4] = 1;
+                Kollision[2] = 1;//Rechts
             }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ-hitbox)) == WorldBlock.Wall)
+            if (_stateView.GetBlock((int)(_stateView.PlayerX - hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
             {
-                Kollision[2] = 1;
+                Kollision[1] = 1;
             }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ+hitbox)) == WorldBlock.Wall)
+            if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
             {
-                Kollision[6] = 1;
+                Kollision[3] = 1;//links
             }
-       
+            for (int i = 0; i < LeichteBlöcke.Count; i++)
+            {
+                //TODO: hier 4 Seitenkollision
+           
+            }
 
-            //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
-            if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY), (int)_stateView.PlayerZ) != WorldBlock.Wall)
-            {
-                Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
-               
-            }
-            if(_stateView.GetBlock((int)_stateView.PlayerX, (int)_stateView.PlayerY, (int)_stateView.PlayerZ) == WorldBlock.Wall) {
-               Jump1 = false; // setze Sprung zurück
-                  Jump2 = false; // setze Sprung zurück
-                CurrentJumpTime = 0;
-            }
-          
             return (ref GameState _state) =>
 			{
                 // Hier Variablen ändern - direkt, oder über _state.Player ...
+                //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
+                if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY), (int)_stateView.PlayerZ) != WorldBlock.Wall)
+                {
+                    Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                   
+                }
+                else{
+                    for (int i = 0; i < LeichteBlöcke.Count; i++)
+                    {
+                        //TODO: hier Kollision nach unten
+                    }
+                    }
+                if (_stateView.GetBlock((int)_stateView.PlayerX, (int)_stateView.PlayerY, (int)_stateView.PlayerZ) == WorldBlock.Wall)
+                {
+                    Jump1 = false; // setze Sprung zurück
+                    Jump2 = false; // setze Sprung zurück
+                    CurrentJumpTime = 0;
+                }
+
+
+               
                 if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
                 {
                     Jump1 = true;
@@ -82,43 +134,54 @@ namespace ReiseZumGrundDesSees
                    
                     if (CurrentJumpTime < 500) //Zeit, wann nach Sprung 1, Sprung 2 bereit ist
                     {
-                      
-                        Position.Y += 0.082f;//Sprunghöhe 2
+                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1), (int)_stateView.PlayerZ) != WorldBlock.Wall)//TODO: und drüber kein Leichter Block FEHLT
+                            Position.Y += 0.082f;//Sprunghöhe 2
+                        else
+                            CurrentJumpTime = 500;
                     }
                     
                     if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump2 == false && CurrentJumpTime > 300)//Doppelsprung
                     {
-                        Console.WriteLine(CurrentJumpTime);
+                    //Doppelsprung setzt erneuten Sprung ein, neue Höhe ist Einsatzhöhe+Sprung
                         Jump2 = true;
                         CurrentJumpTime = 0;
                     }
                     
                 }
               
-                    float sprint=1;
-                    if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
+                
                     
                     if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && Kollision[0]==0)
                     {
                         Position.Z += 0.016f*sprint;
                     }
 
-                    if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && Kollision[6] == 0)
+                    if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && Kollision[3] == 0)
                     {
                         Position.X += 0.016f * sprint;
                     }
 
-                    if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && Kollision[4] == 0)
+                    if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && Kollision[2] == 0)
                     {
                         Position.Z -= 0.016f * sprint;
                     }
 
-                    if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && Kollision[2] == 0)
+                    if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && Kollision[1] == 0)
                     {
                         Position.X -= 0.016f * sprint;
                     }
-                
-			};
+
+                if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && LeichterBlock.Maximalanzahl > LeichterBlock.Anzahl)
+                {
+                    LeichteBlöcke.Add(new LeichterBlock(this));
+                }
+                for(int i = 0; i <LeichteBlöcke.Count; i++)
+                {
+                    if (LeichteBlöcke.ElementAt(i).AktuelleDauer > LeichterBlock.MaximialDauer)
+                        LeichteBlöcke.RemoveAt(i);
+                }
+
+            };
         }
 
     }
