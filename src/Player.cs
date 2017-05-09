@@ -17,13 +17,16 @@ namespace ReiseZumGrundDesSees
         bool Jump1;
         bool Jump2;
         double CurrentJumpTime;
-
+        double BlickTime;
+        public int Blickrichtung;
         public Player(ContentManager contentManager, Vector3 _position)
         {
             Position = _position;
             Jump1 = false;
             Jump2 = false;
             CurrentJumpTime = 0;
+            Blickrichtung = 0;
+            BlickTime = 0;
             model = contentManager.Load<Model>("spielfigur");
         }
        
@@ -31,25 +34,59 @@ namespace ReiseZumGrundDesSees
 		{
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
-            int[] Kollision = new int[8];//für jede Mögliche Richtung Kollsion
-            float hitbox=0.2f;
-            // Wenn Kolision
-            //Verhältnis vorher berechnen, momentane Blockgröße 1x1x1
-            if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY+0.05f), (int)_stateView.PlayerZ) == WorldBlock.Wall)
+            int[] Kollision = new int[4];//für jede Mögliche Richtung Kollsion
+            float hitbox=0.5f;
+            
+            float sprint = 1;
+            if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
+
+            //Blickrichtung   
+            BlickTime += _passedTime;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100)
+                Blickrichtung = 6;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
+                Blickrichtung = 2;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && BlickTime > 100)
+                Blickrichtung = 0;          
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
+                Blickrichtung = 4;
+                       
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            { 
+                Blickrichtung = 7;
+                BlickTime = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            { 
+                Blickrichtung = 3;
+                BlickTime = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            { 
+                Blickrichtung = 1;
+                BlickTime = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            { 
+                Blickrichtung = 5;
+                BlickTime = 0;
+            }
+
+            if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY+0.05f), (int)(_stateView.PlayerZ + hitbox)) == WorldBlock.Wall)
             {
                 Kollision[0] = 1;
             }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX - hitbox), (int)(_stateView.PlayerY + 0.05f), (int)_stateView.PlayerZ) == WorldBlock.Wall)
-            {
-                Kollision[4] = 1;
-            }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ-hitbox)) == WorldBlock.Wall)
+            if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ - hitbox)) == WorldBlock.Wall)
             {
                 Kollision[2] = 1;
             }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ+hitbox)) == WorldBlock.Wall)
+            if (_stateView.GetBlock((int)(_stateView.PlayerX - hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
             {
-                Kollision[6] = 1;
+                Kollision[1] = 1;
+            }
+            if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
+            {
+                Kollision[3] = 1;
             }
        
 
@@ -88,32 +125,31 @@ namespace ReiseZumGrundDesSees
                     
                     if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump2 == false && CurrentJumpTime > 300)//Doppelsprung
                     {
-                        Console.WriteLine(CurrentJumpTime);
+                    
                         Jump2 = true;
                         CurrentJumpTime = 0;
                     }
                     
                 }
               
-                    float sprint=1;
-                    if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
+                
                     
                     if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && Kollision[0]==0)
                     {
                         Position.Z += 0.016f*sprint;
                     }
 
-                    if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && Kollision[6] == 0)
+                    if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && Kollision[3] == 0)
                     {
                         Position.X += 0.016f * sprint;
                     }
 
-                    if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && Kollision[4] == 0)
+                    if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && Kollision[2] == 0)
                     {
                         Position.Z -= 0.016f * sprint;
                     }
 
-                    if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && Kollision[2] == 0)
+                    if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && Kollision[1] == 0)
                     {
                         Position.X -= 0.016f * sprint;
                     }
