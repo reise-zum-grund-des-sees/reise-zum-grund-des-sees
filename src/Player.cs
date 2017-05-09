@@ -41,8 +41,8 @@ namespace ReiseZumGrundDesSees
             if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
 
             //Blickrichtung   
-            BlickTime += _passedTime;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100)
+            BlickTime += _passedTime; //Um Blöcke in 8 Richtungen setzen zu können
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100) //hier die Zeit zwischen seitliche Inputs
                 Blickrichtung = 6;
             if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
                 Blickrichtung = 2;
@@ -71,7 +71,7 @@ namespace ReiseZumGrundDesSees
                 Blickrichtung = 5;
                 BlickTime = 0;
             }
-
+            //Kollision 4 Richtungen
             if (_stateView.GetBlock((int)(_stateView.PlayerX ), (int)(_stateView.PlayerY+0.05f), (int)(_stateView.PlayerZ + hitbox)) == WorldBlock.Wall)
             {
                 Kollision[0] = 1;
@@ -125,7 +125,7 @@ namespace ReiseZumGrundDesSees
                     
                     if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump2 == false && CurrentJumpTime > 300)//Doppelsprung
                     {
-                    
+                    //Doppelsprung setzt erneuten Sprung ein, neue Höhe ist Einsatzhöhe+Sprung
                         Jump2 = true;
                         CurrentJumpTime = 0;
                     }
