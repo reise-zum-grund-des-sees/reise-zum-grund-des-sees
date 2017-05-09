@@ -12,7 +12,7 @@ namespace ReiseZumGrundDesSees
     class InputManager
     {
         private Point PreviousMousePosition;
-        public InputEventArgs Update()
+        public InputEventArgs Update(Rectangle _windowBounds)
         {
             InputEventList _eventList = InputEventList.None;
 
@@ -30,10 +30,13 @@ namespace ReiseZumGrundDesSees
             if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
             if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
             if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
-            
+
+            Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
+            Vector2 _moueMovementRelative = _mouseMovement.ToVector2() / _windowBounds.Size.ToVector2();
+
             InputEventArgs _args = new InputEventArgs(_eventList,
-                new Point(_mouseState.X, _mouseState.Y),             
-                new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y));
+                new Point(_mouseState.X, _mouseState.Y),
+                _mouseMovement, _moueMovementRelative);
 
            // Mouse.SetPosition(800 / 2, 480 / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
             _mouseState = Mouse.GetState();
@@ -49,15 +52,17 @@ namespace ReiseZumGrundDesSees
         public readonly InputEventList Events;
         public readonly Point MousePosition;
         public readonly Point MouseMovement;
+        public readonly Vector2 MouseMovementRelative;
 
-        public InputEventArgs(InputEventList _events, Point _mousePos, Point _mouseMov)
+        public InputEventArgs(InputEventList _events, Point _mousePos, Point _mouseMov, Vector2 _mouseMovRel)
         {
             Events = _events;
             MousePosition = _mousePos;
             MouseMovement = _mouseMov;
+            MouseMovementRelative = _mouseMovRel;
         }
 
-        public override string ToString() => $"Event: { Events }\r\nMousePosition: { MousePosition }\r\nMouseMovement: { MouseMovement }";
+        public override string ToString() => $"Event: { Events }\r\nMousePosition: { MousePosition }\r\nMouseMovement: { MouseMovement }\r\nMouseMovementRelative: { MouseMovementRelative }";
     }
 
     [Flags]
