@@ -87,7 +87,7 @@ namespace ReiseZumGrundDesSees
             //throw new NotImplementedException();
 
             graphicsDevice.RasterizerState = NoCullMode;
-            foreach (ModelMesh mesh in _player.model.Meshes)
+            foreach (ModelMesh mesh in _player.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
