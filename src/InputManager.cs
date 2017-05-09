@@ -31,7 +31,8 @@ namespace ReiseZumGrundDesSees
             if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
             if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
 
-            Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
+             Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
+            
             Vector2 _moueMovementRelative = _mouseMovement.ToVector2() / _windowBounds.Size.ToVector2();
 
             InputEventArgs _args = new InputEventArgs(_eventList,
