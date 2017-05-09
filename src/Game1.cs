@@ -43,8 +43,8 @@ namespace ReiseZumGrundDesSees
 		{
 			// TODO: Add your initialization logic here
 			GameMode = GameFlags.GameRunning;
-			InputManager = new InputManager();     
-            GameState = new GameState(new World(16, 16, 16, 3, 3), new Player(Content ,new Vector3(24, 1, 24)), new Camera(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height));  //vorrübergehend GameState festsetzen
+			InputManager = new InputManager();
+            GameState = new GameState(new World(16, 16, 16, 3, 3), new Player(Content ,new Vector3(24, 1, 24)), new Camera(false));  //vorrübergehend GameState festsetzen
             GameState.World.GenerateTestWorld();
             GameState.World.GenerateVertices(GraphicsDevice);
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
