@@ -18,6 +18,8 @@ namespace ReiseZumGrundDesSees
 
         Texture2D blocktexture;
 
+        private Render renderer;
+
 		MainMenu MainMenu;
 
 		GameFlags GameMode;
@@ -66,7 +68,8 @@ namespace ReiseZumGrundDesSees
             blocktexture = Content.Load<Texture2D>("blocktexture");
 
 			// TODO: use this.Content to load your game content here
-			MainMenu = new MainMenu(this.Content);
+			MainMenu = new MainMenu(Content);
+            renderer = new Render(GraphicsDevice, Content);
 		}
 
 		/// <summary>
@@ -126,10 +129,11 @@ namespace ReiseZumGrundDesSees
 
 			
 
-			Matrix m = GameState.Camera.CalculateViewMatrix();
+			Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
+            Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
 
-			Render.Player(m, GameState.Player);
-            Render.World(m, GameState.World, effect, GraphicsDevice, blocktexture);
+            renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
+            renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
 
 			
 

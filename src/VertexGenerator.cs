@@ -43,6 +43,7 @@ namespace ReiseZumGrundDesSees
                                 _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 0.25f);
 
                                 // BACK
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(1, 0));
@@ -51,6 +52,8 @@ namespace ReiseZumGrundDesSees
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(0, 1));
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.25f, 0.5f);
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += new Vector2(0f, 0.5f);
 
                                 // LEFT
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
@@ -59,6 +62,8 @@ namespace ReiseZumGrundDesSees
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(1, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.25f, 0.5f);
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += new Vector2(0.25f, 0f);
 
                                 // RIGHT
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
@@ -67,6 +72,8 @@ namespace ReiseZumGrundDesSees
                                 _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(0, 1));
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.25f, 0.5f);
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += new Vector2(0.75f, 0f);
 
                                 // TOP
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
@@ -75,6 +82,8 @@ namespace ReiseZumGrundDesSees
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.25f, 0.5f);
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += new Vector2(0f, 0.25f);
 
                                 // BOTTOM
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
@@ -83,6 +92,8 @@ namespace ReiseZumGrundDesSees
                                 _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 0));
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.25f, 0.5f);
+                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += new Vector2(0f, 0.75f);
                                 break;
                         }
                     }
