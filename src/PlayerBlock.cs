@@ -104,8 +104,14 @@ namespace ReiseZumGrundDesSees
                 //Update Timer
                 AktuelleDauer += _passedTime;
              
-                if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.5f), (int)Position.Z) != WorldBlock.Wall)
-                {
+                //if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.5f), (int)Position.Z) != WorldBlock.Wall)
+                    if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.55f), (int)Position.Z) == WorldBlock.Wall ||
+             _view.GetBlock((int)(Position.X + 0.95f - 0.5f), (int)(Position.Y - 0.55f), (int)Position.Z) == WorldBlock.Wall ||
+             _view.GetBlock((int)(Position.X - (0.95f - 0.5f)), (int)(Position.Y - 0.55f), (int)Position.Z) == WorldBlock.Wall ||
+             _view.GetBlock((int)(Position.X), (int)(Position.Y - 0.55f), (int)(Position.Z + 0.95f - 0.5f)) == WorldBlock.Wall ||
+             _view.GetBlock((int)(Position.X), (int)(Position.Y - 0.55f), (int)(Position.Z - (0.95f - 0.5f))) == WorldBlock.Wall
+             ) { }//anstatt 0.95f auch Player.hitbox möglich, dann gleiche Kollision wie Spieler
+                else   {
                     if (Art != 0) {                  
                     List<Vector3> bound = new List<Vector3>();
                     bound.Add(Position + new Vector3(0.5f, 0.5f, 0.5f));
@@ -118,11 +124,12 @@ namespace ReiseZumGrundDesSees
                     bound.Add(Position + new Vector3(0.5f, -0.5f, -0.5f));
                     bound.Add(Position + new Vector3(-0.5f, 0.5f, -0.5f));
                     Box = BoundingBox.CreateFromPoints(bound);
-                    int k = 0;
-                    for (int i = 0; i < Player.Blöcke.Count; i++)//Kollision beim Fallen untereinander, erlaubt ineinander stecken
-                    {
-                        if (Box.Intersects(Player.Blöcke[i].Box) == true) k++;    //immer Kollision mit sich selbst              
-                    }
+
+                        int k = 0;
+                        for (int i = 0; i < Player.Blöcke.Count; i++)//Kollision beim Fallen untereinander, erlaubt ineinander stecken
+                        {
+                            if (Box.Intersects(Player.Blöcke[i].Box) == true) k++;    //immer Kollision mit sich selbst              
+                        }
                         if (k <= 1)
                         {
                             if (Art == 1)
@@ -130,12 +137,11 @@ namespace ReiseZumGrundDesSees
                             if (Art == 2)
                                 Position.Y -= 0.048f;//hier Fallgeschwindigkeit momentan 3 Block pro Sekunde
                         }
-
                     }
                  
                   
                 }
-
+                
             }
             if (MaximialDauer < AktuelleDauer && Alive == true)
             {
