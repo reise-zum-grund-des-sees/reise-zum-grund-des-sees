@@ -101,7 +101,6 @@ namespace ReiseZumGrundDesSees
             bound.Add(Position + new Vector3(-0.4f, 1.5f, -0.4f));
             bound.Add(Position + new Vector3(0.4f, 1.5f, -0.4f));
             bound.Add(Position + new Vector3(-0.4f, 1.5f, 0.4f));
-            bound.Add(Position + new Vector3(0.4f, 1.5f, 0.4f));
             bound.Add(Position + new Vector3(0.4f, 0.05f, 0.4f));
             bound.Add(Position + new Vector3(-0.4f, 0.05f, -0.4f));
             bound.Add(Position + new Vector3(0.4f, 0.05f, -0.4f));

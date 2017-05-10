@@ -86,7 +86,6 @@ namespace ReiseZumGrundDesSees
             bound.Add(Position + new Vector3(-0.5f, -0.5f, 0.5f));
             bound.Add(Position + new Vector3(0.5f, -0.5f, 0.5f));
             bound.Add(Position + new Vector3(-0.5f, 0.5f, 0.5f));
-            bound.Add(Position + new Vector3(0.5f, 0.5f, 0.5f));
             bound.Add(Position + new Vector3(0.5f, 0.5f, -0.5f));
             bound.Add(Position + new Vector3(-0.5f, -0.5f, -0.5f));
             bound.Add(Position + new Vector3(0.5f, -0.5f, -0.5f));
@@ -105,7 +104,7 @@ namespace ReiseZumGrundDesSees
                 //Update Timer
                 AktuelleDauer += _passedTime;
              
-                if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.5f), (int)Position.Z) != WorldBlock.Wall)//TODO: Stapeln von Leichten Blöcken
+                if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.5f), (int)Position.Z) != WorldBlock.Wall)
                 {
                     if (Art != 0) {                  
                     List<Vector3> bound = new List<Vector3>();
@@ -119,11 +118,22 @@ namespace ReiseZumGrundDesSees
                     bound.Add(Position + new Vector3(0.5f, -0.5f, -0.5f));
                     bound.Add(Position + new Vector3(-0.5f, 0.5f, -0.5f));
                     Box = BoundingBox.CreateFromPoints(bound);
+                    int k = 0;
+                    for (int i = 0; i < Player.Blöcke.Count; i++)//Kollision beim Fallen untereinander, erlaubt ineinander stecken
+                    {
+                        if (Box.Intersects(Player.Blöcke[i].Box) == true) k++;    //immer Kollision mit sich selbst              
                     }
-                    if(Art == 1)
-                       Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
-                    if (Art == 2)
-                       Position.Y -= 0.048f;//hier Fallgeschwindigkeit momentan 3Block pro Sekunde
+                        if (k <= 1)
+                        {
+                            if (Art == 1)
+                                Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                            if (Art == 2)
+                                Position.Y -= 0.048f;//hier Fallgeschwindigkeit momentan 3 Block pro Sekunde
+                        }
+
+                    }
+                 
+                  
                 }
 
             }
