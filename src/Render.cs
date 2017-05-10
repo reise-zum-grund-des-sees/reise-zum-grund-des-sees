@@ -103,17 +103,17 @@ namespace ReiseZumGrundDesSees
             }
 
         }
-        public void LeichterBlock(List<LeichterBlock> _leichterblock, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
+        public void LeichterBlock(List<PlayerBlock> _block, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
             // benötige Block mit Größe 1x1x1? und Mittelpunkt in 0.5x0.5x0.5
-            for (int i = 0; i < _leichterblock.Count; i++)
+            for (int i = 0; i < _block.Count; i++)
             {
-                foreach (ModelMesh mesh in _leichterblock[i].Model.Meshes)
+                foreach (ModelMesh mesh in _block[i].Model.Meshes)
                 {
                     foreach (BasicEffect effect in mesh.Effects)
                     {
                         effect.EnableDefaultLighting();
-                        effect.World = Matrix.CreateTranslation(_leichterblock[i].Position);
+                        effect.World = Matrix.CreateTranslation(_block[i].Position);
 
                         effect.View = _viewMatrix;
 

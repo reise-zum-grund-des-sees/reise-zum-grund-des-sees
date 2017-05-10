@@ -20,7 +20,7 @@ namespace ReiseZumGrundDesSees
         double BlickTime;
         double Blockcd;
         public int Blickrichtung;
-        public static List<LeichterBlock> LeichteBlöcke;
+        public static List<PlayerBlock> Blöcke;
         public BoundingBox Box;
         ContentManager ContentManager;
         public Player(ContentManager contentManager, Vector3 _position)
@@ -33,7 +33,7 @@ namespace ReiseZumGrundDesSees
             Blickrichtung = 0;
             BlickTime = 0;
             Blockcd = 0;
-            LeichteBlöcke = new List<LeichterBlock>();
+            Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
         }
 
@@ -102,18 +102,18 @@ namespace ReiseZumGrundDesSees
             bound.Add(Position + new Vector3(0.4f, 1.5f, -0.4f));
             bound.Add(Position + new Vector3(-0.4f, 1.5f, 0.4f));
             bound.Add(Position + new Vector3(0.4f, 1.5f, 0.4f));
-            bound.Add(Position + new Vector3(0.4f, 0.01f, 0.4f));
-            bound.Add(Position + new Vector3(-0.4f, 0.01f, -0.4f));
-            bound.Add(Position + new Vector3(0.4f, 0.01f, -0.4f));
-            bound.Add(Position + new Vector3(-0.4f, 0.01f, 0.4f));
+            bound.Add(Position + new Vector3(0.4f, 0.05f, 0.4f));
+            bound.Add(Position + new Vector3(-0.4f, 0.05f, -0.4f));
+            bound.Add(Position + new Vector3(0.4f, 0.05f, -0.4f));
+            bound.Add(Position + new Vector3(-0.4f, 0.05f, 0.4f));
             Box = BoundingBox.CreateFromPoints(bound);
 
-            for (int i = 0; i < LeichteBlöcke.Count; i++)
+            for (int i = 0; i < Blöcke.Count; i++)
             {
-                if (Box.Intersects(LeichteBlöcke.ElementAt(i).Box) && Kollision[3] == 0 && LeichteBlöcke.ElementAt(i).Position.X - Position.X > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveLeft)) Kollision[3] = 1;//links von Spieler ist Wand
-                if (Box.Intersects(LeichteBlöcke.ElementAt(i).Box) && Kollision[1] == 0 && LeichteBlöcke.ElementAt(i).Position.X - Position.X < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveRight)) Kollision[1] = 1;//rechts
-                if (Box.Intersects(LeichteBlöcke.ElementAt(i).Box) && Kollision[2] == 0 && LeichteBlöcke.ElementAt(i).Position.Z - Position.Z < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveBackwards)) Kollision[2] = 1;//hinten
-                if (Box.Intersects(LeichteBlöcke.ElementAt(i).Box) && Kollision[0] == 0 && LeichteBlöcke.ElementAt(i).Position.Z - Position.Z > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveForwards)) Kollision[0] = 1;//vorne
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[3] == 0 && Blöcke.ElementAt(i).Position.X - Position.X > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveLeft)) Kollision[3] = 1;//links von Spieler ist Wand
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[1] == 0 && Blöcke.ElementAt(i).Position.X - Position.X < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveRight)) Kollision[1] = 1;//rechts
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[2] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveBackwards)) Kollision[2] = 1;//hinten
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[0] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveForwards)) Kollision[0] = 1;//vorne
 
             }
 
@@ -132,10 +132,10 @@ namespace ReiseZumGrundDesSees
                 {
 
 
-                    for (int i = 0; i < LeichteBlöcke.Count; i++)
+                    for (int i = 0; i < Blöcke.Count; i++)
                     {
-                        if (Position.Y - LeichteBlöcke.ElementAt(i).Position.Y < 0.5f
-                        && Math.Abs(LeichteBlöcke.ElementAt(i).Position.X - Position.X) < 0.5f && Math.Abs(LeichteBlöcke.ElementAt(i).Position.Z - Position.Z) < 0.5f)
+                        if (Position.Y - Blöcke.ElementAt(i).Position.Y < 0.5f && Position.Y - Blöcke.ElementAt(i).Position.Y >-0.1f
+                        && Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < 0.5f && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < 0.5f)
                             j = true;
                     }
                     if (j == true) { }
@@ -167,13 +167,17 @@ namespace ReiseZumGrundDesSees
                     if (CurrentJumpTime < 500) //Zeit, wann nach Sprung 1, Sprung 2 bereit ist
                     {
                         bool k = false;
-                        //for (int i = 0; i < LeichteBlöcke.Count; i++)
-                        //if (Box.Intersects(LeichteBlöcke.ElementAt(i).Box)&& LeichteBlöcke.ElementAt(i).Position.Y - Position.Y > 0) k = true; // Kollision drunter nicht funktionstüchtig
-                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)
+                        for (int i = 0; i < Blöcke.Count; i++)
+                        if ( Blöcke.ElementAt(i).Position.Y- Position.Y  < 2f && Blöcke.ElementAt(i).Position.Y - Position.Y>0.1f
+                       && Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < 0.5f && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < 0.5f) k = true;
+                       
+                            if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)
 
                             Position.Y += 0.082f;//Sprunghöhe 2
                         else
                             CurrentJumpTime = 500;
+
+                          
                     }
 
                     if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump2 == false && CurrentJumpTime > 300)//Doppelsprung
@@ -207,17 +211,27 @@ namespace ReiseZumGrundDesSees
                     Position.X -= 0.016f * sprint;
                 }
                 Blockcd += _passedTime;
-                if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && LeichterBlock.Maximalanzahl > LeichterBlock.Anzahl && Blockcd > 1000)
+                if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && PlayerBlock.MaximumL > PlayerBlock.AnzahlL && Blockcd > 1000)
                 {
-                    LeichteBlöcke.Add(new LeichterBlock(ContentManager, this));
+                    Blöcke.Add(new PlayerBlock(ContentManager, this,0));
                     Blockcd = 0;
                 }
-                for (int i = 0; i < LeichteBlöcke.Count; i++)
+                if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && PlayerBlock.MaximumM > PlayerBlock.AnzahlM && Blockcd > 1000)
                 {
-                    if (LeichteBlöcke.ElementAt(i).AktuelleDauer > LeichterBlock.MaximialDauer)
-                        LeichteBlöcke.RemoveAt(i);
+                    Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+                    Blockcd = 0;
                 }
-
+                if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && PlayerBlock.MaximumS > PlayerBlock.AnzahlS && Blockcd > 1000)
+                {
+                    Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+                    Blockcd = 0;
+                }
+                for (int i = 0; i < Blöcke.Count; i++)
+                {
+                    if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
+                        Blöcke.RemoveAt(i);
+                }
+                Console.WriteLine(Position);
             };
         }
 

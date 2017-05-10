@@ -30,7 +30,8 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
 
             if (_keyboardState.IsKeyDown(Keys.D1)) _eventList |= InputEventList.LeichterBlock;
-
+            if (_keyboardState.IsKeyDown(Keys.D2)) _eventList |= InputEventList.MittelschwererBlock;
+            if (_keyboardState.IsKeyDown(Keys.D3)) _eventList |= InputEventList.SchwererBlock;
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
@@ -95,6 +96,8 @@ namespace ReiseZumGrundDesSees
         MoveUp = 0x800,
         MoveDown = 0x1000,
 
-        LeichterBlock = 0x2000
+        LeichterBlock = 0x2000,
+        MittelschwererBlock = 0x30000,
+        SchwererBlock = 0x4000
     }
 }

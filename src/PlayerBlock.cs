@@ -9,27 +9,46 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class LeichterBlock
+    class PlayerBlock
     {
-        public static int Anzahl = 0;
-        public static int Maximalanzahl = 3;
-        public static int Maximum = 3;
+        public static int AnzahlL = 0;  
+        public static int MaximumL = 3;
+        public static int AnzahlM = 0;
+        public static int MaximumM = 3;
+        public static int AnzahlS = 0;
+        public static int MaximumS = 3;
         public static double MaximialDauer;
         public double AktuelleDauer;
+        public int Art;
         bool Alive;
         public Model Model;
         public Vector3 Position;
         public BoundingBox Box;
-        public LeichterBlock(ContentManager contentManager, Player _player)
+        public PlayerBlock(ContentManager contentManager, Player _player,int ArtdesBlocks)
         {
 
             Alive = true;
+            Art = ArtdesBlocks;
             AktuelleDauer = 0;
-            Anzahl++;
             MaximialDauer = 15000;
             Position = _player.Position;
             Position.Y += 0.5f; //Auf Höhe des Spielers
-            Model = contentManager.Load<Model>("Block");
+            if (Art == 0){//leichterBlock
+                AnzahlL++;
+                Model = contentManager.Load<Model>("Block");
+            }
+            if (Art == 1)//MittelschwererBlock
+            {
+                AnzahlM++;
+                Model = contentManager.Load<Model>("Block");
+            }
+            if (Art == 2)//SchwererBlock
+            {
+                AnzahlS++;
+                Model = contentManager.Load<Model>("Block");
+            }
+            
+           
             //Position des Blockes basierend auf Blickrichtung
             switch (_player.Blickrichtung)
             {
@@ -85,9 +104,10 @@ namespace ReiseZumGrundDesSees
 
                 //Update Timer
                 AktuelleDauer += _passedTime;
+             
                 if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.5f), (int)Position.Z) != WorldBlock.Wall)//TODO: Stapeln von Leichten Blöcken
                 {
-                    Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                    if (Art != 0) {                  
                     List<Vector3> bound = new List<Vector3>();
                     bound.Add(Position + new Vector3(0.5f, 0.5f, 0.5f));
                     bound.Add(Position + new Vector3(-0.5f, -0.5f, 0.5f));
@@ -99,14 +119,34 @@ namespace ReiseZumGrundDesSees
                     bound.Add(Position + new Vector3(0.5f, -0.5f, -0.5f));
                     bound.Add(Position + new Vector3(-0.5f, 0.5f, -0.5f));
                     Box = BoundingBox.CreateFromPoints(bound);
+                    }
+                    if(Art == 1)
+                       Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                    if (Art == 2)
+                       Position.Y -= 0.048f;//hier Fallgeschwindigkeit momentan 3Block pro Sekunde
                 }
 
             }
             if (MaximialDauer < AktuelleDauer && Alive == true)
             {
-                //Zerstöre Objekt
-                Anzahl--;
                 Alive = false;
+                //Zerstöre Objekt
+                if (Art == 0)
+                {//leichterBlock
+                    AnzahlL--;
+                
+                }
+                if (Art == 1)//MittelschwererBlock
+                {
+                    AnzahlM--;
+                
+                }
+                if (Art == 2)//SchwererBlock
+                {
+                    AnzahlS--;
+                  
+                }
+
 
             }
             else
