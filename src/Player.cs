@@ -23,8 +23,8 @@ namespace ReiseZumGrundDesSees
         public static List<PlayerBlock> Blöcke;
         public BoundingBox Box;
         ContentManager ContentManager;
-        float FallOffset = 0.8f;//wann fällt man von Blöcken runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
-        //>0.9 auch Probleme bei gesetzten Blöcken
+        float FallOffset = 0.8f;//wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
+        
         public Player(ContentManager contentManager, Vector3 _position)
         {
             ContentManager = contentManager;
@@ -44,7 +44,7 @@ namespace ReiseZumGrundDesSees
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
             int[] Kollision = new int[4];//für jede Mögliche Richtung Kollsion
-            float hitbox = 0.51f;
+            float hitbox = 0.5f;
 
             float sprint = 1;
             if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
@@ -103,10 +103,10 @@ namespace ReiseZumGrundDesSees
             bound.Add(Position + new Vector3(-0.5f, 1.5f, -0.5f));
             bound.Add(Position + new Vector3(0.5f, 1.5f, -0.5f));
             bound.Add(Position + new Vector3(-0.5f, 1.5f, 0.5f));
-            bound.Add(Position + new Vector3(0.5f, 0.25f, 0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 0.25f, -0.5f));
-            bound.Add(Position + new Vector3(0.5f, 0.25f, -0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 0.25f, 0.5f));
+            bound.Add(Position + new Vector3(0.5f, 0.15f, 0.5f));
+            bound.Add(Position + new Vector3(-0.5f, 0.15f, -0.5f));
+            bound.Add(Position + new Vector3(0.5f, 0.15f, -0.5f));
+            bound.Add(Position + new Vector3(-0.5f, 0.15f, 0.5f));
             Box = BoundingBox.CreateFromPoints(bound);
 
             for (int i = 0; i < Blöcke.Count; i++)
@@ -124,6 +124,7 @@ namespace ReiseZumGrundDesSees
                 // Hier Variablen ändern - direkt, oder über _state.Player ...
                 //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
                 bool j = false;
+                bool kollisionmitblock = false;
                 //PROBLEMSTELLE
                 if (_stateView.GetBlock((int)Position.X, (int)(Position.Y - 0.032f), (int)Position.Z) == WorldBlock.Wall ||
                 _stateView.GetBlock((int)(Position.X + (FallOffset - 0.5f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
@@ -132,8 +133,8 @@ namespace ReiseZumGrundDesSees
                 _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z - (FallOffset - 0.5f))) == WorldBlock.Wall
                 )
                 {
-                    //Im Block steckend halbwechs funktionierend
-  // if(Math.Abs(Position.Y- (int)(Position.Y) ) < 0.55f) Position.Y -= 0.032f;
+                    kollisionmitblock = true;
+
                 }
                 else
                 {
@@ -141,27 +142,26 @@ namespace ReiseZumGrundDesSees
 
                     for (int i = 0; i < Blöcke.Count; i++)
                     {
-                        if (Position.Y - Blöcke.ElementAt(i).Position.Y < 0.5f+ 0.032f && Position.Y - Blöcke.ElementAt(i).Position.Y >0f
-                        && Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < FallOffset && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < FallOffset)
+                  
+                      //unter Spieler ein Block
+                         if (Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < FallOffset  && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < FallOffset
+                           && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= 0.8f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y <=1f)
                             j = true;
+                      
+                  
                     }
                     if (j == true) { }
                     else
 
                         Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
                 }
-                //gleiche PROBLEMSTELLE
-                if (_stateView.GetBlock((int)Position.X, (int)(Position.Y - 0.032f), (int)Position.Z) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X + (FallOffset - 0.5f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X - (FallOffset - 0.5f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z + (FallOffset - 0.5f))) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z - (FallOffset - 0.5f))) == WorldBlock.Wall ||
-               j ==true
-               )
+              
+                if (kollisionmitblock || j ==true)
                 {
                     Jump1 = false; // setze Sprung zurück
                     Jump2 = false; // setze Sprung zurück
                     CurrentJumpTime = 0;
+                   
                 }
 
 
@@ -182,16 +182,20 @@ namespace ReiseZumGrundDesSees
                     {
                         bool k = false;
                         for (int i = 0; i < Blöcke.Count; i++)
-                        if ( Blöcke.ElementAt(i).Position.Y- Position.Y  < 0.5f+0.032f && Blöcke.ElementAt(i).Position.Y - Position.Y>0f
-                       && Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < FallOffset && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < FallOffset) k = true;
+                        {
 
-                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)//über SPieler ein Block?
-
+                            //über Spieler ein Block
+                            if(Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < FallOffset-0.1f && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < FallOffset-0.1f
+                             && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y < 0f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= -1.5f) k = true;
+                         
+                        }
+                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)//über Spieler ein Block?
+                            //nicht funktionsfähig, falsche Kollisionsbox
                             Position.Y += 0.082f;//Sprunghöhe 2
                         else
                         CurrentJumpTime = 500;
-                        
 
+                    
                           
                     }
 
@@ -246,7 +250,7 @@ namespace ReiseZumGrundDesSees
                     if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
                         Blöcke.RemoveAt(i);
                 }
-                //Console.WriteLine(Position);
+              //  Console.WriteLine(Position);
             };
         }
 
