@@ -1,14 +1,14 @@
 # Steuerung
 
-| Key    | Effect                     |
-|--------|----------------------------|
-| Strg+E | Toggle Welt-Editor-Mode    |
-| Strg+S | Save World                 |
-| Strg+L | Load World                 |
-| Q      | Down                       |
-| E      | Up                         |
-| Left   | Mouse Click: Set Block     |
-| Right  | Mouse Click: Remove Block  |
+| Key               | Effect                     |
+|-------------------|----------------------------|
+| Strg+E            | Toggle Welt-Editor-Mode    |
+| Strg+S            | Save World                 |
+| Strg+L            | Load World                 |
+| Q                 | Down                       |
+| E                 | Up                         |
+| Left Mouse Click  | Set Block                  |
+| Right Mouse Click | Remove Block               |
 
 # Blender
 
