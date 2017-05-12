@@ -81,7 +81,7 @@ namespace ReiseZumGrundDesSees
                 BlickTime = 0;
             }
             //Kollision 4 Richtungen
-            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ + hitbox )) == WorldBlock.Wall)        
+            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ + hitbox)) == WorldBlock.Wall)        
             {
                 Kollision[2] = 1;//hinten
             }        
@@ -140,14 +140,18 @@ namespace ReiseZumGrundDesSees
                 //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
                 bool j = false;
                 bool kollisionmitblock = false;
-                //PROBLEMSTELLE, durch Ecken in BLock glitchen
-                if (_stateView.GetBlock((int)Position.X, (int)(Position.Y-0.032f), (int)Position.Z) == WorldBlock.Wall ||
-
-          _stateView.GetBlock((int)(Position.X + (FallOffset - 0.55f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-          _stateView.GetBlock((int)(Position.X - (FallOffset - 0.55f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-          _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z + (FallOffset - 0.55f))) == WorldBlock.Wall ||
-          _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z - (FallOffset - 0.55f))) == WorldBlock.Wall
-
+                //PROBLEMSTELLE, durch Ecken in Block glitchen
+                if (
+                (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall &&
+                 _stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 0.032f), (int)_stateView.PlayerZ) != WorldBlock.Wall) ||
+                (_stateView.GetBlock((int)(_stateView.PlayerX + (FallOffset - 0.55f)), (int)(_stateView.PlayerY - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall  &&
+                 _stateView.GetBlock((int)(_stateView.PlayerX + (FallOffset - 0.55f)), (int)(_stateView.PlayerY + 0.032f), (int)_stateView.PlayerZ) != WorldBlock.Wall) ||
+               (_stateView.GetBlock((int)(_stateView.PlayerX - (FallOffset - 0.55f)), (int)(_stateView.PlayerY - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall &&
+                 _stateView.GetBlock((int)(_stateView.PlayerX - (FallOffset - 0.55f)), (int)(_stateView.PlayerY + 0.032f), (int)_stateView.PlayerZ) != WorldBlock.Wall) ||
+                (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY - 0.032f), (int)(_stateView.PlayerZ + (FallOffset - 0.55f))) == WorldBlock.Wall && 
+                _stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.032f), (int)(_stateView.PlayerZ + (FallOffset - 0.55f))) != WorldBlock.Wall) ||
+                 (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY - 0.032f), (int)(_stateView.PlayerZ - (FallOffset - 0.55f))) == WorldBlock.Wall &&
+                  _stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.032f), (int)(_stateView.PlayerZ - (FallOffset - 0.55f))) != WorldBlock.Wall)
                 )
 
                 {
@@ -207,9 +211,8 @@ namespace ReiseZumGrundDesSees
                              && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y < 0f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= -1.5f) k = true;
                          
                         }
-                        //_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && 
-                        if (k == false)//über Spieler ein Block?
-                          //nicht funktionsfähig, falsche Kollisionsbox
+                        
+                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)//über Spieler ein Block?
                         {
                             Position.Y += 0.082f ;//Sprunghöhe 2
                         }
