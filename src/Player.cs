@@ -23,7 +23,7 @@ namespace ReiseZumGrundDesSees
         public static List<PlayerBlock> Blöcke;
         public BoundingBox Box;
         ContentManager ContentManager;
-        float FallOffset = 0.8f;//wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
+        public float FallOffset = 0.8f;//wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
         
         public Player(ContentManager contentManager, Vector3 _position)
         {
@@ -44,7 +44,7 @@ namespace ReiseZumGrundDesSees
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
             int[] Kollision = new int[4];//für jede Mögliche Richtung Kollsion
-            float hitbox = 0.5f;
+            float hitbox = -0.5f+FallOffset;;
 
             float sprint = 1;
             if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
@@ -81,7 +81,7 @@ namespace ReiseZumGrundDesSees
                 BlickTime = 0;
             }
             //Kollision 4 Richtungen
-            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ + hitbox)) == WorldBlock.Wall)
+            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ + hitbox )) == WorldBlock.Wall)        
             {
                 Kollision[0] = 1;//vorne
             }
@@ -98,16 +98,31 @@ namespace ReiseZumGrundDesSees
                 Kollision[3] = 1;//links
             }
             //4 Seiten Kollision mit gesetzen Blöcken
+           
             List<Vector3> bound = new List<Vector3>();
-            bound.Add(Position + new Vector3(0.5f, 1.5f, 0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 1.5f, -0.5f));
-            bound.Add(Position + new Vector3(0.5f, 1.5f, -0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 1.5f, 0.5f));
-            bound.Add(Position + new Vector3(0.5f, 0.15f, 0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 0.15f, -0.5f));
-            bound.Add(Position + new Vector3(0.5f, 0.15f, -0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 0.15f, 0.5f));
+          
+            bound.Add(Position + new Vector3(FallOffset-0.5f, 1.5f,FallOffset - 0.5f));
+            bound.Add(Position + new Vector3(-(FallOffset - 0.5f), 1.5f, -(FallOffset - 0.5f)));
+            bound.Add(Position + new Vector3(FallOffset - 0.5f, 1.5f, -(FallOffset - 0.5f)));
+            bound.Add(Position + new Vector3(-(FallOffset - 0.5f), 1.5f, FallOffset - 0.5f));
+            bound.Add(Position + new Vector3(FallOffset - 0.5f, 0.15f, FallOffset - 0.5f));
+            bound.Add(Position + new Vector3(-(FallOffset - 0.5f), 0.15f, -(FallOffset - 0.5f)));
+            bound.Add(Position + new Vector3(FallOffset - 0.5f, 0.15f, -(FallOffset - 0.5f)));
+            bound.Add(Position + new Vector3(-(FallOffset - 0.5f), 0.15f, FallOffset - 0.5f));
             Box = BoundingBox.CreateFromPoints(bound);
+          
+           /*
+            bound.Add(Position + new Vector3(0.05f,1.5f, 0.05f));
+            bound.Add(Position + new Vector3(-0.05f, 1.5f, -0.05f));
+            bound.Add(Position + new Vector3(0.05f,1.5f, -0.05f));
+            bound.Add(Position + new Vector3(-0.05f, 1.5f, 0.05f));
+            bound.Add(Position + new Vector3( 0.05f, 0.15f, 0.05f));
+            bound.Add(Position + new Vector3(-0.05f, 0.15f, -0.05f));
+            bound.Add(Position + new Vector3(0.05f,0.15f, -0.05f));
+            bound.Add(Position + new Vector3(-0.05f, 0.15f, 0.05f));
+              Box = BoundingBox.CreateFromPoints(bound);
+           */
+
 
             for (int i = 0; i < Blöcke.Count; i++)
             {
@@ -115,7 +130,6 @@ namespace ReiseZumGrundDesSees
                 if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[1] == 0 && Blöcke.ElementAt(i).Position.X - Position.X < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveRight)) Kollision[1] = 1;//rechts
                 if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[2] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveBackwards)) Kollision[2] = 1;//hinten
                 if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[0] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveForwards)) Kollision[0] = 1;//vorne
-               
             }
 
 
@@ -125,16 +139,19 @@ namespace ReiseZumGrundDesSees
                 //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
                 bool j = false;
                 bool kollisionmitblock = false;
-                //PROBLEMSTELLE
-                if (_stateView.GetBlock((int)Position.X, (int)(Position.Y - 0.032f), (int)Position.Z) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X + (FallOffset - 0.5f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X - (FallOffset - 0.5f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z + (FallOffset - 0.5f))) == WorldBlock.Wall ||
-                _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z - (FallOffset - 0.5f))) == WorldBlock.Wall
+                //PROBLEMSTELLE, durch Ecken in BLock glitchen
+                if (_stateView.GetBlock((int)Position.X, (int)(Position.Y-0.032f), (int)Position.Z) == WorldBlock.Wall ||
+
+          _stateView.GetBlock((int)(Position.X + (FallOffset - 0.55f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
+          _stateView.GetBlock((int)(Position.X - (FallOffset - 0.55f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
+          _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z + (FallOffset - 0.55f))) == WorldBlock.Wall ||
+          _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z - (FallOffset - 0.55f))) == WorldBlock.Wall
+
                 )
+
                 {
                     kollisionmitblock = true;
-
+                    
                 }
                 else
                 {
@@ -144,8 +161,8 @@ namespace ReiseZumGrundDesSees
                     {
                   
                       //unter Spieler ein Block
-                         if (Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < FallOffset  && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < FallOffset
-                           && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= 0.8f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y <=1f)
+                         if (Math.Abs(Blöcke.ElementAt(i).Position.X - Position.X) < FallOffset-0.1f  && Math.Abs(Blöcke.ElementAt(i).Position.Z - Position.Z) < FallOffset-0.1f
+                           && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= 0.9f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y <=1f)
                             j = true;
                       
                   
@@ -155,7 +172,7 @@ namespace ReiseZumGrundDesSees
 
                         Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
                 }
-              
+                Console.WriteLine(kollisionmitblock);
                 if (kollisionmitblock || j ==true)
                 {
                     Jump1 = false; // setze Sprung zurück
@@ -189,11 +206,14 @@ namespace ReiseZumGrundDesSees
                              && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y < 0f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= -1.5f) k = true;
                          
                         }
-                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)//über Spieler ein Block?
-                            //nicht funktionsfähig, falsche Kollisionsbox
-                            Position.Y += 0.082f;//Sprunghöhe 2
+                        //_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && 
+                        if (k == false)//über Spieler ein Block?
+                          //nicht funktionsfähig, falsche Kollisionsbox
+                        {
+                            Position.Y += 0.082f ;//Sprunghöhe 2
+                        }
                         else
-                        CurrentJumpTime = 500;
+                            CurrentJumpTime = 500;
 
                     
                           
