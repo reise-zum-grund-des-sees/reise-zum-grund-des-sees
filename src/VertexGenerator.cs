@@ -49,70 +49,88 @@ namespace ReiseZumGrundDesSees
                                 Random rnd = new Random(x * 16 * 16 + y * 16 + z);
 
                                 // FRONT
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, 6);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                if (z == _sizeZ - 1 || _region.Blocks[x, y, z + 1] != WorldBlock.Wall)
+                                {
+                                    _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
+                                    r = rnd.Next(0, 6);
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                }
 
                                 // BACK
-                                _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, 6);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                if (z == 0 || _region.Blocks[x, y, z - 1] != WorldBlock.Wall)
+                                {
+                                    _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(0, 1));
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
+                                    r = rnd.Next(0, 6);
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                }
 
                                 // LEFT
-                                _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, 6);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                if (x == 0 || _region.Blocks[x - 1, y, z] != WorldBlock.Wall)
+                                {
+                                    _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
+                                    r = rnd.Next(0, 6);
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                }
 
                                 // RIGHT
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, 6);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                if (x == _sizeX - 1 || _region.Blocks[x + 1, y, z] != WorldBlock.Wall)
+                                {
+                                    _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(0, 1));
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
+                                    r = rnd.Next(0, 6);
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                }
 
                                 // TOP
-                                _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, 6);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                if (y == _sizeY - 1 || _region.Blocks[x, y + 1, z] != WorldBlock.Wall)
+                                {
+                                    _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
+                                    r = rnd.Next(0, 6);
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                }
 
                                 // BOTTOM
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 0));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, 6);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                if (y == 0 || _region.Blocks[x, y - 1, z] != WorldBlock.Wall)
+                                {
+                                    _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
+                                    _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
+                                    _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 0));
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
+                                    r = rnd.Next(0, 6);
+                                    for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                }
                                 break;
                         }
                     }
