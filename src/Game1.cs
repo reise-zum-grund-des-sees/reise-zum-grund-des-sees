@@ -5,88 +5,88 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ReiseZumGrundDesSees
 {
-	/// <summary>
-	/// This is the main type for your game.
-	/// </summary>
-	public class Game1 : Game, IMenuCallback
-	{
-		GraphicsDeviceManager graphics;
-		SpriteBatch spriteBatch;
+    /// <summary>
+    /// This is the main type for your game.
+    /// </summary>
+    public class Game1 : Game, IMenuCallback
+    {
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
 
-		GameState GameState;
-		InputManager InputManager;
+        GameState GameState;
+        InputManager InputManager;
 
         Texture2D blocktexture;
 
         private Render renderer;
 
-		MainMenu MainMenu;
+        MainMenu MainMenu;
 
-		GameFlags GameMode;
+        GameFlags GameMode;
 
         BasicEffect effect;
         WorldEditor editor;
 
-		public Game1()
-		{
-			graphics = new GraphicsDeviceManager(this);
-			Content.RootDirectory = "Content";
+        public Game1()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
             //graphics.IsFullScreen = true;
         }
 
-		/// <summary>
-		/// Allows the game to perform any initialization it needs to before starting to run.
-		/// This is where it can query for any required services and load any non-graphic
-		/// related content.  Calling base.Initialize will enumerate through any components
-		/// and initialize them as well.
-		/// </summary>
-		protected override void Initialize()
-		{
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
+        {
             this.graphics.PreferredBackBufferHeight = 1080;
             this.graphics.PreferredBackBufferWidth = 1920;
             this.graphics.ApplyChanges();
             //this.graphics.ToggleFullScreen();
-			// TODO: Add your initialization logic here
-			GameMode = GameFlags.GameRunning;
-			InputManager = new InputManager();
-            GameState = new GameState(new World(16, 64, 16, 3, 3), new Player(Content, new Vector3(24, 32, 24)), new Camera(false));  //vorrübergehend GameState festsetzen
-            GameState.World.GenerateTestWorld();
-            GameState.World.GenerateVertices(GraphicsDevice);
+
+            GameMode = GameFlags.Menu;
+
+            // TEMP: remove to show main menu
+            StartNewGame();
+
+            InputManager = new InputManager();
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice);
 
             effect = new BasicEffect(GraphicsDevice);
-            
 
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
             base.Initialize();
-		}
+        }
 
-		/// <summary>
-		/// LoadContent will be called once per game and is the place to load
-		/// all of your content.
-		/// </summary>
-		protected override void LoadContent()
-		{
-			// Create a new SpriteBatch, which can be used to draw textures.
-			spriteBatch = new SpriteBatch(GraphicsDevice);
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 
             blocktexture = Content.Load<Texture2D>("blocktexture");
 
-			// TODO: use this.Content to load your game content here
-			MainMenu = new MainMenu(Content);
+            // TODO: use this.Content to load your game content here
+            MainMenu = new MainMenu(Content);
             renderer = new Render(GraphicsDevice, Content);
-		}
+        }
 
-		/// <summary>
-		/// UnloadContent will be called once per game and is the place to unload
-		/// game-specific content.
-		/// </summary>
-		protected override void UnloadContent()
-		{
-			// TODO: Unload any non ContentManager content here
-		}
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// game-specific content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            // TODO: Unload any non ContentManager content here
+        }
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -94,18 +94,18 @@ namespace ReiseZumGrundDesSees
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         bool keyPressedPause = true;
-		protected override void Update(GameTime gameTime)
-		{
-			InputEventArgs _args = InputManager.Update(Window.ClientBounds);
+        protected override void Update(GameTime gameTime)
+        {
+            InputEventArgs _args = InputManager.Update(Window.ClientBounds);
 
-			if (GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
-			{
-				GameState.View _gameStateView = new GameState.View(GameState);
+            if (GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
+            {
+                GameState.View _gameStateView = new GameState.View(GameState);
 
-				UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 // UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-               
+
                 _playerUpdate(ref GameState);
                 _cameraUpdate(ref GameState);
 
@@ -115,13 +115,13 @@ namespace ReiseZumGrundDesSees
                     Player.Blöcke[i].Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 }
             }
-			if (GameMode.HasFlag(GameFlags.Menu))
-			{
-				MainMenu.Update(_args, this);
-			}
+            if (GameMode.HasFlag(GameFlags.Menu))
+            {
+                MainMenu.Update(_args, this);
+            }
             if (GameMode.HasFlag(GameFlags.EditorMode))
             {
-				GameState.View _gameStateView = new GameState.View(GameState);
+                GameState.View _gameStateView = new GameState.View(GameState);
                 UpdateDelegate _editorUpdate = editor.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 _editorUpdate(ref GameState);
             }
@@ -155,27 +155,27 @@ namespace ReiseZumGrundDesSees
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
             else keyPressedPause = false;
 
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-				Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
-			// TODO: Add your update logic here
+            // TODO: Add your update logic here
 
-			base.Update(gameTime);
-		}
+            base.Update(gameTime);
+        }
 
-		/// <summary>
-		/// This is called when the game should draw itself.
-		/// </summary>
-		/// <param name="gameTime">Provides a snapshot of timing values.</param>
-		protected override void Draw(GameTime gameTime)
-		{
-			GraphicsDevice.Clear(Color.CornflowerBlue);
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			// TODO: Add your drawing code here
+            // TODO: Add your drawing code here
 
-			
 
-			Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
+
+            Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
             Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
 
             if (GameMode.HasFlag(GameFlags.EditorMode))
@@ -184,36 +184,51 @@ namespace ReiseZumGrundDesSees
             renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
             renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
             renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
-            
+
 
             base.Draw(gameTime);
-		}
+        }
 
-		// Menu Callbacks
+        // Menu Callbacks
 
-		public void StartNewGame()
-		{
-			throw new NotImplementedException();
-		}
+        public void StartNewGame()
+        {
+            GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
+            World _world = CreateWorld();
+            GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera(false));
+        }
 
-		public void LoadGame(string _path)
-		{
-			throw new NotImplementedException();
-		}
+        private World CreateWorld()
+        {
+            World w = new World(16, 64, 16, 3, 3, new Vector3(24, 32, 24));
+            w.GenerateTestWorld();
+            w.GenerateVertices(GraphicsDevice);
+            return w;
+        }
 
-		public void SaveGame(string _path)
-		{
-			throw new NotImplementedException();
-		}
+        public void LoadGame(string _path)
+        {
+            World w = new World(_path);
+            GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera(false));
+            GameState.World.GenerateVertices(GraphicsDevice);
+        }
 
-		public void ShowCredits()
-		{
-			throw new NotImplementedException();
-		}
+        public void SaveGame(string _path)
+        {
+            GameState.World.Save(_path);
+        }
 
-		public void ExitGame()
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public void ShowCredits()
+        {
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.MessageBox.Show(
+                "Tom Heimbrodt\nSimon Nestrowicz\nSarah Fuchs",
+                "Credits", System.Windows.Forms.MessageBoxButtons.OK);
+        }
+
+        public void ExitGame()
+        {
+            Exit();
+        }
+    }
 }

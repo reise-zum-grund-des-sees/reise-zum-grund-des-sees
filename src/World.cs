@@ -20,6 +20,8 @@ namespace ReiseZumGrundDesSees
         public readonly int RegionSizeX, RegionSizeY, RegionSizeZ;
         private readonly int RegionsCountX, RegionsCountZ;
 
+        public readonly float SpawnPosX, SpawnPosY, SpawnPosZ;
+
         public World(string _basePath)
         {
             Blocks = new BlockWrapper(this);
@@ -42,6 +44,11 @@ namespace ReiseZumGrundDesSees
                         RegionsCountX = int.Parse(_items[1]);
                         RegionsCountZ = int.Parse(_items[2]);
                         break;
+                    case "spawn":
+                        SpawnPosX = int.Parse(_items[1]);
+                        SpawnPosY = int.Parse(_items[2]);
+                        SpawnPosZ = int.Parse(_items[3]);
+                        break;
                     default: throw new FormatException("World file has an invalid format.");
 
                 }
@@ -59,7 +66,7 @@ namespace ReiseZumGrundDesSees
                             RegionSizeX, RegionSizeY, RegionSizeZ);
         }
 
-        public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ)
+        public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos)
         {
             Blocks = new BlockWrapper(this);
             Vertices = new VertexPositionColorTexture[_regionsCountX, _regionsCountZ][];
@@ -70,6 +77,10 @@ namespace ReiseZumGrundDesSees
             RegionSizeX = _regionSizeX;
             RegionSizeY = _regionSizeY;
             RegionSizeZ = _regionSizeZ;
+
+            SpawnPosX = _spawnPos.X;
+            SpawnPosY = _spawnPos.Y;
+            SpawnPosZ = _spawnPos.Z;
 
             Regions = new WorldRegion[RegionsCountX, RegionsCountZ];
             for (int x = 0; x < RegionsCountX; x++)
