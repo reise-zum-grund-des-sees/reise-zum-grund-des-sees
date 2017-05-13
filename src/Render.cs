@@ -15,7 +15,7 @@ namespace ReiseZumGrundDesSees
         private readonly GraphicsDevice graphicsDevice;
 
         private readonly BasicEffect worldEffect;
-        private readonly RasterizerState ClockwiseCullMode, NoCullMode;
+        private readonly RasterizerState CounterClockwiseCull, NoCullMode;
 
         private readonly Model worldEditorCursor;
 
@@ -25,8 +25,8 @@ namespace ReiseZumGrundDesSees
             Texture2D blocktexture = _content.Load<Texture2D>("blocktexture");
             worldEditorCursor = _content.Load<Model>("cursor");
 
-            ClockwiseCullMode = new RasterizerState();
-            ClockwiseCullMode.CullMode = CullMode.CullClockwiseFace;
+            CounterClockwiseCull = new RasterizerState();
+            CounterClockwiseCull.CullMode = CullMode.CullCounterClockwiseFace;
 
             NoCullMode = new RasterizerState();
             NoCullMode.CullMode = CullMode.None;
@@ -71,7 +71,7 @@ namespace ReiseZumGrundDesSees
                         worldEffect.World = Matrix.CreateTranslation(x * _world.RegionSizeX, 0, z * _world.RegionSizeZ);
                         worldEffect.Projection = _perspectiveMatrix;
 
-                        graphicsDevice.RasterizerState = ClockwiseCullMode;
+                        graphicsDevice.RasterizerState = CounterClockwiseCull;
 
                         foreach (EffectPass pass in worldEffect.CurrentTechnique.Passes)
                             pass.Apply();
