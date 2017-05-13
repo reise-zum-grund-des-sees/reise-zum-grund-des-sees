@@ -17,7 +17,19 @@ namespace ReiseZumGrundDesSees
         /// <param name="_hitA">Die Hitbox des bewegten Objektes</param>
         /// <param name="_hitB">Die Hitbox des statischen Objektes</param>
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der statischen Hitbox kollidieren</returns>
-        public static CollisionInformation CollisionDetection(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
+        public static CollisionInformation CollisionWithObject(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Erkenne Kollisionen zwischen einer Hitbox und der Welt
+        /// </summary>
+        /// <param name="_movment">Die Referenz des Bewegungsvektors der von der Funktion auf mögliche Werte begrenzt wird</param>
+        /// <param name="_hitbox">Die Hitbox des bewegten Objektes</param>
+        /// <param name="_world">Die Welt, auf der sich das Objekt befindet</param>
+        /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der Welt kollidieren</returns>
+        public static CollisionInformation CollisionWithWorld(ref Vector3 _movment, Hitbox _hitbox, World _world)
         {
             throw new NotImplementedException();
         }
