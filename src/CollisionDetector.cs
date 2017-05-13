@@ -10,6 +10,13 @@ namespace ReiseZumGrundDesSees
 {
     static class CollisionDetector
     {
+        /// <summary>
+        /// Erkenne Kollisionen zwischen einer bewegten und einer statischen Hitbox
+        /// </summary>
+        /// <param name="_movA">Die Referenz des Bewegungsvektors der von der Funktion auf mögliche Werte begrenzt wird</param>
+        /// <param name="_hitA">Die Hitbox des bewegten Objektes</param>
+        /// <param name="_hitB">Die Hitbox des statischen Objektes</param>
+        /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der statischen Hitbox kollidieren</returns>
         public static CollisionInformation CollisionDetection(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
         {
             throw new NotImplementedException();
