@@ -45,6 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="CollisionDetector.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameState.cs" />
