@@ -37,16 +37,16 @@ namespace ReiseZumGrundDesSees
             //throw new NotImplementedException();
             return (ref GameState _state) =>
             {
-                Position = new Vector3(_view.PlayerX, _view.PlayerY + 5, _view.PlayerZ - 5);
+                Position = new Vector3(_view.PlayerX, _view.PlayerY + 5, _view.PlayerZ + 5);
                 //LookAt = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ + 2); //altes LookAt
                 //Rotation.X Startpunkt=400, Rotation.Y Startpunkt = 240     
                 if (Rotation.X >= 0- _inputArgs.MouseMovementRelative.X && Rotation.X <= 1 - _inputArgs.MouseMovementRelative.X)
                     Rotation.X += _inputArgs.MouseMovementRelative.X;
-                if (Rotation.Y >= 0 - _inputArgs.MouseMovementRelative.Y && Rotation.Y <= 1 - _inputArgs.MouseMovementRelative.Y)
+                if (Rotation.Y >= 0 - _inputArgs.MouseMovementRelative.Y && Rotation.Y <= 0.9 - _inputArgs.MouseMovementRelative.Y)
                     Rotation.Y += _inputArgs.MouseMovementRelative.Y;
 
                 // Doesn't work for larger Y-Values!!! -> fixed
-                LookAt = new Vector3(_view.PlayerX - (Rotation.X-0.5f) * Bewegungssensivitaet + Offset , _view.PlayerY, _view.PlayerZ - (Rotation.Y - 0.5f) * Bewegungssensivitaet + 5);
+                LookAt = new Vector3(_view.PlayerX + (Rotation.X-0.5f) * Bewegungssensivitaet + Offset , _view.PlayerY, _view.PlayerZ + (Rotation.Y - 0.5f) * Bewegungssensivitaet-2);
                 //LookAt = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
         
 

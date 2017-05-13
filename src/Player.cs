@@ -52,51 +52,52 @@ namespace ReiseZumGrundDesSees
             //Blickrichtung   
             BlickTime += _passedTime; //Um Blöcke in 8 Richtungen setzen zu können
             if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100) //hier die Zeit zwischen seitliche Inputs
-                Blickrichtung = 6;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
                 Blickrichtung = 2;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
+                Blickrichtung = 6;
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && BlickTime > 100)
-                Blickrichtung = 0;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
                 Blickrichtung = 4;
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
+                Blickrichtung = 40;
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
-            {
-                Blickrichtung = 7;
-                BlickTime = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
             {
                 Blickrichtung = 3;
                 BlickTime = 0;
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
             {
-                Blickrichtung = 1;
+                Blickrichtung = 7;
                 BlickTime = 0;
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
             {
                 Blickrichtung = 5;
                 BlickTime = 0;
             }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            {
+                Blickrichtung = 1;
+                BlickTime = 0;
+            }
             //Kollision 4 Richtungen
-            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ + hitbox )) == WorldBlock.Wall)        
+            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ + hitbox)) == WorldBlock.Wall)        
+            {
+                Kollision[2] = 1;//hinten
+            }        
+            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ - hitbox)) == WorldBlock.Wall)
             {
                 Kollision[0] = 1;//vorne
             }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ - hitbox)) == WorldBlock.Wall)
-            {
-                Kollision[2] = 1;//hinten
-            }
             if (_stateView.GetBlock((int)(_stateView.PlayerX - hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
-            {
-                Kollision[1] = 1;//Rechts
-            }
-            if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
             {
                 Kollision[3] = 1;//links
             }
+            if (_stateView.GetBlock((int)(_stateView.PlayerX + hitbox), (int)(_stateView.PlayerY + 0.05f), (int)(_stateView.PlayerZ)) == WorldBlock.Wall)
+            {
+                Kollision[1] = 1;//rechts
+            }
+            
             //4 Seiten Kollision mit gesetzen Blöcken
            
             List<Vector3> bound = new List<Vector3>();
@@ -126,10 +127,10 @@ namespace ReiseZumGrundDesSees
 
             for (int i = 0; i < Blöcke.Count; i++)
             {
-                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[3] == 0 && Blöcke.ElementAt(i).Position.X - Position.X > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveLeft)) Kollision[3] = 1;//links von Spieler ist Wand
-                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[1] == 0 && Blöcke.ElementAt(i).Position.X - Position.X < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveRight)) Kollision[1] = 1;//rechts
-                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[2] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveBackwards)) Kollision[2] = 1;//hinten
-                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[0] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveForwards)) Kollision[0] = 1;//vorne
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[1] == 0 && Blöcke.ElementAt(i).Position.X - Position.X > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveRight)) Kollision[1] = 1;//rechts von Spieler ist Wand
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[3] == 0 && Blöcke.ElementAt(i).Position.X - Position.X < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveLeft)) Kollision[3] = 1;//links
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[0] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z < -0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveForwards)) Kollision[0] = 1;//vorne
+                if (Box.Intersects(Blöcke.ElementAt(i).Box) && Kollision[2] == 0 && Blöcke.ElementAt(i).Position.Z - Position.Z > 0.5f && _inputArgs.Events.HasFlag(InputEventList.MoveBackwards)) Kollision[2] = 1;//hinten
             }
 
 
@@ -139,14 +140,18 @@ namespace ReiseZumGrundDesSees
                 //ist unter dem Spieler ein Block? -> Wenn nein, falle nach unten, wenn er nicht gerade im Sprung ist
                 bool j = false;
                 bool kollisionmitblock = false;
-                //PROBLEMSTELLE, durch Ecken in BLock glitchen
-                if (_stateView.GetBlock((int)Position.X, (int)(Position.Y-0.032f), (int)Position.Z) == WorldBlock.Wall ||
-
-          _stateView.GetBlock((int)(Position.X + (FallOffset - 0.55f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-          _stateView.GetBlock((int)(Position.X - (FallOffset - 0.55f)), (int)(Position.Y - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall ||
-          _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z + (FallOffset - 0.55f))) == WorldBlock.Wall ||
-          _stateView.GetBlock((int)(Position.X), (int)(Position.Y - 0.032f), (int)(Position.Z - (FallOffset - 0.55f))) == WorldBlock.Wall
-
+                //PROBLEMSTELLE, durch Ecken in Block glitchen
+                if (
+                (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall &&
+                 _stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 0.032f), (int)_stateView.PlayerZ) != WorldBlock.Wall) ||
+                (_stateView.GetBlock((int)(_stateView.PlayerX + (FallOffset - 0.55f)), (int)(_stateView.PlayerY - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall  &&
+                 _stateView.GetBlock((int)(_stateView.PlayerX + (FallOffset - 0.55f)), (int)(_stateView.PlayerY + 0.032f), (int)_stateView.PlayerZ) != WorldBlock.Wall) ||
+               (_stateView.GetBlock((int)(_stateView.PlayerX - (FallOffset - 0.55f)), (int)(_stateView.PlayerY - 0.032f), (int)_stateView.PlayerZ) == WorldBlock.Wall &&
+                 _stateView.GetBlock((int)(_stateView.PlayerX - (FallOffset - 0.55f)), (int)(_stateView.PlayerY + 0.032f), (int)_stateView.PlayerZ) != WorldBlock.Wall) ||
+                (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY - 0.032f), (int)(_stateView.PlayerZ + (FallOffset - 0.55f))) == WorldBlock.Wall && 
+                _stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.032f), (int)(_stateView.PlayerZ + (FallOffset - 0.55f))) != WorldBlock.Wall) ||
+                 (_stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY - 0.032f), (int)(_stateView.PlayerZ - (FallOffset - 0.55f))) == WorldBlock.Wall &&
+                  _stateView.GetBlock((int)(_stateView.PlayerX), (int)(_stateView.PlayerY + 0.032f), (int)(_stateView.PlayerZ - (FallOffset - 0.55f))) != WorldBlock.Wall)
                 )
 
                 {
@@ -172,7 +177,7 @@ namespace ReiseZumGrundDesSees
 
                         Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
                 }
-                Console.WriteLine(kollisionmitblock);
+              
                 if (kollisionmitblock || j ==true)
                 {
                     Jump1 = false; // setze Sprung zurück
@@ -206,9 +211,8 @@ namespace ReiseZumGrundDesSees
                              && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y < 0f && Position.Y + 0.5 - Blöcke.ElementAt(i).Position.Y >= -1.5f) k = true;
                          
                         }
-                        //_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && 
-                        if (k == false)//über Spieler ein Block?
-                          //nicht funktionsfähig, falsche Kollisionsbox
+                        
+                        if (_stateView.GetBlock((int)_stateView.PlayerX, (int)(_stateView.PlayerY + 1.5f), (int)_stateView.PlayerZ) != WorldBlock.Wall && k == false)//über Spieler ein Block?
                         {
                             Position.Y += 0.082f ;//Sprunghöhe 2
                         }
@@ -232,22 +236,22 @@ namespace ReiseZumGrundDesSees
 
                 if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && Kollision[0] == 0)
                 {
-                    Position.Z += 0.016f * sprint;
+                    Position.Z -= 0.016f * sprint;
                 }
 
                 if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && Kollision[3] == 0)
                 {
-                    Position.X += 0.016f * sprint;
+                    Position.X -= 0.016f * sprint;
                 }
 
                 if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && Kollision[2] == 0)
                 {
-                    Position.Z -= 0.016f * sprint;
+                    Position.Z += 0.016f * sprint;
                 }
 
                 if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && Kollision[1] == 0)
                 {
-                    Position.X -= 0.016f * sprint;
+                    Position.X += 0.016f * sprint;
                 }
                 Blockcd += _passedTime;
                 if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && PlayerBlock.MaximumL > PlayerBlock.AnzahlL && Blockcd > 1000)
@@ -270,7 +274,7 @@ namespace ReiseZumGrundDesSees
                     if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
                         Blöcke.RemoveAt(i);
                 }
-              //  Console.WriteLine(Position);
+                //Console.WriteLine(Position);
             };
         }
 
