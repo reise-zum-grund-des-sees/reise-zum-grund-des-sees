@@ -33,8 +33,7 @@ namespace ReiseZumGrundDesSees
             Art = ArtdesBlocks;
             AktuelleDauer = 0;
             MaximialDauer = 15000;
-            Position = _player.Position;
-            Position.Y += 0.5f; //Auf Höhe des Spielers
+            Position = _player.Position;        
             if (Art == 0){//leichterBlock
                 AnzahlL++;
                 Model = contentManager.Load<Model>("Block");
