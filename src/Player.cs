@@ -71,7 +71,7 @@ namespace ReiseZumGrundDesSees
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && BlickTime > 100)
                 Blickrichtung = 4;
             if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
-                Blickrichtung = 40;
+                Blickrichtung = 0;
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
             {

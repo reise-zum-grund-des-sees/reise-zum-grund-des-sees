@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Player : IUpdateable
+    class Player2 : IUpdateable
     {
         public Vector3 Position;
         public Model Model;
@@ -25,7 +25,7 @@ namespace ReiseZumGrundDesSees
         ContentManager ContentManager;
         public float FallOffset = 0.8f;//wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
         
-        public Player(ContentManager contentManager, Vector3 _position)
+        public Player2(ContentManager contentManager, Vector3 _position)
         {
             ContentManager = contentManager;
             Position = _position;
