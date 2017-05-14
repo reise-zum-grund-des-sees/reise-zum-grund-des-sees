@@ -189,7 +189,7 @@ namespace ReiseZumGrundDesSees
                     else
                     {
                         Fallgeschwindigkeit += 2 * Beschleunigung;
-                        Position.Y -= Fallgeschwindigkeit;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                        Position.Y -= Fallgeschwindigkeit;
                     }
                 }
 

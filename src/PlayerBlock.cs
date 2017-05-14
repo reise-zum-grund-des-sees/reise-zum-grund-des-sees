@@ -19,6 +19,8 @@ namespace ReiseZumGrundDesSees
         public static int MaximumS = 3;
         public static double MaximialDauer;
         public double AktuelleDauer;
+        float Beschleunigung;
+        float Fallgeschwindigkeit;
         public int Art;
         bool Alive;
         public Model Model;
@@ -36,16 +38,22 @@ namespace ReiseZumGrundDesSees
             if (Art == 0){//leichterBlock
                 AnzahlL++;
                 Model = contentManager.Load<Model>("Block");
+                Beschleunigung = 0;
+                Fallgeschwindigkeit = 0;
             }
             if (Art == 1)//MittelschwererBlock
             {
                 AnzahlM++;
                 Model = contentManager.Load<Model>("Block");
+                Beschleunigung = 0.032f / 30f;
+                Fallgeschwindigkeit = 0;
             }
             if (Art == 2)//SchwererBlock
             {
-                AnzahlS++;
+                AnzahlS++;             
                 Model = contentManager.Load<Model>("Block");
+                Beschleunigung = 0.032f / 22.5f;
+                Fallgeschwindigkeit = 0;
             }
             
            
@@ -132,10 +140,19 @@ namespace ReiseZumGrundDesSees
                         }
                         if (k <= 1)
                         {
-                            if (Art == 1)
-                                Position.Y -= 0.032f;//hier Fallgeschwindigkeit momentan 2 Block pro Sekunde
+                            if (Art == 1) {
+                            Fallgeschwindigkeit += 2 * Beschleunigung;
+                            Position.Y -= Fallgeschwindigkeit;
+                            }
                             if (Art == 2)
-                                Position.Y -= 0.048f;//hier Fallgeschwindigkeit momentan 3 Block pro Sekunde
+                            {
+                                Fallgeschwindigkeit += 3 * Beschleunigung;
+                                Position.Y -= Fallgeschwindigkeit;
+                            }
+                        }
+                        else
+                        {
+                            Fallgeschwindigkeit = 0;
                         }
                     }
                  
