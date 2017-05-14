@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class PlayerBlock
+    class PlayerBlock : IUpdateable
     {
         public static int AnzahlL = 0;  
         public static int MaximumL = 3;
@@ -19,40 +19,39 @@ namespace ReiseZumGrundDesSees
         public static int MaximumS = 3;
         public static double MaximialDauer;
         public double AktuelleDauer;
-        float Beschleunigung;
-        float Fallgeschwindigkeit;
+        float _speedY;
+        Vector3 _movement;
         public int Art;
         bool Alive;
         public Model Model;
         public Vector3 Position;
-        public BoundingBox Box;
+
         public PlayerBlock(ContentManager contentManager, Player _player,int ArtdesBlocks)
         {
 
             Alive = true;
             Art = ArtdesBlocks;
+            _speedY = 0;
+            _movement = new Vector3(0, 0, 0);
             AktuelleDauer = 0;
             MaximialDauer = 15000;
             Position = _player.Position;        
             if (Art == 0){//leichterBlock
                 AnzahlL++;
                 Model = contentManager.Load<Model>("Block");
-                Beschleunigung = 0;
-                Fallgeschwindigkeit = 0;
+                   
             }
             if (Art == 1)//MittelschwererBlock
             {
                 AnzahlM++;
                 Model = contentManager.Load<Model>("Block");
-                Beschleunigung = 0.032f / 30f;
-                Fallgeschwindigkeit = 0;
+          
             }
             if (Art == 2)//SchwererBlock
             {
                 AnzahlS++;             
                 Model = contentManager.Load<Model>("Block");
-                Beschleunigung = 0.032f / 22.5f;
-                Fallgeschwindigkeit = 0;
+          
             }
             
            
@@ -88,21 +87,10 @@ namespace ReiseZumGrundDesSees
                     Position.X -= 1;
                     break;
             }
-            List<Vector3> bound = new List<Vector3>();
-            bound.Add(Position + new Vector3(0.5f, 0.5f, 0.5f));
-            bound.Add(Position + new Vector3(-0.5f, -0.5f, 0.5f));
-            bound.Add(Position + new Vector3(0.5f, -0.5f, 0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 0.5f, 0.5f));
-            bound.Add(Position + new Vector3(0.5f, 0.5f, -0.5f));
-            bound.Add(Position + new Vector3(-0.5f, -0.5f, -0.5f));
-            bound.Add(Position + new Vector3(0.5f, -0.5f, -0.5f));
-            bound.Add(Position + new Vector3(-0.5f, 0.5f, -0.5f));
-            Box = BoundingBox.CreateFromPoints(bound);
-
-
+      
         }
 
-        public void Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {
             if (MaximialDauer >= AktuelleDauer && Alive == true)
             {
@@ -110,55 +98,37 @@ namespace ReiseZumGrundDesSees
 
                 //Update Timer
                 AktuelleDauer += _passedTime;
-             
-                //if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.5f), (int)Position.Z) != WorldBlock.Wall)
-                    if (_view.GetBlock((int)Position.X, (int)(Position.Y - 0.55f), (int)Position.Z) == WorldBlock.Wall ||
-             _view.GetBlock((int)(Position.X + 0.95f - 0.5f), (int)(Position.Y - 0.55f), (int)Position.Z) == WorldBlock.Wall ||
-             _view.GetBlock((int)(Position.X - (0.95f - 0.5f)), (int)(Position.Y - 0.55f), (int)Position.Z) == WorldBlock.Wall ||
-             _view.GetBlock((int)(Position.X), (int)(Position.Y - 0.55f), (int)(Position.Z + 0.95f - 0.5f)) == WorldBlock.Wall ||
-             _view.GetBlock((int)(Position.X), (int)(Position.Y - 0.55f), (int)(Position.Z - (0.95f - 0.5f))) == WorldBlock.Wall
-             ) { }//anstatt 0.95f auch Player.hitbox möglich, dann gleiche Kollision wie Spieler
-                else   {
-                    if (Art != 0) {                  
-                    List<Vector3> bound = new List<Vector3>();
-                    bound.Add(Position + new Vector3(0.5f, 0.5f, 0.5f));
-                    bound.Add(Position + new Vector3(-0.5f, -0.5f, 0.5f));
-                    bound.Add(Position + new Vector3(0.5f, -0.5f, 0.5f));
-                    bound.Add(Position + new Vector3(-0.5f, 0.5f, 0.5f));
-                    bound.Add(Position + new Vector3(0.5f, 0.5f, 0.5f));
-                    bound.Add(Position + new Vector3(0.5f, 0.5f, -0.5f));
-                    bound.Add(Position + new Vector3(-0.5f, -0.5f, -0.5f));
-                    bound.Add(Position + new Vector3(0.5f, -0.5f, -0.5f));
-                    bound.Add(Position + new Vector3(-0.5f, 0.5f, -0.5f));
-                    Box = BoundingBox.CreateFromPoints(bound);
-
-                        int k = 0;
-                        for (int i = 0; i < Player.Blöcke.Count; i++)//Kollision beim Fallen untereinander, erlaubt ineinander stecken
-                        {
-                            if (Box.Intersects(Player.Blöcke[i].Box) == true) k++;    //immer Kollision mit sich selbst              
-                        }
-                        if (k <= 1)
-                        {
-                            if (Art == 1) {
-                            Fallgeschwindigkeit += 2 * Beschleunigung;
-                            Position.Y -= Fallgeschwindigkeit;
-                            }
-                            if (Art == 2)
-                            {
-                                Fallgeschwindigkeit += 3 * Beschleunigung;
-                                Position.Y -= Fallgeschwindigkeit;
-                            }
-                        }
-                        else
-                        {
-                            Fallgeschwindigkeit = 0;
-                        }
-                    }
-                 
-                  
+                _movement = new Vector3(0,0, 0);
+                //Wenn keine Kolision mit Wand oder Block               
+                if (Art == 1)
+                {
+                    _speedY -= 0.005f * (float)_passedTime;
+                    _movement.Y += _speedY * (float)_passedTime * 0.01f;
                 }
-                
+                if (Art == 2)
+                {
+                    _speedY -= 0.005f * (float)_passedTime;
+                    _movement.Y += _speedY * (float)_passedTime * 0.015f;
+                }
+                List<Direction> _info2 = new List<Direction>();
+                for (int i = 0; i < Player.Blöcke.Count; i++)
+                    if (Vector3.Distance(Position, Player.Blöcke[i].Position) != 0)
+                    {
+                        _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 0.8f, 0.8f, 1f)));                        
+                    }
+                for (int i = 0; i < Player.Blöcke.Count-1; i++)
+                    if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
+                    _speedY = 0;
+
+                Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z , 0.5f, 0.5f, 1f), _view);
+                    if (_info3.HasFlag(Direction.Bottom) && _speedY < 0)
+                        _speedY = 0;
+
+                if (Art!=0 && _speedY!=0)
+                Position += _movement;
+
             }
+
             if (MaximialDauer < AktuelleDauer && Alive == true)
             {
                 Alive = false;
@@ -186,6 +156,11 @@ namespace ReiseZumGrundDesSees
                 //Objekt ist Tot
 
             }
+            return (ref GameState _state) =>
+            {
+               
+                //Console.WriteLine(Position);
+            };
         }
     }
 }
