@@ -10,28 +10,156 @@ namespace ReiseZumGrundDesSees
 {
     static class CollisionDetector
     {
+        const float FLOATING_POINT_INCORRECTION = 0.0001f;
+
         /// <summary>
         /// Erkenne Kollisionen zwischen einer bewegten und einer statischen Hitbox
         /// </summary>
         /// <param name="_movA">Die Referenz des Bewegungsvektors der von der Funktion auf mögliche Werte begrenzt wird</param>
         /// <param name="_hitA">Die Hitbox des bewegten Objektes</param>
         /// <param name="_hitB">Die Hitbox des statischen Objektes</param>
+        /// <param name="_possibleMovements">Mögliche Ausweichbewegungen des bewegten Hitbox</param>
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der statischen Hitbox kollidieren</returns>
-        public static CollisionInformation CollisionWithObject(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
+        public static Direction CollisionWithObject(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
         {
-            throw new NotImplementedException();
+            Direction _collInfo = Direction.None;
+            float xDiff = 0, yDiff = 0, zDiff = 0;
+            // collision left
+            if (_hitA.X + _movA.X < _hitB.X + _hitB.Width - FLOATING_POINT_INCORRECTION &
+                _hitA.X + _hitA.Width + _movA.X > _hitB.X + FLOATING_POINT_INCORRECTION)
+            {
+                if (_movA.X >= 0)
+                {
+                    xDiff = (_hitB.X - (_hitA.X + _hitA.Width)) - _movA.X;
+                    _collInfo |= Direction.Right;
+                }
+                else
+                {
+                    xDiff = (_hitB.X + _hitB.Width - _hitA.X) - _movA.X;
+                    _collInfo |= Direction.Left;
+                }
+            }
+
+            // collision top/bottom
+            if (_hitA.Y + _movA.Y < _hitB.Y + _hitB.Height - FLOATING_POINT_INCORRECTION &
+                _hitA.Y + _hitA.Height + _movA.Y > _hitB.Y + FLOATING_POINT_INCORRECTION)
+            {
+                if (_movA.Y >= 0)
+                {
+                    yDiff = (_hitB.Y - (_hitA.Y + _hitA.Height)) - _movA.Y;
+                    _collInfo |= Direction.Top;
+                }
+                else
+                {
+                    yDiff = (_hitB.Y + _hitB.Height - _hitA.Y) - _movA.Y;
+                    _collInfo |= Direction.Bottom;
+                }
+            }
+
+            // collision front/back
+            if (_hitA.Z + _movA.Z < _hitB.Z + _hitB.Depth - FLOATING_POINT_INCORRECTION &
+                _hitA.Z + _hitA.Depth + _movA.Z > _hitB.Z + FLOATING_POINT_INCORRECTION)
+            {
+                if (_movA.Z >= 0)
+                {
+                    zDiff = (_hitB.Z - (_hitA.Z + _hitA.Depth)) - _movA.Z;
+                    _collInfo |= Direction.Front;
+                }
+                else
+                {
+                    zDiff = (_hitB.Z + _hitB.Depth - _hitA.Z) - _movA.Z;
+                    _collInfo |= Direction.Back;
+                }
+            }
+
+            if (((_collInfo & (Direction.Left | Direction.Right)) != Direction.None) &
+                ((_collInfo & (Direction.Top | Direction.Bottom)) != Direction.None) &
+                ((_collInfo & (Direction.Back | Direction.Front)) != Direction.None))
+            {
+                float xDiffNormalized = Math.Abs(xDiff / _movA.X);
+                float yDiffNormalized = Math.Abs(yDiff / _movA.Y);
+                float zDiffNormalized = Math.Abs(zDiff / _movA.Z);
+                if (_movA.Length() < FLOATING_POINT_INCORRECTION)
+                {
+                    xDiffNormalized = Math.Abs(xDiff);
+                    yDiffNormalized = Math.Abs(yDiff);
+                    zDiffNormalized = Math.Abs(zDiff);
+                }
+
+                if (yDiffNormalized <= xDiffNormalized && yDiffNormalized <= zDiffNormalized)
+                {
+                    _movA.Y += yDiff;
+                    return _collInfo & (Direction.Top | Direction.Bottom);
+                }
+                else if (xDiffNormalized <= zDiffNormalized)
+                {
+                    _movA.X += xDiff;
+                    return _collInfo & (Direction.Left | Direction.Right);
+                }
+                else
+                {
+                    _movA.Z += zDiff;
+                    return _collInfo & (Direction.Front | Direction.Back);
+                }
+            }
+            else return Direction.None;
         }
 
         /// <summary>
         /// Erkenne Kollisionen zwischen einer Hitbox und der Welt
         /// </summary>
-        /// <param name="_movment">Die Referenz des Bewegungsvektors der von der Funktion auf mögliche Werte begrenzt wird</param>
+        /// <param name="_movement">Die Referenz des Bewegungsvektors der von der Funktion auf mögliche Werte begrenzt wird</param>
         /// <param name="_hitbox">Die Hitbox des bewegten Objektes</param>
         /// <param name="_world">Die Welt, auf der sich das Objekt befindet</param>
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der Welt kollidieren</returns>
-        public static CollisionInformation CollisionWithWorld(ref Vector3 _movment, Hitbox _hitbox, World _world)
+        public static Direction CollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IWorld _world)
         {
-            throw new NotImplementedException();
+            int _hitX = (int)_hitbox.X;
+            int _hitY = (int)_hitbox.Y;
+            int _hitZ = (int)_hitbox.Z;
+
+            Direction _collInfo = Direction.None;
+
+            // Bugfix: if we feed all 3 directions into CollisionWithObject it doesnt know in which direction it should move the player
+
+            Vector3 _tmpMovement = new Vector3(_movement.X, 0, 0);
+            // test for hitbox surrounding blocks
+            for (int x = _hitX - 1; x <= _hitX + 1; x++)
+                for (int y = _hitY - 1; y <= _hitY + 1; y++)
+                    for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
+                    {
+                        WorldBlock b = _world.GetBlock(x, y, z);
+                        if (b.HasCollision())
+                            _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                    }
+            _movement.X = _tmpMovement.X;
+
+
+            _tmpMovement = new Vector3(0, _movement.Y, 0);
+            // test for hitbox surrounding blocks
+            for (int x = _hitX - 1; x <= _hitX + 1; x++)
+                for (int y = _hitY - 1; y <= _hitY + 1; y++)
+                    for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
+                    {
+                        WorldBlock b = _world.GetBlock(x, y, z);
+                        if (b.HasCollision())
+                            _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y, z, b.GetBounds()));
+                    }
+            _movement.Y = _tmpMovement.Y;
+
+            _tmpMovement = new Vector3(0, 0, _movement.Z);
+            // test for hitbox surrounding blocks
+            for (int x = _hitX - 1; x <= _hitX + 1; x++)
+                for (int y = _hitY - 1; y <= _hitY + 1; y++)
+                    for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
+                    {
+                        WorldBlock b = _world.GetBlock(x, y, z);
+                        if (b.HasCollision())
+                            _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y + _tmpMovement.Y, z, b.GetBounds()));
+                    }
+            _movement.Z = _tmpMovement.Z;
+
+            return _collInfo;
         }
     }
 
@@ -49,10 +177,17 @@ namespace ReiseZumGrundDesSees
             Y = y;
             Z = z;
         }
+
+        public Hitbox(Vector3 _position, Vector3 _size)
+            : this(_position.X, _position.Y, _position.Z, _size.X, _size.Y, _size.Z)
+        { }
+
+        public Hitbox(float x, float y, float z, Vector3 _size)
+            : this(x, y, z, _size.X, _size.Y, _size.Z) { }
     }
 
     [Flags]
-    enum CollisionInformation
+    enum Direction
     {
         None = 0,
         Left = 1,
@@ -60,6 +195,7 @@ namespace ReiseZumGrundDesSees
         Front = 4,
         Back = 8,
         Top = 16,
-        Bottom = 32
+        Bottom = 32,
+        All = 63
     }
 }

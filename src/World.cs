@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    class World : IUpdateable
+    class World : IUpdateable, IWorld
     {
         public readonly BlockWrapper Blocks;
         public readonly VertexPositionColorTexture[,][] Vertices;
@@ -154,7 +154,11 @@ namespace ReiseZumGrundDesSees
                     int by = y;
                     int bz = z - rz * w.RegionSizeZ;
 
-                    return w.Regions[rx, rz].Blocks[bx, by, bz];
+                    if (rx >= w.RegionsCountX | rx < 0 | rz >= w.RegionsCountZ | rz < 0 |
+                        bx >= w.RegionSizeX | bx < 0 | by >= w.RegionSizeY | by < 0 | bz >= w.RegionSizeZ | bz < 0)
+                        return WorldBlock.Wall;
+                    else
+                        return w.Regions[rx, rz].Blocks[bx, by, bz];
                 }
 
                 set
@@ -169,6 +173,8 @@ namespace ReiseZumGrundDesSees
                 }
             }
         }
+
+        public WorldBlock GetBlock(int x, int y, int z) => Blocks[x, y, z];
 
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {

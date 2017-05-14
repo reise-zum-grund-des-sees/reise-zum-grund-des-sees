@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-	struct GameState
+	struct GameState : IWorld
 	{
 		public readonly Camera Camera;
 		public readonly Player Player;
@@ -21,7 +21,9 @@ namespace ReiseZumGrundDesSees
 			Camera = _camera;
 		}
 
-		public struct View
+        public WorldBlock GetBlock(int x, int y, int z) => World.Blocks[x, y, z];
+
+		public struct View : IWorld
 		{
 			private GameState baseState;
 			public View(GameState s)
@@ -53,4 +55,9 @@ namespace ReiseZumGrundDesSees
 		/// <returns>UpdateDelegate, dass den GameState verändern kann: return (ref GameState _state) => { /* CODE HERE */ };</returns>
 		UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime);
 	}
+
+    interface IWorld
+    {
+        WorldBlock GetBlock(int x, int y, int z);
+    }
 }
