@@ -12,6 +12,7 @@ namespace ReiseZumGrundDesSees
     class InputManager
     {
         private Point PreviousMousePosition;
+        private bool leftMouseDown = false, rightMouseDown = false, middleMouseDown = false;
         public InputEventArgs Update(Rectangle _windowBounds)
         {
             InputEventList _eventList = InputEventList.None;
@@ -34,9 +35,33 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.D3)) _eventList |= InputEventList.SchwererBlock;
             MouseState _mouseState = Mouse.GetState();
 
-            if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
-            if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
-            if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
+            if (_mouseState.LeftButton == ButtonState.Pressed)
+            {
+                if (!leftMouseDown)
+                {
+                    _eventList |= InputEventList.MouseLeftClick;
+                    leftMouseDown = true;
+                }
+            }
+            else leftMouseDown = false;
+            if (_mouseState.RightButton == ButtonState.Pressed)
+            {
+                if (!rightMouseDown)
+                {
+                    _eventList |= InputEventList.MouseRightClick;
+                    rightMouseDown = true;
+                }
+            }
+            else rightMouseDown = false;
+            if (_mouseState.MiddleButton == ButtonState.Pressed)
+            {
+                if (!middleMouseDown)
+                {
+                    _eventList |= InputEventList.MouseMiddleClick;
+                    middleMouseDown = true;
+                }
+            }
+            else middleMouseDown = false;
 
              Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
             

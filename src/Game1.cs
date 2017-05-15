@@ -117,7 +117,7 @@ namespace ReiseZumGrundDesSees
             }
             if (GameMode.HasFlag(GameFlags.Menu))
             {
-                MainMenu.Update(_args, this);
+                MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             }
             if (GameMode.HasFlag(GameFlags.EditorMode))
             {
@@ -151,14 +151,13 @@ namespace ReiseZumGrundDesSees
                     GameMode ^= GameFlags.EditorMode;
                 }
             }
+            else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
+            {
+                GameMode ^= GameFlags.Menu;
+            }
 
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
             else keyPressedPause = false;
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -169,12 +168,13 @@ namespace ReiseZumGrundDesSees
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
 
             // TODO: Add your drawing code here
 
 
-            if (!GameMode.HasFlag(GameFlags.Menu))
+            if (GameMode.HasFlag(GameFlags.GameLoaded))
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
@@ -186,12 +186,11 @@ namespace ReiseZumGrundDesSees
                 renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
             }
-            else
+
+            if (GameMode.HasFlag(GameFlags.Menu))
             {
                 MainMenu.Render(spriteBatch);
-                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             }
-
 
             base.Draw(gameTime);
         }
@@ -215,6 +214,7 @@ namespace ReiseZumGrundDesSees
 
         public void LoadGame(string _path)
         {
+            GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
             World w = new World(_path);
             GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera(false));
             GameState.World.GenerateVertices(GraphicsDevice);
