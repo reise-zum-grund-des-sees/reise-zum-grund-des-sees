@@ -50,7 +50,7 @@ namespace ReiseZumGrundDesSees
             GameMode = GameFlags.Menu;
 
             // TEMP: remove to show main menu
-            StartNewGame();
+            //StartNewGame();
 
             InputManager = new InputManager();
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
@@ -58,7 +58,7 @@ namespace ReiseZumGrundDesSees
             editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice);
 
             effect = new BasicEffect(GraphicsDevice);
-
+            this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
             base.Initialize();
         }
@@ -174,16 +174,19 @@ namespace ReiseZumGrundDesSees
             // TODO: Add your drawing code here
 
 
+            if (!GameMode.HasFlag(GameFlags.Menu))
+            {
+                Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
+                Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
 
-            Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
-            Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
+                if (GameMode.HasFlag(GameFlags.EditorMode))
+                    renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
 
-            if (GameMode.HasFlag(GameFlags.EditorMode))
-                renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
-
-            renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-            renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
-            renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
+            }
+            else MainMenu.Render(spriteBatch);
 
 
             base.Draw(gameTime);
