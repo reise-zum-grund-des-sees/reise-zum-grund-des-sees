@@ -22,82 +22,92 @@ namespace ReiseZumGrundDesSees
         float _speedY;
         Vector3 _movement;
         public int Art;
-        bool Alive;
         public Model Model;
         public Vector3 Position;
-
+        public int Zustand=0;
+        public enum ZustandList
+        {
+            Bereit = 0,
+            Gesetzt = 1,
+            CD = 2,
+            Übergang = 3
+          
+        }
         public PlayerBlock(ContentManager contentManager, Player _player,int ArtdesBlocks)
         {
 
-            Alive = true;
             Art = ArtdesBlocks;
             _speedY = 0;
             _movement = new Vector3(0, 0, 0);
             AktuelleDauer = 0;
             MaximialDauer = 15000;
-            Position = _player.Position;        
+            Position = _player.Position;
+            Zustand = (int)ZustandList.Bereit;
             if (Art == 0){//leichterBlock
-                AnzahlL++;
+              //  AnzahlL++;
                 Model = contentManager.Load<Model>("Block");
-                   
             }
             if (Art == 1)//MittelschwererBlock
             {
-                AnzahlM++;
+               // AnzahlM++;
                 Model = contentManager.Load<Model>("Block");
-          
             }
             if (Art == 2)//SchwererBlock
             {
-                AnzahlS++;             
+               // AnzahlS++;             
                 Model = contentManager.Load<Model>("Block");
-          
             }
-            
+
+
            
-            //Position des Blockes basierend auf Blickrichtung
-            switch (_player.Blickrichtung)
-            {
-                case 0:
-                    Position.Z += 1;
-                    break;
-                case 1:
-                    Position.Z += 1;
-                    Position.X += 1;
-                    break;
-                case 2:
-                    Position.X += 1;
-                    break;
-                case 3:
-                    Position.Z -= 1;
-                    Position.X += 1;
-                    break;
-                case 4:
-                    Position.Z -= 1;
-                    break;
-                case 5:
-                    Position.Z -= 1;
-                    Position.X -= 1;
-                    break;
-                case 6:
-                    Position.X -= 1;
-                    break;
-                default:
-                    Position.Z += 1;
-                    Position.X -= 1;
-                    break;
-            }
-      
+
         }
 
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {
-            if (MaximialDauer >= AktuelleDauer && Alive == true)
-            {
 
+            
+            if (Zustand == (int)ZustandList.Übergang) {
+                //Position des Blockes basierend auf Blickrichtung
+                Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
+                switch (Player.Blickrichtung)
+                {
+                    case 0:
+                        Position.Z += 1;
+                        break;
+                    case 1:
+                        Position.Z += 1;
+                        Position.X += 1;
+                        break;
+                    case 2:
+                        Position.X += 1;
+                        break;
+                    case 3:
+                        Position.Z -= 1;
+                        Position.X += 1;
+                        break;
+                    case 4:
+                        Position.Z -= 1;
+                        break;
+                    case 5:
+                        Position.Z -= 1;
+                        Position.X -= 1;
+                        break;
+                    case 6:
+                        Position.X -= 1;
+                        break;
+                    default:
+                        Position.Z += 1;
+                        Position.X -= 1;
+                        break;
+                }
+                Zustand = (int)ZustandList.Gesetzt;
+            }
+            if(Zustand == (int)ZustandList.Gesetzt || Zustand == (int)ZustandList.CD)
+            AktuelleDauer += _passedTime;//Update Timer
 
-                //Update Timer
-                AktuelleDauer += _passedTime;
+            if (MaximialDauer >= AktuelleDauer && Zustand == (int)ZustandList.Gesetzt)
+            {           
                 _movement = new Vector3(0,0, 0);
                 //Wenn keine Kolision mit Wand oder Block               
                 if (Art == 1)
@@ -112,11 +122,11 @@ namespace ReiseZumGrundDesSees
                 }
                 List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Player.Blöcke.Count; i++)
-                    if (Vector3.Distance(Position, Player.Blöcke[i].Position) != 0)
+                    if (Vector3.Distance(Position, Player.Blöcke[i].Position) != 0 && Player.Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
                     {
                         _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 0.8f, 0.8f, 1f)));                        
                     }
-                for (int i = 0; i < Player.Blöcke.Count-1; i++)
+                for (int i = 0; i < _info2.Count-1; i++)
                     if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
                     _speedY = 0;
 
@@ -129,32 +139,24 @@ namespace ReiseZumGrundDesSees
 
             }
 
-            if (MaximialDauer < AktuelleDauer && Alive == true)
+            else if (MaximialDauer < AktuelleDauer && Zustand == (int)ZustandList.Gesetzt)
             {
-                Alive = false;
+                Zustand = (int)ZustandList.CD;
                 //Zerstöre Objekt
-                if (Art == 0)
-                {//leichterBlock
-                    AnzahlL--;
-                
-                }
-                if (Art == 1)//MittelschwererBlock
-                {
-                    AnzahlM--;
-                
-                }
-                if (Art == 2)//SchwererBlock
-                {
-                    AnzahlS--;
-                  
-                }
-
+           
 
             }
             else
             {
                 //Objekt ist Tot
+                //MaximumL als allgemeines Maximum, müsste addiertes Maximum sein, da ist cd aber zu hoch
+                if (MaximumL * MaximialDauer <= AktuelleDauer && Zustand == (int)ZustandList.CD)
+                {
+                    Zustand = (int)ZustandList.Bereit;
+                    AktuelleDauer = 0;
+                 
 
+                }
             }
             return (ref GameState _state) =>
             {

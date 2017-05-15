@@ -19,7 +19,7 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;
         double BlickTime;
         double Blockcd;
-        public int Blickrichtung;
+        public static int Blickrichtung;
         public static List<PlayerBlock> Blöcke;
         ContentManager ContentManager;
         public float FallOffset = 0.8f; //wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
@@ -36,6 +36,16 @@ namespace ReiseZumGrundDesSees
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
+            //Startblöcke, müsssen später auf Pickup hinzugefügt werden
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
         }
   
         public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)
@@ -111,8 +121,9 @@ namespace ReiseZumGrundDesSees
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 0.8f, 1.5f), _stateView);
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
+                if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
                 _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 0.8f, 0.8f, 1f)));
-            for (int i = 0; i < Blöcke.Count; i++)
+            for (int i = 0; i < _info2.Count; i++)
             {
                 if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
                     _speedY = 0;
@@ -133,26 +144,54 @@ namespace ReiseZumGrundDesSees
             }
 
             Blockcd += _passedTime;
-            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && PlayerBlock.MaximumL > PlayerBlock.AnzahlL && Blockcd > 1000)
+            //Beim finden neuer Blöcke ins Array
+         
+         
+            
+            
+            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
             {
-                Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-                Blockcd = 0;
+                           
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 0)
+                    {
+                        Blockcd = 0;
+                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        Console.WriteLine("0");
+                        break;
+                    }
+               
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && PlayerBlock.MaximumM > PlayerBlock.AnzahlM && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 1000)
             {
-                Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-                Blockcd = 0;
+             
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 1)
+                    {
+                        Blockcd = 0;
+                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        break;
+                    }
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && PlayerBlock.MaximumS > PlayerBlock.AnzahlS && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 1000)
             {
-                Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
-                Blockcd = 0;
+             
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 2)
+                    {
+                        Blockcd = 0;
+                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        break;
+                    }
             }
+           
+            /*
             for (int i = 0; i < Blöcke.Count; i++)
             {
                 if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
                     Blöcke.RemoveAt(i);
             }
+            */
             return (ref GameState _state) =>
             {
                 _state.Player.Position += _movement;         

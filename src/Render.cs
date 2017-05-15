@@ -82,7 +82,7 @@ namespace ReiseZumGrundDesSees
                 }
         }
 
-        public void Player(Player _player, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
+        public void PlayerR(Player _player, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
             //throw new NotImplementedException();
 
@@ -92,7 +92,8 @@ namespace ReiseZumGrundDesSees
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateRotationY(MathHelper.ToRadians(45*_player.Blickrichtung))* Matrix.CreateTranslation(_player.Position);
+       
+                    effect.World = Matrix.CreateRotationY(MathHelper.ToRadians(45 * Player.Blickrichtung)) * Matrix.CreateTranslation(_player.Position);
 
                     effect.View = _viewMatrix;
                     effect.Projection = _perspectiveMatrix;
@@ -106,14 +107,16 @@ namespace ReiseZumGrundDesSees
         public void LeichterBlock(List<PlayerBlock> _block, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
             // benötige Block mit Größe 1x1x1? und Mittelpunkt in 0.5x0.5x0.5
+
             for (int i = 0; i < _block.Count; i++)
             {
+                if (_block[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt) { 
                 foreach (ModelMesh mesh in _block[i].Model.Meshes)
                 {
                     foreach (BasicEffect effect in mesh.Effects)
                     {
                         effect.EnableDefaultLighting();
-                        effect.World = Matrix.CreateTranslation(Vector3.Add(_block[i].Position,new Vector3(0,0.5f,0)));
+                        effect.World = Matrix.CreateTranslation(Vector3.Add(_block[i].Position, new Vector3(0, 0.5f, 0)));
 
                         effect.View = _viewMatrix;
 
@@ -125,6 +128,7 @@ namespace ReiseZumGrundDesSees
                 }
             }
         }
+    }
         // ...
     }
 }

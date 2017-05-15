@@ -182,7 +182,7 @@ namespace ReiseZumGrundDesSees
                 if (GameMode.HasFlag(GameFlags.EditorMode))
                     renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
 
-                renderer.Player(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
             }
