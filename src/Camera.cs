@@ -46,8 +46,8 @@ namespace ReiseZumGrundDesSees
                     Rotation.Y += _inputArgs.MouseMovementRelative.Y;
 
                 // Doesn't work for larger Y-Values!!! -> fixed
-                LookAt = new Vector3(_view.PlayerX + (Rotation.X-0.5f) * Bewegungssensivitaet + Offset , _view.PlayerY, _view.PlayerZ + (Rotation.Y - 0.5f) * Bewegungssensivitaet-2);
-                //LookAt = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
+                //LookAt = new Vector3(_view.PlayerX + (Rotation.X-0.5f) * Bewegungssensivitaet + Offset , _view.PlayerY, _view.PlayerZ + (Rotation.Y - 0.5f) * Bewegungssensivitaet-2);
+                LookAt = new Vector3(_view.PlayerX, _view.PlayerY+2, _view.PlayerZ);
         
 
             };

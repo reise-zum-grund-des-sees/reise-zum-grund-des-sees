@@ -186,7 +186,11 @@ namespace ReiseZumGrundDesSees
                 renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
             }
-            else MainMenu.Render(spriteBatch);
+            else
+            {
+                MainMenu.Render(spriteBatch);
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            }
 
 
             base.Draw(gameTime);
