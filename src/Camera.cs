@@ -17,6 +17,7 @@ namespace ReiseZumGrundDesSees
         public Vector2 Rotation;
         public Vector3 TargetToCam;
         float angle;
+        float Intensität=3f;
         public static bool is_running=false;
         //public Matrix CalculateViewMatrix => throw new NotImplementedException();
         // Matrix.CreateLookAt(new Vector3(Position.X, Position.Y, Position.Z), new Vector3(/* TODO: add camera rotation */), Vector3.UnitY);
@@ -36,13 +37,14 @@ namespace ReiseZumGrundDesSees
         {
             Position += _movement;
         }
+
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
 		{
             //throw new NotImplementedException();
             return (ref GameState _state) =>
             {
 
-                angle = _inputArgs.MouseMovementRelative.X;
+                angle = _inputArgs.MouseMovementRelative.X*Intensität;
 
                 if (Position.Equals(new Vector3(0, 0, 0))) { 
                 Position = new Vector3(_view.PlayerX, _view.PlayerY+5, _view.PlayerZ+5);

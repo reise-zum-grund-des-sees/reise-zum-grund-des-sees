@@ -19,7 +19,8 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;
         double BlickTime;
         double Blockcd;
-        public static int Blickrichtung;
+        public static float Blickrichtung; //in Grad
+        Vector3 NullGrad = new Vector3(0,5,5);
         public static List<PlayerBlock> Blöcke;
         ContentManager ContentManager;
         public float FallOffset = 0.8f; //wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
@@ -53,53 +54,33 @@ namespace ReiseZumGrundDesSees
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
             //Sprint noch nicht implementiert
-           // float sprint = 1;          
+            // float sprint = 1;          
             //if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
 
             //Blickrichtung   
-            BlickTime += _passedTime; //Um Blöcke in 8 Richtungen setzen zu können
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100) //hier die Zeit zwischen seitliche Inputs
-                Blickrichtung = 2;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
-                Blickrichtung = 6;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && BlickTime > 100)
-                Blickrichtung = 4;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
-                Blickrichtung = 0;
-
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
-            {
-                Blickrichtung = 3;
-                BlickTime = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
-            {
-                Blickrichtung = 7;
-                BlickTime = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
-            {
-                Blickrichtung = 5;
-                BlickTime = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
-            {
-                Blickrichtung = 1;
-                BlickTime = 0;
-            }
-
+            Blickrichtung = (Vector3.Dot(_stateView.TargetToCam, NullGrad) / (_stateView.TargetToCam.Length() * NullGrad.Length()));//1 Vorne, 0 Hinten
+            if (_stateView.TargetToCam.X > 0) Blickrichtung *= -1; // Vorzeichen der Seite
             Vector3 _movement = new Vector3(0, 0, 0);
-
+            Vector2 Rotation = new Vector2(_stateView.TargetToCam.X, _stateView.TargetToCam.Z);
+            //Console.WriteLine(Vector3.Distance(_stateView.TargetToCam, NullGrad));
+           
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
-                _movement.Z -= (float)(_passedTime * 0.005);
+                //_movement.Z -= (float)(_passedTime * 0.005);
+            _movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
-                _movement.Z += (float)(_passedTime * 0.005);
+                _movement += Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
 
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
-                _movement.X -= (float)(_passedTime * 0.005);
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft)) {
+                _movement.X -= _stateView.TargetToCam.Z * (float)(_passedTime * 0.001f);
+                _movement.Z += _stateView.TargetToCam.X * (float)(_passedTime * 0.001f);
+            }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
-                _movement.X += (float)(_passedTime * 0.005);
-
+            {
+                _movement.X += _stateView.TargetToCam.Z * (float)(_passedTime * 0.001f);
+                _movement.Z -= _stateView.TargetToCam.X * (float)(_passedTime * 0.001f);
+            }
+                
+  
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1==false) {
                 Jump1 = true;
                 _speedY = 1;
@@ -194,7 +175,7 @@ namespace ReiseZumGrundDesSees
             return (ref GameState _state) =>
             {
                 _state.Player.Position += _movement;
-                _state.Camera.ChangePosition(_movement);   //move Camera with Palyer   
+                _state.Camera.ChangePosition(_movement);   //move Camera with Player   
                 //Console.WriteLine(Position);
             };
         }

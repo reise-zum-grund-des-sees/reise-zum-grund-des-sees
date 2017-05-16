@@ -70,6 +70,7 @@ namespace ReiseZumGrundDesSees
             if (Zustand == (int)ZustandList.Übergang) {
                 //Position des Blockes basierend auf Blickrichtung
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
+                /*
                 switch (Player.Blickrichtung)
                 {
                     case 0:
@@ -101,6 +102,7 @@ namespace ReiseZumGrundDesSees
                         Position.X -= 1;
                         break;
                 }
+                */
                 Zustand = (int)ZustandList.Gesetzt;
             }
             if(Zustand == (int)ZustandList.Gesetzt || Zustand == (int)ZustandList.CD)
