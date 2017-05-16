@@ -71,7 +71,8 @@ namespace ReiseZumGrundDesSees
                 new Point(_mouseState.X, _mouseState.Y),
                 _mouseMovement, _moueMovementRelative);
 
-           // Mouse.SetPosition(800 / 2, 480 / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+         if(Camera.is_running)
+            Mouse.SetPosition(_windowBounds.Center.X, _windowBounds.Center.Y); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
             _mouseState = Mouse.GetState();
             PreviousMousePosition.X = _mouseState.X;
             PreviousMousePosition.Y = _mouseState.Y;

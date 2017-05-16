@@ -145,8 +145,7 @@ namespace ReiseZumGrundDesSees
 
             Blockcd += _passedTime;
             //Beim finden neuer Blöcke ins Array
-         
-         
+      
             
             
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
@@ -194,7 +193,8 @@ namespace ReiseZumGrundDesSees
             */
             return (ref GameState _state) =>
             {
-                _state.Player.Position += _movement;         
+                _state.Player.Position += _movement;
+                _state.Camera.ChangePosition(_movement);   //move Camera with Palyer   
                 //Console.WriteLine(Position);
             };
         }
