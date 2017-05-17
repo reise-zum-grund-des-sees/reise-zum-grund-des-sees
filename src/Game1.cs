@@ -201,7 +201,7 @@ namespace ReiseZumGrundDesSees
         {
             GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
             World _world = CreateWorld();
-            GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera(false));
+            GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
         }
 
         private World CreateWorld()
@@ -216,7 +216,7 @@ namespace ReiseZumGrundDesSees
         {
             GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
             World w = new World(_path);
-            GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera(false));
+            GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
             GameState.World.GenerateVertices(GraphicsDevice);
         }
 

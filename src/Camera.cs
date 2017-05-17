@@ -14,17 +14,14 @@ namespace ReiseZumGrundDesSees
 	{
 		public Vector3 Position;
         public Vector3 LookAt;
-        public Vector2 Rotation;
         public Vector3 TargetToCam;
         float angle;
         float Intensität=3f;
         public static bool is_running=false;
         //public Matrix CalculateViewMatrix => throw new NotImplementedException();
         // Matrix.CreateLookAt(new Vector3(Position.X, Position.Y, Position.Z), new Vector3(/* TODO: add camera rotation */), Vector3.UnitY);
-        public Camera(bool fullscreen)
+        public Camera()
         {
-           
-            Rotation = new Vector2(0,0);
 
         }
         public Matrix CalculateViewMatrix()
@@ -58,7 +55,7 @@ namespace ReiseZumGrundDesSees
 
                 // Calculate our rotation matrix     
                 Matrix rotation = Matrix.CreateFromAxisAngle(new Vector3(0, 1, 0), angle);
-           
+                
                 // rotate the TargetToCam     
                 TargetToCam = Vector3.Transform(TargetToCam, rotation);
 
