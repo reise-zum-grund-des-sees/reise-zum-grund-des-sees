@@ -164,7 +164,7 @@ namespace ReiseZumGrundDesSees
                         break;
                     }
             }
-           
+
             /*
             for (int i = 0; i < Blöcke.Count; i++)
             {
@@ -172,6 +172,12 @@ namespace ReiseZumGrundDesSees
                     Blöcke.RemoveAt(i);
             }
             */
+
+            if (_inputArgs.Events.HasFlag(InputEventList.Delete))
+            {
+                for (int i = 0; i < Blöcke.Count; i++)
+                    Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Delete;
+            }
             return (ref GameState _state) =>
             {
                 _state.Player.Position += _movement;

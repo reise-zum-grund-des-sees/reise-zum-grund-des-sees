@@ -29,6 +29,7 @@ namespace ReiseZumGrundDesSees
 
             if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
             if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
+            if (_keyboardState.IsKeyDown(Keys.B)) _eventList |= InputEventList.Delete;
 
             if (_keyboardState.IsKeyDown(Keys.D1)) _eventList |= InputEventList.LeichterBlock;
             if (_keyboardState.IsKeyDown(Keys.D2)) _eventList |= InputEventList.MittelschwererBlock;
@@ -124,6 +125,8 @@ namespace ReiseZumGrundDesSees
 
         LeichterBlock = 0x2000,
         MittelschwererBlock = 0x30000,
-        SchwererBlock = 0x4000
+        SchwererBlock = 0x4000,
+
+        Delete = 0x50000
     }
 }

@@ -25,12 +25,14 @@ namespace ReiseZumGrundDesSees
         public Model Model;
         public Vector3 Position;
         public int Zustand=0;
+        public double Deletetime;
         public enum ZustandList
         {
             Bereit = 0,
             Gesetzt = 1,
             CD = 2,
-            Übergang = 3
+            Übergang = 3,
+            Delete = 4
           
         }
         public PlayerBlock(ContentManager contentManager, Player _player,int ArtdesBlocks)
@@ -65,7 +67,16 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {
-
+            //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
+            if(Zustand == (int)ZustandList.Delete)
+            {
+                Deletetime += _passedTime;
+                if (Deletetime >= 5000)
+                {
+                    Deletetime = 0;
+                    Zustand = (int)ZustandList.Bereit;
+                }
+            }
             
             if (Zustand == (int)ZustandList.Übergang) {
                 //Position des Blockes basierend auf Blickrichtung
