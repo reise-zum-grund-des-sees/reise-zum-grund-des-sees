@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using System.IO;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-	struct WorldRegion
+	class WorldRegion
 	{
-		public readonly WorldBlock[,,] Blocks;
-		public bool Loaded => Blocks != null;
+		public WorldBlock[,,] Blocks;
+        /*public VertexPositionColorTexture[] Vertices;
+        public VertexBuffer Buffer;*/
 
 		public WorldRegion(Stream _inputStream, int _sizeX, int _sizeY, int _sizeZ)
 		{
@@ -25,10 +28,9 @@ namespace ReiseZumGrundDesSees
 							Blocks[x, y, z] = (WorldBlock)_reader.ReadByte();
 			}
 		}
-		public WorldRegion(int _sizeX, int _sizeY, int _sizeZ)
-		{
-			Blocks = new WorldBlock[_sizeX, _sizeY, _sizeZ];
-		}
+
+		public WorldRegion()
+		{ }
 
 		public void Save(Stream _outputStream)
 		{

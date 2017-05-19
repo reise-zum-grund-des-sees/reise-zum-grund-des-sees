@@ -13,17 +13,21 @@ namespace ReiseZumGrundDesSees
     class World : IUpdateable, IWorld
     {
         public readonly BlockWrapper Blocks;
+
+        private readonly WorldRegion[,] Regions;
         public readonly VertexPositionColorTexture[,][] Vertices;
         public readonly VertexBuffer[,] VertexBuffers;
 
-        private readonly WorldRegion[,] Regions;
         public readonly int RegionSizeX, RegionSizeY, RegionSizeZ;
         private readonly int RegionsCountX, RegionsCountZ;
 
         public readonly float SpawnPosX, SpawnPosY, SpawnPosZ;
 
-        public World(string _basePath)
+        private readonly GraphicsDevice GraphicsDevice;
+
+        public World(string _basePath, GraphicsDevice _device)
         {
+            GraphicsDevice = _device;
             Blocks = new BlockWrapper(this);
             string _worldIndexFile = Path.Combine(_basePath, "index.world");
 
@@ -55,8 +59,9 @@ namespace ReiseZumGrundDesSees
                             RegionSizeX, RegionSizeY, RegionSizeZ);
         }
 
-        public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos)
+        public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos, GraphicsDevice _device)
         {
+            GraphicsDevice = _device;
             Blocks = new BlockWrapper(this);
             Vertices = new VertexPositionColorTexture[_regionsCountX, _regionsCountZ][];
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
@@ -72,15 +77,23 @@ namespace ReiseZumGrundDesSees
             SpawnPosZ = _spawnPos.Z;
 
             Regions = new WorldRegion[RegionsCountX, RegionsCountZ];
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int z = 0; z < RegionsCountZ; z++)
-                    Regions[x, z] = new WorldRegion(RegionSizeX, RegionSizeY, RegionSizeZ);
 
+            /*for (int x = 0; x < RegionsCountX; x++)
+                for (int z = 0; z < RegionsCountZ; z++)
+                    Regions[x, z] = new WorldRegion();*/
         }
 
         public void GenerateTestWorld()
         {
             Random rnd = new Random();
+
+            for (int x = 0; x < RegionsCountX; x++)
+                for (int z = 0; z < RegionsCountZ; z++)
+                {
+                    Regions[x, z] = new WorldRegion();
+                    Regions[x, z].Blocks = new WorldBlock[RegionSizeX, RegionSizeY, RegionSizeZ];
+                }
+
             for (int x = 0; x < RegionSizeX * RegionsCountX; x++)
                 for (int y = 0; y < RegionSizeY; y++)
                     for (int z = 0; z < RegionSizeZ * RegionsCountZ; z++)
@@ -106,22 +119,28 @@ namespace ReiseZumGrundDesSees
         {
             for (int x = 0; x < RegionsCountX; x++)
                 for (int y = 0; y < RegionsCountZ; y++)
-                    LoadVertices(x, y, _device);
+                    LoadVertices(x, y);
         }
 
-        private void LoadVertices(int _regionX, int _regionZ, GraphicsDevice _device)
+        private void LoadVertices(int _regionX, int _regionZ)
         {
             WorldRegion _region = Regions[_regionX, _regionZ];
             List<VertexPositionColorTexture> _vertices = new List<VertexPositionColorTexture>();
 
-            Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(ref _region);
+            Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(this, _regionX * RegionSizeX, 0, _regionZ * RegionSizeZ, RegionSizeX, RegionSizeY, RegionSizeZ);
             if (Vertices[_regionX, _regionZ].Length != 0)
             {
                 if (VertexBuffers[_regionX, _regionZ] != null)
                     VertexBuffers[_regionX, _regionZ].Dispose();
-                VertexBuffers[_regionX, _regionZ] = new VertexBuffer(_device, VertexPositionColorTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
+                VertexBuffers[_regionX, _regionZ] = new VertexBuffer(GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
                 VertexBuffers[_regionX, _regionZ].SetData(Vertices[_regionX, _regionZ]);
             }
+        }
+        private void UnloadVertices(int _regionX, int _regionZ)
+        {
+            Vertices[_regionX, _regionZ] = null;
+            VertexBuffers[_regionX, _regionZ]?.Dispose();
+            VertexBuffers[_regionX, _regionZ] = null;
         }
 
         public class BlockWrapper
@@ -167,7 +186,26 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {
-            throw new NotImplementedException();
+            Vector3 _playerPosition = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
+            for (int x = 0; x < RegionsCountX; x++)
+                for (int z = 0; z < RegionsCountZ; z++)
+                {
+                    float _distance = Vector2.Distance(new Vector2(_view.PlayerX, _view.PlayerZ), new Vector2((x + 0.5f) * RegionSizeX, (z + 0.5f) * RegionSizeZ));
+
+                    if (_distance < 20 && Vertices[x, z] == null)
+                    {
+                        LoadVertices(x, z);
+                    }
+                    else if (_distance > 20 && Vertices[x, z] != null)
+                    {
+                        UnloadVertices(x, z);
+                    }
+                }
+
+            return (ref GameState _gameState) =>
+            {
+
+            };
         }
     }
 }

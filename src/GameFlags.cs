@@ -12,6 +12,7 @@ namespace ReiseZumGrundDesSees
 		Menu = 1,
 		GameLoaded = 2,
 		GameRunning = 4,
-		EditorMode = 8
+		EditorMode = 8,
+        Debug = 16
 	}
 }

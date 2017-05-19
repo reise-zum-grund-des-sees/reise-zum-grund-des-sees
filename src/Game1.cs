@@ -27,6 +27,12 @@ namespace ReiseZumGrundDesSees
         BasicEffect effect;
         WorldEditor editor;
 
+        // Debug - stuff
+        int worldVerticesRendered = 0;
+        int worldChunksRendered = 0;
+        double fps = 0, fpsBuffer = 0;
+        int frameCount = 0;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -42,12 +48,12 @@ namespace ReiseZumGrundDesSees
         /// </summary>
         protected override void Initialize()
         {
-            this.graphics.PreferredBackBufferHeight = 1080;
-            this.graphics.PreferredBackBufferWidth = 1920;
+            this.graphics.ToggleFullScreen();
+            this.graphics.PreferredBackBufferHeight = this.Window.ClientBounds.Width;
+            this.graphics.PreferredBackBufferWidth = this.Window.ClientBounds.Height;
             this.graphics.ApplyChanges();
-            //this.graphics.ToggleFullScreen();
 
-            GameMode = GameFlags.Menu;
+            GameMode = GameFlags.Menu | GameFlags.Debug;
 
             // TEMP: remove to show main menu
             //StartNewGame();
@@ -96,6 +102,14 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
+            if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
+                graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
+            {
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                graphics.ApplyChanges();
+            }
+
             InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
 
             if (GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
@@ -104,12 +118,12 @@ namespace ReiseZumGrundDesSees
 
                 UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-                // UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
 
                 _playerUpdate(ref GameState);
                 _cameraUpdate(ref GameState);
+                _worldUpdate(ref GameState);
 
-                //_worldUpdate(ref GameState);
                 for (int i = 0; i < Player.Blöcke.Count; i++)
                 {
                     Player.Blöcke[i].Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
@@ -143,7 +157,7 @@ namespace ReiseZumGrundDesSees
                     _dialog.SelectedPath = Environment.CurrentDirectory;
                     _dialog.ShowDialog();
 
-                    GameState = new GameState(new World(_dialog.SelectedPath), GameState.Player, GameState.Camera);
+                    GameState = new GameState(new World(_dialog.SelectedPath, GraphicsDevice), GameState.Player, GameState.Camera);
                     GameState.World.GenerateVertices(GraphicsDevice);
                 }
                 else if (kb.IsKeyDown(Keys.E) && keyPressedPause)
@@ -169,11 +183,11 @@ namespace ReiseZumGrundDesSees
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            frameCount++;
+            fps = fps * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
+            if (frameCount % 10 == 0) fpsBuffer = fps;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
-
-            // TODO: Add your drawing code here
-
 
             if (GameMode.HasFlag(GameFlags.GameLoaded))
             {
@@ -184,13 +198,26 @@ namespace ReiseZumGrundDesSees
                     renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
 
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix, out worldVerticesRendered, out worldChunksRendered);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
             }
 
             if (GameMode.HasFlag(GameFlags.Menu))
             {
                 MainMenu.Render(spriteBatch);
+            }
+
+            if (GameMode.HasFlag(GameFlags.Debug))
+            {
+                spriteBatch.Begin(SpriteSortMode.BackToFront);
+
+                spriteBatch.DrawString(Content.Load<SpriteFont>("font"), $"Debug Mode\n" +
+                    $"Frame: { frameCount }\n" +
+                    $"FPS: { Math.Round(fpsBuffer, 1, MidpointRounding.AwayFromZero) }\n" +
+                    $"Rendered Vertices: { worldVerticesRendered } ({ worldVerticesRendered / 6 } faces)\n" +
+                    $"Rendered Chunks (draw calls): { worldChunksRendered }", new Vector2(0, 0), Color.Black);
+
+                spriteBatch.End();
             }
 
             base.Draw(gameTime);
@@ -200,25 +227,25 @@ namespace ReiseZumGrundDesSees
 
         public void StartNewGame()
         {
-            GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode &= ~GameFlags.Menu;
             World _world = CreateWorld();
             GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
         }
 
         private World CreateWorld()
         {
-            World w = new World(16, 64, 16, 3, 3, new Vector3(24, 32, 24));
+            World w = new World(16, 64, 16, 3, 3, new Vector3(24, 32, 24), GraphicsDevice);
             w.GenerateTestWorld();
-            w.GenerateVertices(GraphicsDevice);
             return w;
         }
 
         public void LoadGame(string _path)
         {
-            GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
-            World w = new World(_path);
+            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode &= ~GameFlags.Menu;
+            World w = new World(_path, GraphicsDevice);
             GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
-            GameState.World.GenerateVertices(GraphicsDevice);
         }
 
         public void SaveGame(string _path)

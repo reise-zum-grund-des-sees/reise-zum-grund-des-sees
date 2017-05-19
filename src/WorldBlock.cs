@@ -18,7 +18,8 @@ namespace ReiseZumGrundDesSees
 		Water3,
 		Water4,
 		Lever,
-		Spikes
+		Spikes,
+        Unknown
 	}
 
     static class WorldBlockHelper
@@ -30,6 +31,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Wall:
                 case WorldBlock.InvisibleWall:
                 case WorldBlock.Water4:
+                case WorldBlock.Unknown:
                     return new Vector3(1.00f, 1.00f, 1.00f);
                 case WorldBlock.Water3:
                     return new Vector3(1.00f, 0.75f, 1.00f);
@@ -54,6 +56,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water2:
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
+                case WorldBlock.Unknown:
                     return true;
                 default:
                     return false;

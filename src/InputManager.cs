@@ -75,8 +75,8 @@ namespace ReiseZumGrundDesSees
 
             if (_flags.HasFlag(GameFlags.GameRunning))
             {
-                Mouse.SetPosition(_windowBounds.Center.X, _windowBounds.Center.Y); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
-                PreviousMousePosition = _windowBounds.Center;
+                Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+                PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
             }
             else
             {
