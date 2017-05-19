@@ -27,32 +27,21 @@ namespace ReiseZumGrundDesSees
             Blocks = new BlockWrapper(this);
             string _worldIndexFile = Path.Combine(_basePath, "index.world");
 
-            string[] _lines = File.ReadAllLines(_worldIndexFile);
-            foreach (string _line in _lines)
-            {
-                string[] _items = _line.Split('=', ',', ';');
-                for (int i = 0; i < _items.Length; i++) _items[i] = _items[i].Trim();
+            Dictionary<string, string[]> _worldFile = ConfigFile.Load(_worldIndexFile);
 
-                switch (_items[0])
-                {
-                    case "region_size":
-                        RegionSizeX = int.Parse(_items[1]);
-                        RegionSizeY = int.Parse(_items[2]);
-                        RegionSizeZ = int.Parse(_items[3]);
-                        break;
-                    case "regions_count":
-                        RegionsCountX = int.Parse(_items[1]);
-                        RegionsCountZ = int.Parse(_items[2]);
-                        break;
-                    case "spawn":
-                        SpawnPosX = int.Parse(_items[1]);
-                        SpawnPosY = int.Parse(_items[2]);
-                        SpawnPosZ = int.Parse(_items[3]);
-                        break;
-                    default: throw new FormatException("World file has an invalid format.");
+            string[] _region_size = _worldFile["region_size"];
+            RegionSizeX = int.Parse(_region_size[0]);
+            RegionSizeY = int.Parse(_region_size[1]);
+            RegionSizeZ = int.Parse(_region_size[2]);
 
-                }
-            }
+            string[] _regions_count = _worldFile["regions_count"];
+            RegionsCountX = int.Parse(_regions_count[0]);
+            RegionsCountZ = int.Parse(_regions_count[1]);
+
+            string[] _spawn_position = _worldFile["spawn"];
+            SpawnPosX = int.Parse(_spawn_position[0]);
+            SpawnPosY = int.Parse(_spawn_position[1]);
+            SpawnPosZ = int.Parse(_spawn_position[2]);
 
             Vertices = new VertexPositionColorTexture[RegionsCountX, RegionsCountZ][];
             VertexBuffers = new VertexBuffer[RegionsCountX, RegionsCountZ];

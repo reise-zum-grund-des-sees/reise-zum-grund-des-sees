@@ -10,7 +10,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReiseZumGrundDesSeesOpenGL</RootNamespace>
-    <AssemblyName>ReiseZumGrundDesSeesOpenGL</AssemblyName>
+    <AssemblyName>ReiseZumGrundDesSees</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="CollisionDetector.cs" />
+    <Compile Include="ConfigFile.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameState.cs" />
