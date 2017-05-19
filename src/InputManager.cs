@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace ReiseZumGrundDesSees
     {
         private Point PreviousMousePosition;
         private bool leftMouseDown = false, rightMouseDown = false, middleMouseDown = false;
-        public InputEventArgs Update(Rectangle _windowBounds)
+        public InputEventArgs Update(GameFlags _flags, Rectangle _windowBounds)
         {
             InputEventList _eventList = InputEventList.None;
 
@@ -23,7 +23,7 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.A)) _eventList |= InputEventList.MoveLeft;
             if (_keyboardState.IsKeyDown(Keys.S)) _eventList |= InputEventList.MoveBackwards;
             if (_keyboardState.IsKeyDown(Keys.D)) _eventList |= InputEventList.MoveRight;
-            
+
             if (_keyboardState.IsKeyDown(Keys.Q)) _eventList |= InputEventList.MoveUp;
             if (_keyboardState.IsKeyDown(Keys.E)) _eventList |= InputEventList.MoveDown;
 
@@ -34,6 +34,7 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.D1)) _eventList |= InputEventList.LeichterBlock;
             if (_keyboardState.IsKeyDown(Keys.D2)) _eventList |= InputEventList.MittelschwererBlock;
             if (_keyboardState.IsKeyDown(Keys.D3)) _eventList |= InputEventList.SchwererBlock;
+
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
@@ -64,19 +65,24 @@ namespace ReiseZumGrundDesSees
             }
             else middleMouseDown = false;
 
-             Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
-            
-            Vector2 _moueMovementRelative = _mouseMovement.ToVector2() / _windowBounds.Size.ToVector2();
+            Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
+
+            Vector2 _mouseMovementRelative = _mouseMovement.ToVector2() / _windowBounds.Size.ToVector2();
 
             InputEventArgs _args = new InputEventArgs(_eventList,
                 new Point(_mouseState.X, _mouseState.Y),
-                _mouseMovement, _moueMovementRelative);
+                _mouseMovement, _mouseMovementRelative);
 
-         if(Camera.is_running)
-            Mouse.SetPosition(_windowBounds.Center.X, _windowBounds.Center.Y); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
-            _mouseState = Mouse.GetState();
-            PreviousMousePosition.X = _mouseState.X;
-            PreviousMousePosition.Y = _mouseState.Y;
+            if (_flags.HasFlag(GameFlags.GameRunning))
+            {
+                Mouse.SetPosition(_windowBounds.Center.X, _windowBounds.Center.Y); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+                PreviousMousePosition = _windowBounds.Center;
+            }
+            else
+            {
+                PreviousMousePosition.X = _mouseState.X;
+                PreviousMousePosition.Y = _mouseState.Y;
+            }
 
             return _args;
         }

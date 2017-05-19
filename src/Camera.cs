@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,6 @@ namespace ReiseZumGrundDesSees
 		public Vector3 Position;
         public Vector3 LookAt;
         public float Angle;
-        public static bool is_running=false; //wenn True wird Camera Mittig fixiert
 
         public Camera()
         {
@@ -42,7 +41,7 @@ namespace ReiseZumGrundDesSees
             //throw new NotImplementedException();
             return (ref GameState _state) =>
             {
-                Angle += _inputArgs.MouseMovementRelative.X * 10f;
+                Angle += _inputArgs.MouseMovementRelative.X;
                 LookAt = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
 
 
