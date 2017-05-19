@@ -50,7 +50,6 @@
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="InputManager.cs" />
-    <Compile Include="Player.example.cs" />
     <Compile Include="PlayerBlock.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Player.cs" />
