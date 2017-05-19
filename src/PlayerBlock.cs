@@ -71,6 +71,7 @@ namespace ReiseZumGrundDesSees
             if(Zustand == (int)ZustandList.Delete)
             {
                 Deletetime += _passedTime;
+                AktuelleDauer = 0;
                 if (Deletetime >= 5000)
                 {
                     Deletetime = 0;
@@ -83,7 +84,8 @@ namespace ReiseZumGrundDesSees
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
                 Vector3 Blick = _view.TargetToCam;
                 Blick.Normalize();
-                Position -= new Vector3(Blick.X*1.5f,0,Blick.Z*1.5f);
+                Position -= new Vector3(Blick.X*2f,0,Blick.Z*2f);
+                AktuelleDauer = 0;
                 Zustand = (int)ZustandList.Gesetzt;
             }
             if(Zustand == (int)ZustandList.Gesetzt || Zustand == (int)ZustandList.CD)

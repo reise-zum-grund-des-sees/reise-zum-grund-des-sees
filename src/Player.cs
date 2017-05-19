@@ -17,7 +17,6 @@ namespace ReiseZumGrundDesSees
         bool Jump1;
         bool Jump2;
         bool Jumpcd;
-        double BlickTime;
         double Blockcd;
         public static float Blickrichtung; //in Grad
         Vector3 NullGrad = new Vector3(0,5,5);
@@ -33,7 +32,6 @@ namespace ReiseZumGrundDesSees
             Jump2 = false;
             Jumpcd = false;
             Blickrichtung = 4;
-            BlickTime = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
@@ -58,12 +56,10 @@ namespace ReiseZumGrundDesSees
             //if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
 
             //Blickrichtung   
-            Blickrichtung = (Vector3.Dot(_stateView.TargetToCam, NullGrad) / (_stateView.TargetToCam.Length() * NullGrad.Length()));//1 Vorne, 0 Hinten
-            if (_stateView.TargetToCam.X > 0) Blickrichtung *= -1; // Vorzeichen der Seite
+            Blickrichtung =_stateView.Sumofangle+(float)Math.PI;
+          
             Vector3 _movement = new Vector3(0, 0, 0);
-            Vector2 Rotation = new Vector2(_stateView.TargetToCam.X, _stateView.TargetToCam.Z);
-            //Console.WriteLine(Vector3.Distance(_stateView.TargetToCam, NullGrad));
-           
+                
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
                 //_movement.Z -= (float)(_passedTime * 0.005);
             _movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
@@ -137,7 +133,6 @@ namespace ReiseZumGrundDesSees
                     {
                         Blockcd = 0;
                         Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
-                        Console.WriteLine("0");
                         break;
                     }
                

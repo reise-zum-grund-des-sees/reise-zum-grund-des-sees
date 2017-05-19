@@ -16,6 +16,7 @@ namespace ReiseZumGrundDesSees
         public Vector3 LookAt;
         public Vector3 TargetToCam;
         float angle;
+        public float Sumofangle;
         float Intensität=3f;
         public static bool is_running=false;
         //public Matrix CalculateViewMatrix => throw new NotImplementedException();
@@ -41,15 +42,15 @@ namespace ReiseZumGrundDesSees
             return (ref GameState _state) =>
             {
 
-                angle = _inputArgs.MouseMovementRelative.X*Intensität;
-
+              
+             
                 if (Position.Equals(new Vector3(0, 0, 0))) { 
                 Position = new Vector3(_view.PlayerX, _view.PlayerY+5, _view.PlayerZ+5);
                     is_running = true; //nur Mousepossition zur Mittel wenn Camera erstellt
                 }
-
-               
-
+                angle = _inputArgs.MouseMovementRelative.X * Intensität;
+                Sumofangle += _inputArgs.MouseMovementRelative.X * Intensität;
+                
                 // Get our current target to camera vector (this is opposite of view from above)     
                 TargetToCam = Vector3.Subtract(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ));
 
