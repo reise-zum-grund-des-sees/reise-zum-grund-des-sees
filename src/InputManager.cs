@@ -12,6 +12,7 @@ namespace ReiseZumGrundDesSees
     class InputManager
     {
         private Point PreviousMousePosition;
+        private bool leftMouseDown = false, rightMouseDown = false, middleMouseDown = false;
         public InputEventArgs Update(Rectangle _windowBounds)
         {
             InputEventList _eventList = InputEventList.None;
@@ -28,15 +29,40 @@ namespace ReiseZumGrundDesSees
 
             if (_keyboardState.IsKeyDown(Keys.Space)) _eventList |= InputEventList.Jump;
             if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
+            if (_keyboardState.IsKeyDown(Keys.B)) _eventList |= InputEventList.Delete;
 
             if (_keyboardState.IsKeyDown(Keys.D1)) _eventList |= InputEventList.LeichterBlock;
             if (_keyboardState.IsKeyDown(Keys.D2)) _eventList |= InputEventList.MittelschwererBlock;
             if (_keyboardState.IsKeyDown(Keys.D3)) _eventList |= InputEventList.SchwererBlock;
             MouseState _mouseState = Mouse.GetState();
 
-            if (_mouseState.LeftButton == ButtonState.Pressed) _eventList |= InputEventList.MouseLeftClick;
-            if (_mouseState.RightButton == ButtonState.Pressed) _eventList |= InputEventList.MouseRightClick;
-            if (_mouseState.MiddleButton == ButtonState.Pressed) _eventList |= InputEventList.MouseMiddleClick;
+            if (_mouseState.LeftButton == ButtonState.Pressed)
+            {
+                if (!leftMouseDown)
+                {
+                    _eventList |= InputEventList.MouseLeftClick;
+                    leftMouseDown = true;
+                }
+            }
+            else leftMouseDown = false;
+            if (_mouseState.RightButton == ButtonState.Pressed)
+            {
+                if (!rightMouseDown)
+                {
+                    _eventList |= InputEventList.MouseRightClick;
+                    rightMouseDown = true;
+                }
+            }
+            else rightMouseDown = false;
+            if (_mouseState.MiddleButton == ButtonState.Pressed)
+            {
+                if (!middleMouseDown)
+                {
+                    _eventList |= InputEventList.MouseMiddleClick;
+                    middleMouseDown = true;
+                }
+            }
+            else middleMouseDown = false;
 
              Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
             
@@ -46,7 +72,8 @@ namespace ReiseZumGrundDesSees
                 new Point(_mouseState.X, _mouseState.Y),
                 _mouseMovement, _moueMovementRelative);
 
-           // Mouse.SetPosition(800 / 2, 480 / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+         if(Camera.is_running)
+            Mouse.SetPosition(_windowBounds.Center.X, _windowBounds.Center.Y); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
             _mouseState = Mouse.GetState();
             PreviousMousePosition.X = _mouseState.X;
             PreviousMousePosition.Y = _mouseState.Y;
@@ -98,6 +125,8 @@ namespace ReiseZumGrundDesSees
 
         LeichterBlock = 0x2000,
         MittelschwererBlock = 0x30000,
-        SchwererBlock = 0x4000
+        SchwererBlock = 0x4000,
+
+        Delete = 0x50000
     }
 }

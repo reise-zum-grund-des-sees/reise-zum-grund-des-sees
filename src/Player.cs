@@ -17,9 +17,9 @@ namespace ReiseZumGrundDesSees
         bool Jump1;
         bool Jump2;
         bool Jumpcd;
-        double BlickTime;
         double Blockcd;
-        public int Blickrichtung;
+        public static float Blickrichtung; //in Grad
+        Vector3 NullGrad = new Vector3(0,5,5);
         public static List<PlayerBlock> Blöcke;
         ContentManager ContentManager;
         public float FallOffset = 0.8f; //wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
@@ -32,10 +32,19 @@ namespace ReiseZumGrundDesSees
             Jump2 = false;
             Jumpcd = false;
             Blickrichtung = 4;
-            BlickTime = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
+            //Startblöcke, müsssen später auf Pickup hinzugefügt werden
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
         }
   
         public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)
@@ -43,53 +52,60 @@ namespace ReiseZumGrundDesSees
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
             //Sprint noch nicht implementiert
-           // float sprint = 1;          
+            // float sprint = 1;          
             //if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) sprint = 2;//Sprintgeschwindigkeit
 
             //Blickrichtung   
-            BlickTime += _passedTime; //Um Blöcke in 8 Richtungen setzen zu können
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) && BlickTime > 100) //hier die Zeit zwischen seitliche Inputs
-                Blickrichtung = 2;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) && BlickTime > 100)
-                Blickrichtung = 6;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && BlickTime > 100)
-                Blickrichtung = 4;
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && BlickTime > 100)
-                Blickrichtung = 0;
+            Blickrichtung = -_stateView.CamAngle + (float)Math.PI;
 
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            if ((_inputArgs.Events & InputEventList.MoveForwards) != 0)
             {
-                Blickrichtung = 3;
-                BlickTime = 0;
+                if ((_inputArgs.Events & InputEventList.MoveLeft) != 0)
+                    Blickrichtung += MathHelper.PiOver4;
+                else if ((_inputArgs.Events & InputEventList.MoveRight) != 0)
+                    Blickrichtung -= MathHelper.PiOver4;
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            else if ((_inputArgs.Events & InputEventList.MoveBackwards) != 0)
             {
-                Blickrichtung = 7;
-                BlickTime = 0;
+                if ((_inputArgs.Events & InputEventList.MoveLeft) != 0)
+                    Blickrichtung += MathHelper.PiOver4 * 3;
+                else if ((_inputArgs.Events & InputEventList.MoveRight) != 0)
+                    Blickrichtung -= MathHelper.PiOver4 * 3;
+                else
+                    Blickrichtung += MathHelper.Pi;
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) && _inputArgs.Events.HasFlag(InputEventList.MoveLeft))
-            {
-                Blickrichtung = 5;
-                BlickTime = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) && _inputArgs.Events.HasFlag(InputEventList.MoveRight))
-            {
-                Blickrichtung = 1;
-                BlickTime = 0;
-            }
-
+            else if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+                Blickrichtung += MathHelper.PiOver2;
+            else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
+                Blickrichtung += MathHelper.PiOver2 * 3;
+          
             Vector3 _movement = new Vector3(0, 0, 0);
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
-                _movement.Z -= (float)(_passedTime * 0.005);
+            {
+                //_movement.Z -= (float)(_passedTime * 0.005);
+                //_movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
+                _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
+                _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
+            }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
-                _movement.Z += (float)(_passedTime * 0.005);
+            {
+                //_movement += Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
+                _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
+                _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
+            }
 
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
-                _movement.X -= (float)(_passedTime * 0.005);
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft)) {
+                _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
+                _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
+            }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
-                _movement.X += (float)(_passedTime * 0.005);
-
+            {
+                _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
+                _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
+            }
+                
+  
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1==false) {
                 Jump1 = true;
                 _speedY = 1;
@@ -111,8 +127,9 @@ namespace ReiseZumGrundDesSees
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 0.8f, 1.5f), _stateView);
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
+                if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
                 _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 0.8f, 0.8f, 1f)));
-            for (int i = 0; i < Blöcke.Count; i++)
+            for (int i = 0; i < _info2.Count; i++)
             {
                 if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
                     _speedY = 0;
@@ -133,29 +150,62 @@ namespace ReiseZumGrundDesSees
             }
 
             Blockcd += _passedTime;
-            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && PlayerBlock.MaximumL > PlayerBlock.AnzahlL && Blockcd > 1000)
+            //Beim finden neuer Blöcke ins Array
+      
+            
+            
+            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
             {
-                Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-                Blockcd = 0;
+                           
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 0)
+                    {
+                        Blockcd = 0;
+                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        break;
+                    }
+               
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && PlayerBlock.MaximumM > PlayerBlock.AnzahlM && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 1000)
             {
-                Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-                Blockcd = 0;
+             
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 1)
+                    {
+                        Blockcd = 0;
+                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        break;
+                    }
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && PlayerBlock.MaximumS > PlayerBlock.AnzahlS && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 1000)
             {
-                Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
-                Blockcd = 0;
+             
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 2)
+                    {
+                        Blockcd = 0;
+                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        break;
+                    }
             }
+
+            /*
             for (int i = 0; i < Blöcke.Count; i++)
             {
                 if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
                     Blöcke.RemoveAt(i);
             }
+            */
+
+            if (_inputArgs.Events.HasFlag(InputEventList.Delete))
+            {
+                for (int i = 0; i < Blöcke.Count; i++)
+                    Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Delete;
+            }
             return (ref GameState _state) =>
             {
-                _state.Player.Position += _movement;         
+                _state.Player.Position += _movement;
+                _state.Camera.ChangePosition(_movement);   //move Camera with Player   
                 //Console.WriteLine(Position);
             };
         }

@@ -26,6 +26,17 @@ namespace ReiseZumGrundDesSees
         private Rectangle save = new Rectangle(300, 230, 200, 70);
         private Rectangle credits = new Rectangle(300, 310, 200, 70);
         private Rectangle leave = new Rectangle(300, 390, 200, 70);
+        private Rectangle full;
+
+        private void CreateRectangles(int x, int y)
+        {
+            neuGame = new Rectangle((int)(x * 0.4), (int)(y * 0.15), (int)(x * 0.2), (int)(y * 0.1));
+            load = new Rectangle((int)(x * 0.4), (int)(y * 0.30), (int)(x * 0.2), (int)(y * 0.1));
+            save = new Rectangle((int)(x * 0.4), (int)(y * 0.45), (int)(x * 0.2), (int)(y * 0.1));
+            credits = new Rectangle((int)(x * 0.4), (int)(y * 0.60), (int)(x * 0.2), (int)(y * 0.1));
+            leave = new Rectangle((int)(x * 0.4), (int)(y * 0.75), (int)(x * 0.2), (int)(y * 0.1));
+            full = new Rectangle(0, 0, x, y);
+        }
 
 
 
@@ -38,14 +49,13 @@ namespace ReiseZumGrundDesSees
             Button_Spiel_Speichern = Content.Load<Texture2D>("17");
             Button_Verlassen = Content.Load<Texture2D>("19");
             Button_Credits = Content.Load<Texture2D>("18");
-
 		}
 
-       
-
-        public void Update(InputEventArgs _args, IMenuCallback _callback)
+        public void Update(InputEventArgs _args, IMenuCallback _callback, Point _windowSize)
 		{
-           if (_args.Events.HasFlag(InputEventList.MouseLeftClick))
+            CreateRectangles(_windowSize.X, _windowSize.Y);
+
+            if (_args.Events.HasFlag(InputEventList.MouseLeftClick))
             {
                 if (neuGame.Contains(_args.MousePosition))
                 {
@@ -56,16 +66,16 @@ namespace ReiseZumGrundDesSees
                 {
                     System.Windows.Forms.FolderBrowserDialog _dialog = new System.Windows.Forms.FolderBrowserDialog();
                     _dialog.SelectedPath = Environment.CurrentDirectory;
-                    _dialog.ShowDialog();
-                    _callback.LoadGame(_dialog.SelectedPath);
+                    if (_dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        _callback.LoadGame(_dialog.SelectedPath);
                 }
 
                 if (save.Contains(_args.MousePosition))
                 {
                     System.Windows.Forms.FolderBrowserDialog _dialog = new System.Windows.Forms.FolderBrowserDialog();
                     _dialog.SelectedPath = Environment.CurrentDirectory;
-                    _dialog.ShowDialog();
-                    _callback.SaveGame(_dialog.SelectedPath);
+                    if (_dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        _callback.SaveGame(_dialog.SelectedPath);
                 } 
 
                 if (credits.Contains(_args.MousePosition))
@@ -86,7 +96,7 @@ namespace ReiseZumGrundDesSees
 		public void Render(SpriteBatch _spriteBatch)
 		{
             _spriteBatch.Begin();
-            _spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
+            _spriteBatch.Draw(background, full, Color.White);
             _spriteBatch.Draw(Button_Neues_Spiel_starten, neuGame, Color.White);
             _spriteBatch.Draw(Button_Spiel_Laden, load, Color.White);
             _spriteBatch.Draw(Button_Spiel_Speichern, save, Color.White);
