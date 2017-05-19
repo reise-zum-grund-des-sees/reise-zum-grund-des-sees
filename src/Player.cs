@@ -12,17 +12,15 @@ namespace ReiseZumGrundDesSees
 {
     class Player : IUpdateable
     {
-        public Vector3 Position;
+        public Vector3 Position; //Position des Spielers
         public Model Model;
-        bool Jump1;
-        bool Jump2;
-        bool Jumpcd;
-        double Blockcd;
-        public static float Blickrichtung; //in Grad
-        Vector3 NullGrad = new Vector3(0,5,5);
-        public static List<PlayerBlock> Blöcke;
+        bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
+        bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
+        bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
+        double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
+        public static float Blickrichtung; //in Rad
+        public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
-        public float FallOffset = 0.8f; //wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
         float _speedY = 0;
         public Player(ContentManager contentManager, Vector3 _position)
         {
@@ -31,7 +29,7 @@ namespace ReiseZumGrundDesSees
             Jump1 = false;
             Jump2 = false;
             Jumpcd = false;
-            Blickrichtung = 4;
+            Blickrichtung = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
@@ -149,11 +147,9 @@ namespace ReiseZumGrundDesSees
                 Jumpcd = false;
             }
 
-            Blockcd += _passedTime;
-            //Beim finden neuer Blöcke ins Array
-      
+            Blockcd += _passedTime;      //Zeit erhöhen      
             
-            
+            //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
             {
                            
@@ -189,14 +185,7 @@ namespace ReiseZumGrundDesSees
                     }
             }
 
-            /*
-            for (int i = 0; i < Blöcke.Count; i++)
-            {
-                if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
-                    Blöcke.RemoveAt(i);
-            }
-            */
-
+       // Löschen mit Taste
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
                 for (int i = 0; i < Blöcke.Count; i++)

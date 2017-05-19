@@ -36,9 +36,6 @@ namespace ReiseZumGrundDesSees
 			public float CamZ => baseState.Camera.Position.Z;
             public float CamAngle => baseState.Camera.Angle;
 
-            public Vector3 TargetToCam => baseState.Camera.TargetToCam;
-            public float Sumofangle => baseState.Camera.Sumofangle;
-
             public float PlayerX => baseState.Player.Position.X;
 			public float PlayerY => baseState.Player.Position.Y;
 			public float PlayerZ => baseState.Player.Position.Z;
