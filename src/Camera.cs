@@ -15,7 +15,7 @@ namespace ReiseZumGrundDesSees
 		public Vector3 Position;
         public Vector3 LookAt;
         public Vector3 TargetToCam;
-        float angle;
+        public float Angle;
         public float Sumofangle;
         float Intensität=3f;
         public static bool is_running=false;
@@ -27,7 +27,12 @@ namespace ReiseZumGrundDesSees
         }
         public Matrix CalculateViewMatrix()
         {
-                return Matrix.CreateLookAt(Position,LookAt, Vector3.UnitY);
+            Vector2 _diffToPlayer = new Vector2(7, 10);
+            Vector3 _position =
+                new Vector3(LookAt.X - (float)Math.Sin(Angle) * _diffToPlayer.Y,
+                LookAt.Y + _diffToPlayer.X,
+                LookAt.Z + (float)Math.Cos(Angle) * _diffToPlayer.Y);
+            return Matrix.CreateLookAt(_position, LookAt + new Vector3(0, 2, 0), Vector3.UnitY);
           
         }
 
@@ -41,10 +46,11 @@ namespace ReiseZumGrundDesSees
             //throw new NotImplementedException();
             return (ref GameState _state) =>
             {
-
+                Angle += _inputArgs.MouseMovementRelative.X * 10f;
+                LookAt = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
               
              
-                if (Position.Equals(new Vector3(0, 0, 0))) { 
+                /*if (Position.Equals(new Vector3(0, 0, 0))) { 
                 Position = new Vector3(_view.PlayerX, _view.PlayerY+5, _view.PlayerZ+5);
                     is_running = true; //nur Mousepossition zur Mittel wenn Camera erstellt
                 }
@@ -63,7 +69,7 @@ namespace ReiseZumGrundDesSees
                 // add our rotated TargetToCam to the target position to get the new camera position     
                 Position = Vector3.Add(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), TargetToCam);
               
-                LookAt = new Vector3(_view.PlayerX, _view.PlayerY + 2, _view.PlayerZ);
+                LookAt = new Vector3(_view.PlayerX, _view.PlayerY + 2, _view.PlayerZ);*/
 
             };
         }
