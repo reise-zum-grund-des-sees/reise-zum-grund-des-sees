@@ -73,8 +73,10 @@ namespace ReiseZumGrundDesSees
                 new Point(_mouseState.X, _mouseState.Y),
                 _mouseMovement, _mouseMovementRelative);
 
-            if (_flags.HasFlag(GameFlags.GameRunning))
+            if (_flags.HasFlag(GameFlags.GameRunning) &&
+                Vector2.Distance(new Vector2(_mouseState.X, _mouseState.Y), _windowBounds.Size.ToVector2() * 0.5f) > 500)
             {
+                //DebugHelper.Log("Current Mouse Pos: " + _mouseState.X + ", " + _mouseState.Y + "\nPrevious Mouse Pos: " + PreviousMousePosition.X + ", " + PreviousMousePosition.Y);
                 Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
                 PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
             }

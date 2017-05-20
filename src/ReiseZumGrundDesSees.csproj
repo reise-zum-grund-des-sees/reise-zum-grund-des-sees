@@ -47,6 +47,7 @@
     <Compile Include="Camera.cs" />
     <Compile Include="CollisionDetector.cs" />
     <Compile Include="ConfigFile.cs" />
+    <Compile Include="DebugHelper.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameState.cs" />

@@ -57,7 +57,7 @@ namespace ReiseZumGrundDesSees
             }
         }
 
-        public void World(World _world, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix, out int _renderedVertices, out int _renderedChunks)
+        public void World(World _world, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix, out uint _renderedVertices, out uint _renderedChunks)
         {
             _renderedVertices = 0;
             _renderedChunks = 0;
@@ -69,7 +69,7 @@ namespace ReiseZumGrundDesSees
                 {
                     if (_world.Vertices[x, z]?.Length > 0)
                     {
-                        _renderedVertices += _world.Vertices[x, z].Length;
+                        _renderedVertices += (uint)_world.Vertices[x, z].Length;
                         _renderedChunks++;
                         worldEffect.View = _viewMatrix;
                         worldEffect.World = Matrix.CreateTranslation(x * _world.RegionSizeX, 0, z * _world.RegionSizeZ);
