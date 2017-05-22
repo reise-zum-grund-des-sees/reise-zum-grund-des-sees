@@ -19,6 +19,7 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         public static float Blickrichtung; //in Rad
+        float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
         float _speedY = 0;
@@ -30,6 +31,7 @@ namespace ReiseZumGrundDesSees
             Jump2 = false;
             Jumpcd = false;
             Blickrichtung = 0;
+            BlickrichtungAdd = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
@@ -59,24 +61,28 @@ namespace ReiseZumGrundDesSees
             if ((_inputArgs.Events & InputEventList.MoveForwards) != 0)
             {
                 if ((_inputArgs.Events & InputEventList.MoveLeft) != 0)
-                    Blickrichtung += MathHelper.PiOver4;
+                    BlickrichtungAdd = MathHelper.PiOver4;
                 else if ((_inputArgs.Events & InputEventList.MoveRight) != 0)
-                    Blickrichtung -= MathHelper.PiOver4;
+                    BlickrichtungAdd = -MathHelper.PiOver4;
+                else
+                    BlickrichtungAdd = 0;
             }
             else if ((_inputArgs.Events & InputEventList.MoveBackwards) != 0)
             {
                 if ((_inputArgs.Events & InputEventList.MoveLeft) != 0)
-                    Blickrichtung += MathHelper.PiOver4 * 3;
+                    BlickrichtungAdd = MathHelper.PiOver4 * 3;
                 else if ((_inputArgs.Events & InputEventList.MoveRight) != 0)
-                    Blickrichtung -= MathHelper.PiOver4 * 3;
+                    BlickrichtungAdd = -MathHelper.PiOver4 * 3;
                 else
-                    Blickrichtung += MathHelper.Pi;
+                    BlickrichtungAdd= MathHelper.Pi;
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
-                Blickrichtung += MathHelper.PiOver2;
+                BlickrichtungAdd = MathHelper.PiOver2;
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
-                Blickrichtung += MathHelper.PiOver2 * 3;
-          
+                BlickrichtungAdd = MathHelper.PiOver2 * 3;
+
+            Blickrichtung += BlickrichtungAdd;
+
             Vector3 _movement = new Vector3(0, 0, 0);
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
