@@ -85,6 +85,26 @@ namespace ReiseZumGrundDesSees
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                     _state.World.GenerateVertices(Device);
                 }
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceWater1) && _state.World.Blocks[x, y, z] != WorldBlock.Water1)
+                {
+                    _state.World.Blocks[x, y, z] = WorldBlock.Water1;
+                    _state.World.GenerateVertices(Device);
+                }
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceWater2) && _state.World.Blocks[x, y, z] != WorldBlock.Water2)
+                {
+                    _state.World.Blocks[x, y, z] = WorldBlock.Water2;
+                    _state.World.GenerateVertices(Device);
+                }
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceWater3) && _state.World.Blocks[x, y, z] != WorldBlock.Water3)
+                {
+                    _state.World.Blocks[x, y, z] = WorldBlock.Water3;
+                    _state.World.GenerateVertices(Device);
+                }
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceWater4) && _state.World.Blocks[x, y, z] != WorldBlock.Water4)
+                {
+                    _state.World.Blocks[x, y, z] = WorldBlock.Water4;
+                    _state.World.GenerateVertices(Device);
+                }
             };
         }
     }

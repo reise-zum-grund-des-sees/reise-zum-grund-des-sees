@@ -120,6 +120,7 @@ namespace ReiseZumGrundDesSees
             }
 
             InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
+            DebugHelper.Log(_args.Events.ToString());
 
             if (GameMode.HasFlag(GameFlags.GameLoaded) && GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
             {
@@ -194,6 +195,7 @@ namespace ReiseZumGrundDesSees
             DebugHelper.Information.TotalFrameCount++;
             DebugHelper.Information.FPS = DebugHelper.Information.FPS * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
             DebugHelper.Information.TotalGameTime = gameTime.TotalGameTime;
+            DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
@@ -201,7 +203,7 @@ namespace ReiseZumGrundDesSees
             if (GameMode.HasFlag(GameFlags.GameLoaded))
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
-                Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
+                Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
 
                 if (GameMode.HasFlag(GameFlags.EditorMode))
                     renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
@@ -232,7 +234,7 @@ namespace ReiseZumGrundDesSees
 
         private World CreateWorld()
         {
-            World w = new World(16, 64, 16, 3, 3, new Vector3(24, 32, 24), GraphicsDevice);
+            World w = new World(16, 64, 16, 16, 16, new Vector3(24, 32, 24), GraphicsDevice);
             w.GenerateTestWorld();
             return w;
         }

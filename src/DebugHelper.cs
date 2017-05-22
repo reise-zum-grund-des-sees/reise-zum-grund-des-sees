@@ -19,25 +19,28 @@ namespace ReiseZumGrundDesSees
             public static ulong TotalFrameCount;
             public static uint RenderedWorldVertices;
             public static uint RenderedWorldChunks;
+            public static Vector3 PlayerPosition;
             public static Queue<string> Logs = new Queue<string>();
 
             public static string ToString()
             {
                 StringBuilder logs = new StringBuilder();
+
+                if (Logs.Count > 10)
+                    for (int i = 0; i < Logs.Count - 10; i++)
+                        Logs.Dequeue();
+
                 foreach (string s in Logs)
                 {
                     logs.Append(s);
                     logs.Append("\n");
                 }
 
-                if (Logs.Count > 10)
-                    for (int i = 0; i < Logs.Count - 10; i++)
-                        Logs.Dequeue();
-
                 return
                     $"Total game time: { TotalGameTime.ToString() }\n" +
                     $"Total Frame Count: { TotalFrameCount }\n" +
                     $"FPS: { FPS }\n" +
+                    $"Player position: { PlayerPosition }\n" +
                     $"Rendered World Vertices: { RenderedWorldVertices }\n" +
                     $"Rendered World Chunks: { RenderedWorldChunks }\n" +
                     $"Logs:\n { logs.ToString() }";

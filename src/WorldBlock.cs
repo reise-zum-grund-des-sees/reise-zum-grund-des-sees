@@ -45,6 +45,31 @@ namespace ReiseZumGrundDesSees
             }
         }
 
+        public static Vector2[] GetTextureOffsets(this WorldBlock b)
+        {
+            switch (b)
+            {
+                case WorldBlock.Wall:
+                    return new Vector2[] {
+                            new Vector2(0.0f, 0 / 3f),
+                            new Vector2(0.5f, 0 / 3f),
+                            new Vector2(0.0f, 1 / 3f),
+                            new Vector2(0.5f, 1 / 3f),
+                            new Vector2(0.0f, 2 / 3f)
+                            //new Vector2(0.5f, 2 / 3f)
+                    };
+                case WorldBlock.Water4:
+                case WorldBlock.Water3:
+                case WorldBlock.Water2:
+                case WorldBlock.Water1:
+                    return new Vector2[] {
+                            new Vector2(0.5f, 2 / 3f)
+                    };
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         public static bool HasCollision(this WorldBlock b)
         {
             switch (b)

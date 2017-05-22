@@ -168,7 +168,7 @@ namespace ReiseZumGrundDesSees
         public readonly float X, Y, Z;
         public readonly float Width, Depth, Height;
 
-        public Hitbox(float x, float y, float z, float _width, float _depth, float _height)
+        public Hitbox(float x, float y, float z, float _width, float _height, float _depth)
         {
             Width = _width;
             Depth = _depth;
