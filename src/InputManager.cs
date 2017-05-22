@@ -31,9 +31,25 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
             if (_keyboardState.IsKeyDown(Keys.B)) _eventList |= InputEventList.Delete;
 
-            if (_keyboardState.IsKeyDown(Keys.D1)) _eventList |= InputEventList.LeichterBlock;
-            if (_keyboardState.IsKeyDown(Keys.D2)) _eventList |= InputEventList.MittelschwererBlock;
-            if (_keyboardState.IsKeyDown(Keys.D3)) _eventList |= InputEventList.SchwererBlock;
+            if (_keyboardState.IsKeyDown(Keys.D1))
+            {
+                _eventList |= InputEventList.LeichterBlock;
+                _eventList |= InputEventList.PlaceWater1;
+            }
+            if (_keyboardState.IsKeyDown(Keys.D2))
+            {
+                _eventList |= InputEventList.MittelschwererBlock;
+                _eventList |= InputEventList.PlaceWater2;
+            }
+            if (_keyboardState.IsKeyDown(Keys.D3))
+            {
+                _eventList |= InputEventList.SchwererBlock;
+                _eventList |= InputEventList.PlaceWater3;
+            }
+            if (_keyboardState.IsKeyDown(Keys.D4))
+            {
+                _eventList |= InputEventList.PlaceWater4;
+            }
 
             MouseState _mouseState = Mouse.GetState();
 
@@ -73,10 +89,12 @@ namespace ReiseZumGrundDesSees
                 new Point(_mouseState.X, _mouseState.Y),
                 _mouseMovement, _mouseMovementRelative);
 
-            if (_flags.HasFlag(GameFlags.GameRunning))
+            if (_flags.HasFlag(GameFlags.GameRunning) &&
+                Vector2.Distance(new Vector2(_mouseState.X, _mouseState.Y), _windowBounds.Size.ToVector2() * 0.5f) > 500)
             {
-                Mouse.SetPosition(_windowBounds.Center.X, _windowBounds.Center.Y); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
-                PreviousMousePosition = _windowBounds.Center;
+                //DebugHelper.Log("Current Mouse Pos: " + _mouseState.X + ", " + _mouseState.Y + "\nPrevious Mouse Pos: " + PreviousMousePosition.X + ", " + PreviousMousePosition.Y);
+                Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+                PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
             }
             else
             {
@@ -125,14 +143,18 @@ namespace ReiseZumGrundDesSees
 
         PlaceWall = 0x200,
         RemoveBlock = 0x400,
+        Delete = 0x400,
 
         MoveUp = 0x800,
         MoveDown = 0x1000,
 
         LeichterBlock = 0x2000,
-        MittelschwererBlock = 0x30000,
-        SchwererBlock = 0x4000,
+        MittelschwererBlock = 0x4000,
+        SchwererBlock = 0x8000,
 
-        Delete = 0x50000
+        PlaceWater1 = 0x10000,
+        PlaceWater2 = 0x20000,
+        PlaceWater3 = 0x40000,
+        PlaceWater4 = 0x80000
     }
 }

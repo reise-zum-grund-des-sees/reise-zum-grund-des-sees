@@ -249,3 +249,10 @@
 /processorParam:TextureFormat=Compressed
 /build:schalter_unten.blend
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+

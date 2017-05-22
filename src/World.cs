@@ -13,46 +13,41 @@ namespace ReiseZumGrundDesSees
     class World : IUpdateable, IWorld
     {
         public readonly BlockWrapper Blocks;
+
+        private readonly WorldRegion[,] Regions;
         public readonly VertexPositionColorTexture[,][] Vertices;
         public readonly VertexBuffer[,] VertexBuffers;
 
-        private readonly WorldRegion[,] Regions;
         public readonly int RegionSizeX, RegionSizeY, RegionSizeZ;
         private readonly int RegionsCountX, RegionsCountZ;
 
         public readonly float SpawnPosX, SpawnPosY, SpawnPosZ;
 
-        public World(string _basePath)
+        private readonly List<IWorldObject> objects = new List<IWorldObject>();
+
+        private readonly GraphicsDevice GraphicsDevice;
+
+        public World(string _basePath, GraphicsDevice _device)
         {
+            GraphicsDevice = _device;
             Blocks = new BlockWrapper(this);
             string _worldIndexFile = Path.Combine(_basePath, "index.world");
 
-            string[] _lines = File.ReadAllLines(_worldIndexFile);
-            foreach (string _line in _lines)
-            {
-                string[] _items = _line.Split('=', ',', ';');
-                for (int i = 0; i < _items.Length; i++) _items[i] = _items[i].Trim();
+            Dictionary<string, string[]> _worldFile = ConfigFile.Load(_worldIndexFile);
 
-                switch (_items[0])
-                {
-                    case "region_size":
-                        RegionSizeX = int.Parse(_items[1]);
-                        RegionSizeY = int.Parse(_items[2]);
-                        RegionSizeZ = int.Parse(_items[3]);
-                        break;
-                    case "regions_count":
-                        RegionsCountX = int.Parse(_items[1]);
-                        RegionsCountZ = int.Parse(_items[2]);
-                        break;
-                    case "spawn":
-                        SpawnPosX = int.Parse(_items[1]);
-                        SpawnPosY = int.Parse(_items[2]);
-                        SpawnPosZ = int.Parse(_items[3]);
-                        break;
-                    default: throw new FormatException("World file has an invalid format.");
+            string[] _region_size = _worldFile["region_size"];
+            RegionSizeX = int.Parse(_region_size[0]);
+            RegionSizeY = int.Parse(_region_size[1]);
+            RegionSizeZ = int.Parse(_region_size[2]);
 
-                }
-            }
+            string[] _regions_count = _worldFile["regions_count"];
+            RegionsCountX = int.Parse(_regions_count[0]);
+            RegionsCountZ = int.Parse(_regions_count[1]);
+
+            string[] _spawn_position = _worldFile["spawn"];
+            SpawnPosX = int.Parse(_spawn_position[0]);
+            SpawnPosY = int.Parse(_spawn_position[1]);
+            SpawnPosZ = int.Parse(_spawn_position[2]);
 
             Vertices = new VertexPositionColorTexture[RegionsCountX, RegionsCountZ][];
             VertexBuffers = new VertexBuffer[RegionsCountX, RegionsCountZ];
@@ -66,8 +61,9 @@ namespace ReiseZumGrundDesSees
                             RegionSizeX, RegionSizeY, RegionSizeZ);
         }
 
-        public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos)
+        public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos, GraphicsDevice _device)
         {
+            GraphicsDevice = _device;
             Blocks = new BlockWrapper(this);
             Vertices = new VertexPositionColorTexture[_regionsCountX, _regionsCountZ][];
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
@@ -83,15 +79,23 @@ namespace ReiseZumGrundDesSees
             SpawnPosZ = _spawnPos.Z;
 
             Regions = new WorldRegion[RegionsCountX, RegionsCountZ];
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int z = 0; z < RegionsCountZ; z++)
-                    Regions[x, z] = new WorldRegion(RegionSizeX, RegionSizeY, RegionSizeZ);
 
+            /*for (int x = 0; x < RegionsCountX; x++)
+                for (int z = 0; z < RegionsCountZ; z++)
+                    Regions[x, z] = new WorldRegion();*/
         }
 
         public void GenerateTestWorld()
         {
             Random rnd = new Random();
+
+            for (int x = 0; x < RegionsCountX; x++)
+                for (int z = 0; z < RegionsCountZ; z++)
+                {
+                    Regions[x, z] = new WorldRegion();
+                    Regions[x, z].Blocks = new WorldBlock[RegionSizeX, RegionSizeY, RegionSizeZ];
+                }
+
             for (int x = 0; x < RegionSizeX * RegionsCountX; x++)
                 for (int y = 0; y < RegionSizeY; y++)
                     for (int z = 0; z < RegionSizeZ * RegionsCountZ; z++)
@@ -117,22 +121,42 @@ namespace ReiseZumGrundDesSees
         {
             for (int x = 0; x < RegionsCountX; x++)
                 for (int y = 0; y < RegionsCountZ; y++)
-                    LoadVertices(x, y, _device);
+                    LoadVertices(x, y);
         }
 
-        private void LoadVertices(int _regionX, int _regionZ, GraphicsDevice _device)
+        private void LoadVertices(int _regionX, int _regionZ)
         {
             WorldRegion _region = Regions[_regionX, _regionZ];
             List<VertexPositionColorTexture> _vertices = new List<VertexPositionColorTexture>();
 
-            Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(ref _region);
+            Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(this, _regionX * RegionSizeX, 0, _regionZ * RegionSizeZ, RegionSizeX, RegionSizeY, RegionSizeZ);
             if (Vertices[_regionX, _regionZ].Length != 0)
             {
                 if (VertexBuffers[_regionX, _regionZ] != null)
                     VertexBuffers[_regionX, _regionZ].Dispose();
-                VertexBuffers[_regionX, _regionZ] = new VertexBuffer(_device, VertexPositionColorTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
+                VertexBuffers[_regionX, _regionZ] = new VertexBuffer(GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
                 VertexBuffers[_regionX, _regionZ].SetData(Vertices[_regionX, _regionZ]);
             }
+        }
+        private void UnloadVertices(int _regionX, int _regionZ)
+        {
+            Vertices[_regionX, _regionZ] = null;
+            VertexBuffers[_regionX, _regionZ]?.Dispose();
+            VertexBuffers[_regionX, _regionZ] = null;
+        }
+
+        public IWorldObject ObjectAt(int x, int y, int z)
+        {
+            foreach (IWorldObject _obj in objects)
+                if (_obj.Postion == new Vector3Int(x, y, z))
+                    return _obj;
+            throw new ArgumentException("Argument is not an Object.");
+        }
+
+        public void AddObject(IWorldObject _object)
+        {
+            objects.Add(_object);
+            Blocks[_object.Postion.X, _object.Postion.Y, _object.Postion.Z] = _object.Type;
         }
 
         public class BlockWrapper
@@ -178,7 +202,26 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {
-            throw new NotImplementedException();
+            Vector3 _playerPosition = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
+            for (int x = 0; x < RegionsCountX; x++)
+                for (int z = 0; z < RegionsCountZ; z++)
+                {
+                    float _distance = Vector2.Distance(new Vector2(_view.PlayerX, _view.PlayerZ), new Vector2((x + 0.5f) * RegionSizeX, (z + 0.5f) * RegionSizeZ));
+
+                    if (_distance < 20 && Vertices[x, z] == null)
+                    {
+                        LoadVertices(x, z);
+                    }
+                    else if (_distance > 20 && Vertices[x, z] != null)
+                    {
+                        UnloadVertices(x, z);
+                    }
+                }
+
+            return (ref GameState _gameState) =>
+            {
+
+            };
         }
     }
 }

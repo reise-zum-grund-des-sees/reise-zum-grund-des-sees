@@ -32,7 +32,7 @@ namespace ReiseZumGrundDesSees
             Blickrichtung = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
-            Model = contentManager.Load<Model>("spielfigur");
+            Model = contentManager.Load<Model>("Block");
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
@@ -83,30 +83,30 @@ namespace ReiseZumGrundDesSees
             {
                 //_movement.Z -= (float)(_passedTime * 0.005);
                 //_movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
-                _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
+                _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
             {
                 //_movement += Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
-                _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.001f);
+                _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
             }
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft)) {
-                _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
-                _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
+                _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
             {
-                _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
-                _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.001f);
+                _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
             }
                 
   
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1==false) {
                 Jump1 = true;
-                _speedY = 1;
+                _speedY = 1.1f;
                 Jumpcd = true;
             }
 
@@ -116,7 +116,7 @@ namespace ReiseZumGrundDesSees
             if (Jump1==true && Jump2==false && Jumpcd==false && _inputArgs.Events.HasFlag(InputEventList.Jump))//Doppelsprung
             {
                 Jump2 = true;                 
-                _speedY = 1;
+                _speedY = 1.1f;
             }
            
             _speedY -= 0.005f * (float)_passedTime;

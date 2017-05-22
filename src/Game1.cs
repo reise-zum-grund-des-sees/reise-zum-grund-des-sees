@@ -22,10 +22,24 @@ namespace ReiseZumGrundDesSees
 
         MainMenu MainMenu;
 
-        GameFlags GameMode;
+        GameFlags __GameMode;
+        GameFlags GameMode
+        {
+            get
+            {
+                return __GameMode;
+            }
+            set
+            {
+                __GameMode = value;
+                DebugHelper.Log("GameMode changed to " + value);
+            }
+        }
 
         BasicEffect effect;
         WorldEditor editor;
+
+        SpriteFont font;
 
         public Game1()
         {
@@ -42,12 +56,12 @@ namespace ReiseZumGrundDesSees
         /// </summary>
         protected override void Initialize()
         {
-            this.graphics.PreferredBackBufferHeight = 1080;
-            this.graphics.PreferredBackBufferWidth = 1920;
+            this.graphics.ToggleFullScreen();
+            this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             this.graphics.ApplyChanges();
-            //this.graphics.ToggleFullScreen();
 
-            GameMode = GameFlags.Menu;
+            GameMode = GameFlags.Menu | GameFlags.Debug;
 
             // TEMP: remove to show main menu
             //StartNewGame();
@@ -73,6 +87,7 @@ namespace ReiseZumGrundDesSees
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             blocktexture = Content.Load<Texture2D>("blocktexture");
+            font = Content.Load<SpriteFont>("font");
 
             // TODO: use this.Content to load your game content here
             MainMenu = new MainMenu(Content);
@@ -96,20 +111,29 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
-            InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
+            if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
+                graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
+            {
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                graphics.ApplyChanges();
+            }
 
-            if (GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
+            InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
+            DebugHelper.Log(_args.Events.ToString());
+
+            if (GameMode.HasFlag(GameFlags.GameLoaded) && GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
             {
                 GameState.View _gameStateView = new GameState.View(GameState);
 
                 UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
                 UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-                // UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
 
                 _playerUpdate(ref GameState);
                 _cameraUpdate(ref GameState);
+                _worldUpdate(ref GameState);
 
-                //_worldUpdate(ref GameState);
                 for (int i = 0; i < Player.Blöcke.Count; i++)
                 {
                     Player.Blöcke[i].Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
@@ -143,7 +167,7 @@ namespace ReiseZumGrundDesSees
                     _dialog.SelectedPath = Environment.CurrentDirectory;
                     _dialog.ShowDialog();
 
-                    GameState = new GameState(new World(_dialog.SelectedPath), GameState.Player, GameState.Camera);
+                    GameState = new GameState(new World(_dialog.SelectedPath, GraphicsDevice), GameState.Player, GameState.Camera);
                     GameState.World.GenerateVertices(GraphicsDevice);
                 }
                 else if (kb.IsKeyDown(Keys.E) && keyPressedPause)
@@ -153,8 +177,7 @@ namespace ReiseZumGrundDesSees
             }
             else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
             {
-                GameMode ^= GameFlags.Menu;
-                GameMode ^= GameFlags.GameRunning;
+                GameMode ^= (GameFlags.Menu | GameFlags.GameRunning);
             }
 
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
@@ -169,30 +192,33 @@ namespace ReiseZumGrundDesSees
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            DebugHelper.Information.TotalFrameCount++;
+            DebugHelper.Information.FPS = DebugHelper.Information.FPS * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
+            DebugHelper.Information.TotalGameTime = gameTime.TotalGameTime;
+            DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
+
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
-
-            // TODO: Add your drawing code here
-
 
             if (GameMode.HasFlag(GameFlags.GameLoaded))
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
-                Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 50f);
+                Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
 
                 if (GameMode.HasFlag(GameFlags.EditorMode))
                     renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
 
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix, out DebugHelper.Information.RenderedWorldVertices, out DebugHelper.Information.RenderedWorldChunks);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeverR(Lever.LeverList, ref _viewMatrix, ref _perspectiveMatrix);
             }
 
             if (GameMode.HasFlag(GameFlags.Menu))
-            {
                 MainMenu.Render(spriteBatch);
-            }
+
+            if (GameMode.HasFlag(GameFlags.Debug))
+                DebugHelper.RenderOverlay(spriteBatch, font);
 
             base.Draw(gameTime);
         }
@@ -201,25 +227,25 @@ namespace ReiseZumGrundDesSees
 
         public void StartNewGame()
         {
-            GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode &= ~GameFlags.Menu;
             World _world = CreateWorld();
             GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
         }
 
         private World CreateWorld()
         {
-            World w = new World(16, 64, 16, 3, 3, new Vector3(24, 32, 24));
+            World w = new World(16, 64, 16, 16, 16, new Vector3(24, 32, 24), GraphicsDevice);
             w.GenerateTestWorld();
-            w.GenerateVertices(GraphicsDevice);
             return w;
         }
 
         public void LoadGame(string _path)
         {
-            GameMode = GameFlags.GameRunning | GameFlags.GameLoaded;
-            World w = new World(_path);
+            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode &= ~GameFlags.Menu;
+            World w = new World(_path, GraphicsDevice);
             GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
-            GameState.World.GenerateVertices(GraphicsDevice);
         }
 
         public void SaveGame(string _path)

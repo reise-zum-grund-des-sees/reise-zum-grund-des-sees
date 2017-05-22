@@ -38,13 +38,10 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
 		{
-            //throw new NotImplementedException();
             return (ref GameState _state) =>
             {
-                Angle += _inputArgs.MouseMovementRelative.X;
+                Angle += _inputArgs.MouseMovementRelative.X * 10f;
                 LookAt = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
-
-
             };
         }
 	}
