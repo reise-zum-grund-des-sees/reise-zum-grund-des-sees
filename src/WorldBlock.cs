@@ -101,7 +101,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
                 case WorldBlock.Spikes:
-                case WorldBlock.Lever:
+           
                     return true;
                 default:
                     return false;

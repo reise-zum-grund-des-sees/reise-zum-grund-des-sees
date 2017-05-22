@@ -56,9 +56,9 @@ namespace ReiseZumGrundDesSees
         /// </summary>
         protected override void Initialize()
         {
-            this.graphics.ToggleFullScreen();
-            this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            //this.graphics.ToggleFullScreen();
+            this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             this.graphics.ApplyChanges();
 
             GameMode = GameFlags.Menu | GameFlags.Debug;

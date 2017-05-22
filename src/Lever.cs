@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Lever 
+    class Lever : IWorldObject
     {
         public static List<Lever> LeverList = new List<Lever>();
         public Model Model;
@@ -18,10 +18,29 @@ namespace ReiseZumGrundDesSees
         ContentManager ContentManager;
         public double Rotation;
         public bool alive;
+
+        public Hitbox Hitbox
+        {
+            get;        
+        }
+
+        public Vector3Int Postion
+        {
+            get;
+        }
+
+        public WorldBlock Type
+        {
+            get;
+        }
+
         public Lever(ContentManager _contentManager,Vector3 _position)
         {
             alive = true;
-            Position = _position + new Vector3(0.5f,0.5f,0.5f);
+            Position = _position;
+            Hitbox= new Hitbox(_position.X+0.5f, _position.Y, _position.Z + 0.5f, 1f, 1f, 1f);//richtig schieben, im render mus auch Y+0.5f gesetzt werden
+            Type = WorldBlock.Lever;
+            //Position = _position + new Vector3(0.5f,0.5f,0.5f);
             is_pressed = false;
             ContentManager = _contentManager;
             Rotation = 0;
@@ -51,6 +70,10 @@ namespace ReiseZumGrundDesSees
 
             return null;
         }
-     
+
+        public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

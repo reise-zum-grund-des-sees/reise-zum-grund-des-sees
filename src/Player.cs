@@ -32,7 +32,7 @@ namespace ReiseZumGrundDesSees
             Blickrichtung = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
-            Model = contentManager.Load<Model>("Block");
+            Model = contentManager.Load<Model>("spielfigur");
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
@@ -127,7 +127,7 @@ namespace ReiseZumGrundDesSees
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
                 if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
-                _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 0.8f, 0.8f, 1f)));
+                _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
             for (int i = 0; i < _info2.Count; i++)
             {
                 if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
@@ -151,7 +151,7 @@ namespace ReiseZumGrundDesSees
             
             List<Direction> _infoLever = new List<Direction>();
             for (int i = 0; i < Lever.LeverList.Count; i++) { 
-              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Lever.LeverList[i].Position.X, Lever.LeverList[i].Position.Y, Lever.LeverList[i].Position.Z, 1f, 1f, 1f)));
+              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f),Lever.LeverList[i].Hitbox));
             }
             
             for (int i = 0; i < _infoLever.Count; i++)
