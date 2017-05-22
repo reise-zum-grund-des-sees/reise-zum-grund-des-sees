@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -55,7 +55,7 @@ namespace ReiseZumGrundDesSees
             InputManager = new InputManager();
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
-            editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice);
+            editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice, Content);
 
             effect = new BasicEffect(GraphicsDevice);
             this.IsMouseVisible = true;
@@ -96,7 +96,7 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
-            InputEventArgs _args = InputManager.Update(Window.ClientBounds);
+            InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
 
             if (GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
             {
@@ -154,6 +154,7 @@ namespace ReiseZumGrundDesSees
             else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
             {
                 GameMode ^= GameFlags.Menu;
+                GameMode ^= GameFlags.GameRunning;
             }
 
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
@@ -185,6 +186,7 @@ namespace ReiseZumGrundDesSees
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.LeverR(Lever.LeverList, ref _viewMatrix, ref _perspectiveMatrix);
             }
 
             if (GameMode.HasFlag(GameFlags.Menu))

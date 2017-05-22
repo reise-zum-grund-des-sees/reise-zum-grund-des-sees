@@ -12,17 +12,15 @@ namespace ReiseZumGrundDesSees
 {
     class Player : IUpdateable
     {
-        public Vector3 Position;
+        public Vector3 Position; //Position des Spielers
         public Model Model;
-        bool Jump1;
-        bool Jump2;
-        bool Jumpcd;
-        double Blockcd;
-        public static float Blickrichtung; //in Grad
-        Vector3 NullGrad = new Vector3(0,5,5);
-        public static List<PlayerBlock> Blöcke;
+        bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
+        bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
+        bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
+        double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
+        public static float Blickrichtung; //in Rad
+        public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
-        public float FallOffset = 0.8f; //wann fällt der Spieler runter, soll zwischen 0.5f-1f liegen, je höher desto mehr Probleme treten bei Mapblöcken auf
         float _speedY = 0;
         public Player(ContentManager contentManager, Vector3 _position)
         {
@@ -31,7 +29,7 @@ namespace ReiseZumGrundDesSees
             Jump1 = false;
             Jump2 = false;
             Jumpcd = false;
-            Blickrichtung = 4;
+            Blickrichtung = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
@@ -125,6 +123,7 @@ namespace ReiseZumGrundDesSees
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 0.8f, 1.5f), _stateView);
+           
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
                 if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
@@ -148,12 +147,24 @@ namespace ReiseZumGrundDesSees
                 Jump2 = false;
                 Jumpcd = false;
             }
+            //Lever collisions
+            List<Direction> _infoLever = new List<Direction>();
+            for (int i = 0; i < Lever.LeverList.Count; i++) { 
+              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Lever.LeverList[i].Position.X, Lever.LeverList[i].Position.Y, Lever.LeverList[i].Position.Z, 0.8f, 1f, 0.8f)));
+            }
+            for (int i = 0; i < _infoLever.Count; i++)
+            {
+                if (_infoLever[i].HasFlag(Direction.Back) && Lever.LeverList[i].Rotation==0 ||
+                   _infoLever[i].HasFlag(Direction.Left) && Lever.LeverList[i].Rotation == Math.PI/2 ||
+                   _infoLever[i].HasFlag(Direction.Front) && Lever.LeverList[i].Rotation == Math.PI ||
+                   _infoLever[i].HasFlag(Direction.Right) && Lever.LeverList[i].Rotation == Math.PI*2/3)
+                    if(_inputArgs.Events.HasFlag(InputEventList.MoveDown))
+                        Lever.LeverList[i].press(); //Bottem ist Starposition vorne
+            }
 
-            Blockcd += _passedTime;
-            //Beim finden neuer Blöcke ins Array
-      
+                Blockcd += _passedTime;      //Zeit erhöhen      
             
-            
+            //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
             {
                            
@@ -189,14 +200,7 @@ namespace ReiseZumGrundDesSees
                     }
             }
 
-            /*
-            for (int i = 0; i < Blöcke.Count; i++)
-            {
-                if (Blöcke.ElementAt(i).AktuelleDauer > PlayerBlock.MaximialDauer)
-                    Blöcke.RemoveAt(i);
-            }
-            */
-
+       // Löschen mit Taste
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
                 for (int i = 0; i < Blöcke.Count; i++)

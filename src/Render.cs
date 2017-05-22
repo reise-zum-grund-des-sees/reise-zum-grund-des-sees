@@ -129,6 +129,30 @@ namespace ReiseZumGrundDesSees
             }
         }
     }
+        public void LeverR(List<Lever> _lever, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
+        {
+
+            for (int i = 0; i < _lever.Count; i++)
+            {
+
+                foreach (ModelMesh mesh in _lever[i].Model.Meshes)
+                {
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.EnableDefaultLighting();
+                        effect.World = Matrix.CreateRotationZ((float)_lever[i].Rotation) *Matrix.CreateRotationX((float)Math.PI*3/2)*Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(_lever[i].Position);
+
+                        effect.View = _viewMatrix;
+
+                        effect.Projection = _perspectiveMatrix;
+
+                    }
+
+                    mesh.Draw();
+                }
+
+            }
+        }
         // ...
     }
 }
