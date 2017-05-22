@@ -18,11 +18,12 @@ namespace ReiseZumGrundDesSees
         private readonly RasterizerState CounterClockwiseCull, NoCullMode;
 
         private readonly Model worldEditorCursor;
+        private readonly Texture2D blockTexture;
 
         public Render(GraphicsDevice _graphicsDevice, ContentManager _content)
         {
             graphicsDevice = _graphicsDevice;
-            Texture2D blocktexture = _content.Load<Texture2D>("blocktexture");
+            blockTexture = _content.Load<Texture2D>("blocktexture");
             worldEditorCursor = _content.Load<Model>("cursor");
 
             CounterClockwiseCull = new RasterizerState();
@@ -34,7 +35,7 @@ namespace ReiseZumGrundDesSees
             worldEffect = new BasicEffect(graphicsDevice);
             worldEffect.VertexColorEnabled = true;
             worldEffect.TextureEnabled = true;
-            worldEffect.Texture = blocktexture;
+            worldEffect.Texture = blockTexture;
         }
 
         public void WorldEditor(WorldEditor _editor, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)

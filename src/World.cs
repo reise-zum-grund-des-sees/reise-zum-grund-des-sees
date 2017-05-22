@@ -23,6 +23,8 @@ namespace ReiseZumGrundDesSees
 
         public readonly float SpawnPosX, SpawnPosY, SpawnPosZ;
 
+        private readonly List<IWorldObject> objects = new List<IWorldObject>();
+
         private readonly GraphicsDevice GraphicsDevice;
 
         public World(string _basePath, GraphicsDevice _device)
@@ -141,6 +143,20 @@ namespace ReiseZumGrundDesSees
             Vertices[_regionX, _regionZ] = null;
             VertexBuffers[_regionX, _regionZ]?.Dispose();
             VertexBuffers[_regionX, _regionZ] = null;
+        }
+
+        public IWorldObject ObjectAt(int x, int y, int z)
+        {
+            foreach (IWorldObject _obj in objects)
+                if (_obj.Postion == new Vector3Int(x, y, z))
+                    return _obj;
+            throw new ArgumentException("Argument is not an Object.");
+        }
+
+        public void AddObject(IWorldObject _object)
+        {
+            objects.Add(_object);
+            Blocks[_object.Postion.X, _object.Postion.Y, _object.Postion.Z] = _object.Type;
         }
 
         public class BlockWrapper

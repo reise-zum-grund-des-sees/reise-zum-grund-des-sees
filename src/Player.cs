@@ -32,7 +32,7 @@ namespace ReiseZumGrundDesSees
             Blickrichtung = 0;
             Blockcd = 0;
             Blöcke = new List<PlayerBlock>();
-            Model = contentManager.Load<Model>("spielfigur");
+            Model = contentManager.Load<Model>("Block");
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
