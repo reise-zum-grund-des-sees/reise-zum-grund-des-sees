@@ -183,7 +183,7 @@ namespace ReiseZumGrundDesSees
         { }
 
         public Hitbox(float x, float y, float z, Vector3 _size)
-            : this(x, y, z, _size.X, _size.Y, _size.Z) { }
+            : this(x, y, z, _size.X, _size.Z, _size.Y) { }
     }
 
     [Flags]

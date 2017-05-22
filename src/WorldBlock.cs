@@ -39,7 +39,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Spikes:
                     return new Vector3(1.00f, 0.25f, 1.00f);
                 case WorldBlock.Lever:
-                    return new Vector3(0.80f, 1.00f, 0.80f);
+                    return new Vector3(1f, 1.00f, 1f);
                 default:
                     throw new ArgumentException($"{b} has no Bounds");
             }

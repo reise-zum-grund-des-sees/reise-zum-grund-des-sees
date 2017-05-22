@@ -21,7 +21,7 @@ namespace ReiseZumGrundDesSees
         public Lever(ContentManager _contentManager,Vector3 _position)
         {
             alive = true;
-            Position = _position;
+            Position = _position + new Vector3(0.5f,0.5f,0.5f);
             is_pressed = false;
             ContentManager = _contentManager;
             Rotation = 0;
@@ -43,6 +43,7 @@ namespace ReiseZumGrundDesSees
             }
             }
         }
+        
      public static Lever AtPosition(Vector3 _position)
         {
             for (int i = 0; i < LeverList.Count; i++)

@@ -78,18 +78,14 @@ namespace ReiseZumGrundDesSees
                 _state.Camera.LookAt = blockPosition;
                 _state.Camera.Position = blockPosition + new Vector3(0, 10, -7);
 
-                if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] != WorldBlock.Wall && !_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)) 
+                if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] == WorldBlock.None && !_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)) 
                 {
                     _state.World.Blocks[x, y, z] = WorldBlock.Wall;
                     _state.World.GenerateVertices(Device);
                 }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] != WorldBlock.None)
                 {
-                    if (_state.World.Blocks[x, y, z] == WorldBlock.Lever)
-                    { 
-                        Lever.AtPosition(Position).alive = false;
-                        Lever.LeverList.Remove(Lever.AtPosition(Position));
-                    }
+  
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                     _state.World.GenerateVertices(Device);
                   
