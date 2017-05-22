@@ -123,6 +123,7 @@ namespace ReiseZumGrundDesSees
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 0.8f, 1.5f), _stateView);
+           
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
                 if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
@@ -146,8 +147,22 @@ namespace ReiseZumGrundDesSees
                 Jump2 = false;
                 Jumpcd = false;
             }
+            //Lever collisions
+            List<Direction> _infoLever = new List<Direction>();
+            for (int i = 0; i < Lever.LeverList.Count; i++) { 
+              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Lever.LeverList[i].Position.X, Lever.LeverList[i].Position.Y, Lever.LeverList[i].Position.Z, 0.8f, 1f, 0.8f)));
+            }
+            for (int i = 0; i < _infoLever.Count; i++)
+            {
+                if (_infoLever[i].HasFlag(Direction.Back) && Lever.LeverList[i].Rotation==0 ||
+                   _infoLever[i].HasFlag(Direction.Left) && Lever.LeverList[i].Rotation == Math.PI/2 ||
+                   _infoLever[i].HasFlag(Direction.Front) && Lever.LeverList[i].Rotation == Math.PI ||
+                   _infoLever[i].HasFlag(Direction.Right) && Lever.LeverList[i].Rotation == Math.PI*2/3)
+                    if(_inputArgs.Events.HasFlag(InputEventList.MoveDown))
+                        Lever.LeverList[i].press(); //Bottem ist Starposition vorne
+            }
 
-            Blockcd += _passedTime;      //Zeit erhöhen      
+                Blockcd += _passedTime;      //Zeit erhöhen      
             
             //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)

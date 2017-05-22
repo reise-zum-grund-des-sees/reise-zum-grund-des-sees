@@ -55,7 +55,7 @@ namespace ReiseZumGrundDesSees
             InputManager = new InputManager();
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
-            editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice);
+            editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice, Content);
 
             effect = new BasicEffect(GraphicsDevice);
             this.IsMouseVisible = true;
@@ -186,6 +186,7 @@ namespace ReiseZumGrundDesSees
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.LeverR(Lever.LeverList, ref _viewMatrix, ref _perspectiveMatrix);
             }
 
             if (GameMode.HasFlag(GameFlags.Menu))

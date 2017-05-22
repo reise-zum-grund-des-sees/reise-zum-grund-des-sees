@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
@@ -13,11 +14,13 @@ namespace ReiseZumGrundDesSees
     {
         public Vector3 Position;
         public GraphicsDevice Device;
+        public ContentManager ContentManager;
 
-        public WorldEditor(Vector3 _position, GraphicsDevice _device)
+        public WorldEditor(Vector3 _position, GraphicsDevice _device, ContentManager _content)
         {
             Position = _position;
             Device = _device;
+            ContentManager = _content;
         }
 
         double f, b, l, r, u, d;
@@ -33,25 +36,25 @@ namespace ReiseZumGrundDesSees
             u += _passedTime;
             d += _passedTime;
 
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) & f > movementSpeed)
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards) & b > movementSpeed)
+            {        
+                _difference.Z -= 1;
+                b = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) & f > movementSpeed)
             {
                 _difference.Z += 1;
                 f = 0;
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards) & b > movementSpeed)
-            {
-                _difference.Z -= 1;
-                b = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) & l > movementSpeed)
-            {
-                _difference.X += 1;
-                l = 0;
-            }
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) & r > movementSpeed)
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft) & r > movementSpeed)
             {
                 _difference.X -= 1;
                 r = 0;
+            }
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight) & l > movementSpeed)
+            {    
+                _difference.X += 1;
+                l = 0;
             }
             if (_inputArgs.Events.HasFlag(InputEventList.MoveUp) & u > movementSpeed)
             {
@@ -75,15 +78,34 @@ namespace ReiseZumGrundDesSees
                 _state.Camera.LookAt = blockPosition;
                 _state.Camera.Position = blockPosition + new Vector3(0, 10, -7);
 
-                if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] != WorldBlock.Wall)
+                if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] != WorldBlock.Wall && !_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)) 
                 {
                     _state.World.Blocks[x, y, z] = WorldBlock.Wall;
                     _state.World.GenerateVertices(Device);
                 }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] != WorldBlock.None)
                 {
+                    if (_state.World.Blocks[x, y, z] == WorldBlock.Lever)
+                    { 
+                        Lever.AtPosition(Position).alive = false;
+                        Lever.LeverList.Remove(Lever.AtPosition(Position));
+                    }
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                     _state.World.GenerateVertices(Device);
+                  
+                }
+                else if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) &&_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && _state.World.Blocks[x, y, z]==WorldBlock.None)//Schalter ertmal auf Taste 1 und Linksklick belegen
+                {
+                             
+                    if (_state.World.Blocks[x, y, z] == WorldBlock.Lever)
+                        Lever.AtPosition(Position).Rotation +=Math.PI/2;
+                    
+                    else
+                    {
+                        _state.World.Blocks[x, y, z] = WorldBlock.Lever;
+                        Lever lever = new Lever(ContentManager, Position);
+                    }
+                
                 }
             };
         }

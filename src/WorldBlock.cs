@@ -38,6 +38,8 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water1:
                 case WorldBlock.Spikes:
                     return new Vector3(1.00f, 0.25f, 1.00f);
+                case WorldBlock.Lever:
+                    return new Vector3(0.80f, 1.00f, 0.80f);
                 default:
                     throw new ArgumentException($"{b} has no Bounds");
             }
@@ -50,6 +52,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Wall:
                 case WorldBlock.InvisibleWall:
                 case WorldBlock.Spikes:
+                case WorldBlock.Lever:
                 case WorldBlock.Water1:
                 case WorldBlock.Water2:
                 case WorldBlock.Water3:
@@ -70,6 +73,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
                 case WorldBlock.Spikes:
+                case WorldBlock.Lever:
                     return true;
                 default:
                     return false;
