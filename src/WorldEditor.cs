@@ -90,7 +90,7 @@ namespace ReiseZumGrundDesSees
                     _state.World.GenerateVertices(Device);
                   
                 }
-                else if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) &&_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && _state.World.Blocks[x, y, z]==WorldBlock.None)//Schalter ertmal auf Taste 1 und Linksklick belegen
+                else if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) &&_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && ( _state.World.Blocks[x, y, z]==WorldBlock.None || _state.World.Blocks[x, y, z] == WorldBlock.Lever ))//Schalter ertmal auf Taste 1 und Linksklick belegen
                 {
                              
                     if (_state.World.Blocks[x, y, z] == WorldBlock.Lever)

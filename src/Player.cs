@@ -18,6 +18,7 @@ namespace ReiseZumGrundDesSees
         bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
+        double Levercd;
         public static float Blickrichtung; //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
@@ -33,6 +34,7 @@ namespace ReiseZumGrundDesSees
             Blickrichtung = 0;
             BlickrichtungAdd = 0;
             Blockcd = 0;
+            Levercd = 0;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
@@ -167,10 +169,13 @@ namespace ReiseZumGrundDesSees
                    _infoLever[i].HasFlag(Direction.Front) && Lever.LeverList[i].Rotation == Math.PI ||
                    _infoLever[i].HasFlag(Direction.Right) && Lever.LeverList[i].Rotation == Math.PI*2/3)
                     if(_inputArgs.Events.HasFlag(InputEventList.MoveDown))
+                        if (Levercd >= 5000) {
+                            Levercd = 0;
                         Lever.LeverList[i].press(); //Bottem ist Starposition vorne
+                        }
             }
-           
-                Blockcd += _passedTime;      //Zeit erhöhen      
+            Levercd += _passedTime;
+            Blockcd += _passedTime;      //Zeit erhöhen      
             
             //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
