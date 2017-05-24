@@ -51,6 +51,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="IWorldObject.cs" />
+    <Compile Include="Lever.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerBlock.cs" />
