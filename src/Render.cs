@@ -14,16 +14,13 @@ namespace ReiseZumGrundDesSees
     {
         private readonly GraphicsDevice graphicsDevice;
 
-        private readonly BasicEffect worldEffect;
         private readonly RasterizerState CounterClockwiseCull, NoCullMode;
 
         private readonly Model worldEditorCursor;
-        private readonly Texture2D blockTexture;
 
         public Render(GraphicsDevice _graphicsDevice, ContentManager _content)
         {
             graphicsDevice = _graphicsDevice;
-            blockTexture = _content.Load<Texture2D>("blocktexture");
             worldEditorCursor = _content.Load<Model>("cursor");
 
             CounterClockwiseCull = new RasterizerState();
@@ -31,11 +28,6 @@ namespace ReiseZumGrundDesSees
 
             NoCullMode = new RasterizerState();
             NoCullMode.CullMode = CullMode.None;
-
-            worldEffect = new BasicEffect(graphicsDevice);
-            worldEffect.VertexColorEnabled = true;
-            worldEffect.TextureEnabled = true;
-            worldEffect.Texture = blockTexture;
         }
 
         public void WorldEditor(WorldEditor _editor, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
@@ -62,29 +54,6 @@ namespace ReiseZumGrundDesSees
         {
             _renderedVertices = 0;
             _renderedChunks = 0;
-            int maxX = _world.Vertices.GetLength(0);
-            int maxZ = _world.Vertices.GetLength(1);
-
-            for (int x = 0; x < maxX; x++)
-                for (int z = 0; z < maxZ; z++)
-                {
-                    if (_world.Vertices[x, z]?.Length > 0)
-                    {
-                        _renderedVertices += (uint)_world.Vertices[x, z].Length;
-                        _renderedChunks++;
-                        worldEffect.View = _viewMatrix;
-                        worldEffect.World = Matrix.CreateTranslation(x * _world.RegionSizeX, 0, z * _world.RegionSizeZ);
-                        worldEffect.Projection = _perspectiveMatrix;
-
-                        graphicsDevice.RasterizerState = CounterClockwiseCull;
-
-                        foreach (EffectPass pass in worldEffect.CurrentTechnique.Passes)
-                            pass.Apply();
-
-                        graphicsDevice.SetVertexBuffer(_world.VertexBuffers[x, z]);
-                        graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, _world.Vertices[x, z].Length / 3);
-                    }
-                }
         }
 
         public void PlayerR(Player _player, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)

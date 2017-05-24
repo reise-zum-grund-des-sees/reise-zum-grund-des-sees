@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-	struct GameState : IWorld
+	struct GameState
 	{
 		public readonly Camera Camera;
 		public readonly Player Player;
@@ -21,9 +21,7 @@ namespace ReiseZumGrundDesSees
 			Camera = _camera;
 		}
 
-        public WorldBlock GetBlock(int x, int y, int z) => World.Blocks[x, y, z];
-
-		public struct View : IWorld
+		public struct View
 		{
 			private GameState baseState;
 			public View(GameState s)
@@ -40,7 +38,7 @@ namespace ReiseZumGrundDesSees
 			public float PlayerY => baseState.Player.Position.Y;
 			public float PlayerZ => baseState.Player.Position.Z;
 
-			public WorldBlock GetBlock(int x, int y, int z) => baseState.World.Blocks[x, y, z];
+            public IReadonlyBlockWorld BlockWorld => baseState.World.Blocks;
 		}
 	}
 
@@ -57,8 +55,4 @@ namespace ReiseZumGrundDesSees
 		UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime);
 	}
 
-    interface IWorld
-    {
-        WorldBlock GetBlock(int x, int y, int z);
-    }
 }

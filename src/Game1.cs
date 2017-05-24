@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -19,6 +21,8 @@ namespace ReiseZumGrundDesSees
         Texture2D blocktexture;
 
         private Render renderer;
+        private List<IRenderable> worldRenderables = new List<IRenderable>();
+        private List<IRenderable> otherRenderables = new List<IRenderable>();
 
         MainMenu MainMenu;
 
@@ -36,9 +40,7 @@ namespace ReiseZumGrundDesSees
             }
         }
 
-        BasicEffect effect;
         WorldEditor editor;
-
         SpriteFont font;
 
         public Game1()
@@ -71,7 +73,6 @@ namespace ReiseZumGrundDesSees
 
             editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice, Content);
 
-            effect = new BasicEffect(GraphicsDevice);
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
             base.Initialize();
@@ -153,28 +154,13 @@ namespace ReiseZumGrundDesSees
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
             {
-                if (kb.IsKeyDown(Keys.S))
-                {
-                    System.Windows.Forms.FolderBrowserDialog _dialog = new System.Windows.Forms.FolderBrowserDialog();
-                    _dialog.SelectedPath = Environment.CurrentDirectory;
-                    _dialog.ShowDialog();
-
-                    GameState.World.Save(_dialog.SelectedPath);
-                }
-                else if (kb.IsKeyDown(Keys.L))
-                {
-                    System.Windows.Forms.FolderBrowserDialog _dialog = new System.Windows.Forms.FolderBrowserDialog();
-                    _dialog.SelectedPath = Environment.CurrentDirectory;
-                    _dialog.ShowDialog();
-
-                    GameState = new GameState(new World(_dialog.SelectedPath, GraphicsDevice), GameState.Player, GameState.Camera);
-                    GameState.World.GenerateVertices(GraphicsDevice);
-                }
-                else if (kb.IsKeyDown(Keys.E) && keyPressedPause)
+                if (kb.IsKeyDown(Keys.E) && keyPressedPause)
                 {
                     GameMode ^= GameFlags.EditorMode;
                 }
             }
+            else if (kb.IsKeyDown(Keys.F1) && keyPressedPause)
+                GameMode ^= GameFlags.Debug;
             else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
             {
                 GameMode ^= (GameFlags.Menu | GameFlags.GameRunning);
@@ -209,9 +195,11 @@ namespace ReiseZumGrundDesSees
                     renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
 
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.World(GameState.World, ref _viewMatrix, ref _perspectiveMatrix, out DebugHelper.Information.RenderedWorldVertices, out DebugHelper.Information.RenderedWorldChunks);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeverR(Lever.LeverList, ref _viewMatrix, ref _perspectiveMatrix);
+
+                foreach (var _renderable in worldRenderables)
+                    _renderable.Render(_viewMatrix, _perspectiveMatrix);
             }
 
             if (GameMode.HasFlag(GameFlags.Menu))
@@ -229,13 +217,19 @@ namespace ReiseZumGrundDesSees
         {
             GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameMode &= ~GameFlags.Menu;
-            World _world = CreateWorld();
+            RenderableWorld _world = CreateWorld();
+
+            worldRenderables.Clear();
+            worldRenderables.Add(_world);
+            foreach (var _renderable in worldRenderables)
+                _renderable.Initialize(GraphicsDevice);
+
             GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
         }
 
-        private World CreateWorld()
+        private RenderableWorld CreateWorld()
         {
-            World w = new World(16, 64, 16, 16, 16, new Vector3(24, 32, 24), GraphicsDevice);
+            RenderableWorld w = new RenderableWorld(16, 64, 16, 16, 16, new Vector3(24, 32, 24), Content);
             w.GenerateTestWorld();
             return w;
         }
@@ -244,7 +238,13 @@ namespace ReiseZumGrundDesSees
         {
             GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameMode &= ~GameFlags.Menu;
-            World w = new World(_path, GraphicsDevice);
+            RenderableWorld w = new RenderableWorld(_path, Content);
+
+            worldRenderables.Clear();
+            worldRenderables.Add(w);
+            foreach (var _renderable in worldRenderables)
+                _renderable.Initialize(GraphicsDevice);
+
             GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
         }
 

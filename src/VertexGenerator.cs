@@ -11,7 +11,7 @@ namespace ReiseZumGrundDesSees
 {
     class VertexGenerator
     {
-        public static VertexPositionColorTexture[] GenerateVertices(IWorld _world, int _startX, int _startY, int _startZ, int _sizeX, int _sizeY, int _sizeZ, bool _bottomOptimizations = true)
+        public static VertexPositionColorTexture[] GenerateVertices(IReadonlyBlockWorld _world, int _startX, int _startY, int _startZ, int _sizeX, int _sizeY, int _sizeZ, bool _bottomOptimizations = true)
         {
             /*int _sizeX = _region.Blocks.GetLength(0);
             int _sizeY = _region.Blocks.GetLength(1);
@@ -25,7 +25,7 @@ namespace ReiseZumGrundDesSees
                     for (int y = _startY; y < _startY + _sizeY; y++)
                     {
                         bool _optimizationFlag = _bottomOptimizations;
-                        WorldBlock b = _world.GetBlock(x, y, z);
+                        WorldBlock b = _world[x, y, z];
                         if (b.IsVisible())
                         {
                             Vector3 _bounds = b.GetBounds();
@@ -47,7 +47,7 @@ namespace ReiseZumGrundDesSees
                             Random rnd = new Random(x * 16 * 16 + y * 16 + z);
 
                             // FRONT
-                            if (_world.GetBlock(x, y, z + 1) != WorldBlock.Wall)
+                            if (_world[x, y, z + 1] != WorldBlock.Wall)
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
@@ -61,7 +61,7 @@ namespace ReiseZumGrundDesSees
                             }
 
                             // BACK
-                            if (_world.GetBlock(x, y, z - 1) != WorldBlock.Wall)
+                            if (_world[x, y, z - 1] != WorldBlock.Wall)
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
@@ -75,7 +75,7 @@ namespace ReiseZumGrundDesSees
                             }
 
                             // LEFT
-                            if (_world.GetBlock(x - 1, y, z) != WorldBlock.Wall)
+                            if (_world[x - 1, y, z] != WorldBlock.Wall)
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
@@ -89,7 +89,7 @@ namespace ReiseZumGrundDesSees
                             }
 
                             // RIGHT
-                            if (_world.GetBlock(x + 1, y, z) != WorldBlock.Wall)
+                            if (_world[x + 1, y, z] != WorldBlock.Wall)
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
@@ -103,7 +103,7 @@ namespace ReiseZumGrundDesSees
                             }
 
                             // TOP
-                            if (_world.GetBlock(x, y + 1, z) != WorldBlock.Wall)
+                            if (_world[x, y + 1, z] != WorldBlock.Wall)
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
@@ -117,7 +117,7 @@ namespace ReiseZumGrundDesSees
                             }
 
                             // BOTTOM
-                            if (!_optimizationFlag && _world.GetBlock(x, y - 1, z) != WorldBlock.Wall)
+                            if (!_optimizationFlag && _world[x, y - 1, z] != WorldBlock.Wall)
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));

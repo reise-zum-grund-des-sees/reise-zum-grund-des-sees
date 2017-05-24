@@ -117,7 +117,7 @@ namespace ReiseZumGrundDesSees
         /// <param name="_hitbox">Die Hitbox des bewegten Objektes</param>
         /// <param name="_world">Die Welt, auf der sich das Objekt befindet</param>
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der Welt kollidieren</returns>
-        public static Direction CollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IWorld _world)
+        public static Direction CollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
         {
             int _hitX = (int)_hitbox.X;
             int _hitY = (int)_hitbox.Y;
@@ -133,7 +133,7 @@ namespace ReiseZumGrundDesSees
                 for (int y = _hitY - 1; y <= _hitY + 1; y++)
                     for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
                     {
-                        WorldBlock b = _world.GetBlock(x, y, z);
+                        WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
                             _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
                     }
@@ -146,7 +146,7 @@ namespace ReiseZumGrundDesSees
                 for (int y = _hitY - 1; y <= _hitY + 1; y++)
                     for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
                     {
-                        WorldBlock b = _world.GetBlock(x, y, z);
+                        WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
                             _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y, z, b.GetBounds()));
                     }
@@ -158,7 +158,7 @@ namespace ReiseZumGrundDesSees
                 for (int y = _hitY - 1; y <= _hitY + 1; y++)
                     for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
                     {
-                        WorldBlock b = _world.GetBlock(x, y, z);
+                        WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
                             _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y + _tmpMovement.Y, z, b.GetBounds()));
                     }

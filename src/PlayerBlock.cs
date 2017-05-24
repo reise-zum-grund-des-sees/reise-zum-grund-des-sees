@@ -115,7 +115,7 @@ namespace ReiseZumGrundDesSees
                     if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
                     _speedY = 0;
 
-                Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z , 0.5f, 0.5f, 1f), _view);
+                Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z , 0.5f, 0.5f, 1f), _view.BlockWorld);
                     if (_info3.HasFlag(Direction.Bottom) && _speedY < 0)
                         _speedY = 0;
 
