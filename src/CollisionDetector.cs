@@ -23,17 +23,21 @@ namespace ReiseZumGrundDesSees
         public static Direction CollisionWithObject(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
         {
             Direction _collInfo = Direction.None;
-            float xDiff = 0, yDiff = 0, zDiff = 0;
+
+            float xDiff = float.PositiveInfinity, yDiff = float.PositiveInfinity, zDiff = float.PositiveInfinity;
+            bool xCollFlag = false, yCollFlag = false, zCollFlag = false;
+
             // collision left
             if (_hitA.X + _movA.X < _hitB.X + _hitB.Width - FLOATING_POINT_INCORRECTION &
                 _hitA.X + _hitA.Width + _movA.X > _hitB.X + FLOATING_POINT_INCORRECTION)
             {
-                if (_movA.X >= 0)
+                xCollFlag = true;
+                if (_movA.X > 0)     
                 {
                     xDiff = (_hitB.X - (_hitA.X + _hitA.Width)) - _movA.X;
                     _collInfo |= Direction.Right;
                 }
-                else
+                else if (_movA.X < 0)
                 {
                     xDiff = (_hitB.X + _hitB.Width - _hitA.X) - _movA.X;
                     _collInfo |= Direction.Left;
@@ -44,12 +48,13 @@ namespace ReiseZumGrundDesSees
             if (_hitA.Y + _movA.Y < _hitB.Y + _hitB.Height - FLOATING_POINT_INCORRECTION &
                 _hitA.Y + _hitA.Height + _movA.Y > _hitB.Y + FLOATING_POINT_INCORRECTION)
             {
-                if (_movA.Y >= 0)
+                yCollFlag = true;
+                if (_movA.Y > 0)
                 {
                     yDiff = (_hitB.Y - (_hitA.Y + _hitA.Height)) - _movA.Y;
                     _collInfo |= Direction.Top;
                 }
-                else
+                else if (_movA.Y < 0)
                 {
                     yDiff = (_hitB.Y + _hitB.Height - _hitA.Y) - _movA.Y;
                     _collInfo |= Direction.Bottom;
@@ -60,47 +65,47 @@ namespace ReiseZumGrundDesSees
             if (_hitA.Z + _movA.Z < _hitB.Z + _hitB.Depth - FLOATING_POINT_INCORRECTION &
                 _hitA.Z + _hitA.Depth + _movA.Z > _hitB.Z + FLOATING_POINT_INCORRECTION)
             {
-                if (_movA.Z >= 0)
+                zCollFlag = true;
+                if (_movA.Z > 0)
                 {
                     zDiff = (_hitB.Z - (_hitA.Z + _hitA.Depth)) - _movA.Z;
                     _collInfo |= Direction.Front;
                 }
-                else
+                else if (_movA.Z < 0)
                 {
                     zDiff = (_hitB.Z + _hitB.Depth - _hitA.Z) - _movA.Z;
                     _collInfo |= Direction.Back;
                 }
             }
 
-            if (((_collInfo & (Direction.Left | Direction.Right)) != Direction.None) &
-                ((_collInfo & (Direction.Top | Direction.Bottom)) != Direction.None) &
-                ((_collInfo & (Direction.Back | Direction.Front)) != Direction.None))
+            if (xCollFlag & yCollFlag & zCollFlag)
             {
                 float xDiffNormalized = Math.Abs(xDiff / _movA.X);
                 float yDiffNormalized = Math.Abs(yDiff / _movA.Y);
                 float zDiffNormalized = Math.Abs(zDiff / _movA.Z);
-                if (_movA.Length() < FLOATING_POINT_INCORRECTION)
+                /*if (_movA.Length() < FLOATING_POINT_INCORRECTION)
                 {
                     xDiffNormalized = Math.Abs(xDiff);
                     yDiffNormalized = Math.Abs(yDiff);
                     zDiffNormalized = Math.Abs(zDiff);
-                }
+                }*/
 
-                if (yDiffNormalized <= xDiffNormalized && yDiffNormalized <= zDiffNormalized)
+                if (_collInfo.HasFlag(Direction.Top) | _collInfo.HasFlag(Direction.Bottom) & yDiffNormalized <= xDiffNormalized & yDiffNormalized <= zDiffNormalized)
                 {
                     _movA.Y += yDiff;
                     return _collInfo & (Direction.Top | Direction.Bottom);
                 }
-                else if (xDiffNormalized <= zDiffNormalized)
+                else if (_collInfo.HasFlag(Direction.Left) | _collInfo.HasFlag(Direction.Right) & xDiffNormalized <= zDiffNormalized)
                 {
                     _movA.X += xDiff;
                     return _collInfo & (Direction.Left | Direction.Right);
                 }
-                else
+                else if (_collInfo.HasFlag(Direction.Front) | _collInfo.HasFlag(Direction.Back))
                 {
                     _movA.Z += zDiff;
                     return _collInfo & (Direction.Front | Direction.Back);
                 }
+                else return Direction.None;
             }
             else return Direction.None;
         }
@@ -183,7 +188,7 @@ namespace ReiseZumGrundDesSees
         { }
 
         public Hitbox(float x, float y, float z, Vector3 _size)
-            : this(x, y, z, _size.X, _size.Z, _size.Y) { }
+            : this(x, y, z, _size.X, _size.Y, _size.Z) { }
     }
 
     [Flags]

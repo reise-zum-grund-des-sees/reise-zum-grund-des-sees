@@ -130,36 +130,46 @@ namespace ReiseZumGrundDesSees
             _speedY -= 0.005f * (float)_passedTime;
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
-            Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 0.8f, 1.5f), _stateView);
+            Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView);
           
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
                 if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
-                _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
+                _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
             for (int i = 0; i < _info2.Count; i++)
             {
                 if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
+                {
                     _speedY = 0;
+                    Jump1 = false;
+                    Jump2 = false;
+                    Jumpcd = false;
+                }
                 else if (_info2[i].HasFlag(Direction.Top) && _speedY > 0)
                     _speedY = 0;
             }
 
             if (_info.HasFlag(Direction.Bottom) && _speedY < 0)
-                _speedY = 0;
-            else if (_info.HasFlag(Direction.Top) && _speedY > 0)
-                _speedY = 0;
-
-            if (_speedY == 0)
             {
+                _speedY = 0;
                 Jump1 = false;
                 Jump2 = false;
                 Jumpcd = false;
             }
+            else if (_info.HasFlag(Direction.Top) && _speedY > 0)
+                _speedY = 0;
+
+            /*if (_speedY == 0)
+            {
+                Jump1 = false;
+                Jump2 = false;
+                Jumpcd = false;
+            }*/
             //Lever collisions
             
             List<Direction> _infoLever = new List<Direction>();
             for (int i = 0; i < Lever.LeverList.Count; i++) { 
-              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1.5f),Lever.LeverList[i].Hitbox));
+              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f),Lever.LeverList[i].Hitbox));
             }
             
             for (int i = 0; i < _infoLever.Count; i++)
