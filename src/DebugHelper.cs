@@ -19,7 +19,9 @@ namespace ReiseZumGrundDesSees
             public static ulong TotalFrameCount;
             public static uint RenderedWorldVertices;
             public static uint RenderedWorldChunks;
+            public static Vector3 EditorCursorPosition;
             public static Vector3 PlayerPosition;
+            public static float CameraRotation;
             public static Queue<string> Logs = new Queue<string>();
 
             public static string ToString()
@@ -41,6 +43,8 @@ namespace ReiseZumGrundDesSees
                     $"Total Frame Count: { TotalFrameCount }\n" +
                     $"FPS: { FPS }\n" +
                     $"Player position: { PlayerPosition }\n" +
+                    $"EditorCursor position: { EditorCursorPosition }\n" +
+                    $"Camera rotation: { CameraRotation }\n" +
                     $"Rendered World Vertices: { RenderedWorldVertices }\n" +
                     $"Rendered World Chunks: { RenderedWorldChunks }\n" +
                     $"Logs:\n { logs.ToString() }";

@@ -76,11 +76,10 @@ namespace ReiseZumGrundDesSees
             }
             invalidatedChunks.Clear();
             
-            Vector3 _playerPosition = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
             for (int x = 0; x < RegionsCountX; x++)
                 for (int z = 0; z < RegionsCountZ; z++)
                 {
-                    float _distance = Vector2.Distance(new Vector2(_view.PlayerX, _view.PlayerZ), new Vector2((x + 0.5f) * RegionSizeX, (z + 0.5f) * RegionSizeZ));
+                    float _distance = Vector2.Distance(new Vector2(_view.CameraCenter.Position.X, _view.CameraCenter.Position.Z), new Vector2((x + 0.5f) * RegionSizeX, (z + 0.5f) * RegionSizeZ));
 
                     if (_distance < 20 && Vertices[x, z] == null)
                     {

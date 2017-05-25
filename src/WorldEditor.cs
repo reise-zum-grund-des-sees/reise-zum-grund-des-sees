@@ -10,17 +10,18 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class WorldEditor : IUpdateable
+    class WorldEditor : IUpdateable, IPositionObject, IRenderable
     {
-        public Vector3 Position;
-        public GraphicsDevice Device;
-        public ContentManager ContentManager;
+        public Vector3 Position { get; set; }
+        private ContentManager content;
+        private GraphicsDevice graphicsDevice;
+        private Model cursorModel;
 
-        public WorldEditor(Vector3 _position, GraphicsDevice _device, ContentManager _content)
+        public WorldEditor(Vector3 _position, ContentManager _content)
         {
             Position = _position;
-            Device = _device;
-            ContentManager = _content;
+            content = _content;
+            cursorModel = _content.Load<Model>("cursor");
         }
 
         double f, b, l, r, u, d;
@@ -67,6 +68,9 @@ namespace ReiseZumGrundDesSees
                 d = 0;
             }
 
+            float _direction = (float)Math.Round(-_view.CamAngle * 4 / MathHelper.TwoPi) * MathHelper.TwoPi / 4f;
+            _difference = Vector3.Transform(_difference, Quaternion.CreateFromAxisAngle(Vector3.Up, _direction));
+
 
             return (ref GameState _state) =>
             {
@@ -75,8 +79,8 @@ namespace ReiseZumGrundDesSees
                 int y = (int)Position.Y;
                 int z = (int)Position.Z;
                 Vector3 blockPosition = new Vector3(x, y, z) + new Vector3(0.5f);
-                _state.Camera.LookAt = blockPosition;
-                _state.Camera.Position = blockPosition + new Vector3(0, 10, -7);
+                /*_state.Camera.LookAt = blockPosition;
+                _state.Camera.Position = blockPosition + new Vector3(0, 10, -7);*/
 
                 if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] == WorldBlock.None && !_inputArgs.Events.HasFlag(InputEventList.LeichterBlock))
                     _state.World.Blocks[x, y, z] = WorldBlock.Wall;
@@ -105,11 +109,36 @@ namespace ReiseZumGrundDesSees
                     else
                     {
                         _state.World.Blocks[x, y, z] = WorldBlock.Lever;
-                        Lever lever = new Lever(ContentManager, Position);
+                        Lever lever = new Lever(content, Position);
                     }
 
                 }
             };
+        }
+
+        public void Initialize(GraphicsDevice _graphicsDevice)
+        {
+            graphicsDevice = _graphicsDevice;
+        }
+
+        public void Render(Matrix _viewMatrix, Matrix _projectionMatrix)
+        {
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
+            foreach (ModelMesh mesh in cursorModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    Vector3 _blockPosition = new Vector3((int)Position.X + 0.5f, (int)Position.Y + 0.5f, (int)Position.Z + 0.5f);
+                    effect.World = Matrix.CreateTranslation(_blockPosition);
+
+                    effect.View = _viewMatrix;
+                    effect.Projection = _projectionMatrix;
+
+                }
+
+                mesh.Draw();
+            }
         }
     }
 }

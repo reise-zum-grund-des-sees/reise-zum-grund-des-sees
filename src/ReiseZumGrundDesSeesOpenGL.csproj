@@ -50,6 +50,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="IPositionObject.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="IRenderable.cs" />
     <Compile Include="IWorldObject.cs" />

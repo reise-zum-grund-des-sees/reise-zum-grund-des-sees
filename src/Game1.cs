@@ -40,6 +40,10 @@ namespace ReiseZumGrundDesSees
                     graphics.IsFullScreen = (value & GameFlags.Fullscreen) != 0;
                     graphics.ApplyChanges();
                 }
+                if (value.HasFlag(GameFlags.EditorMode) && GameState.Camera != null)
+                    GameState.Camera.Center = editor;
+                else if (value.HasFlag(GameFlags.GameRunning) && GameState.Camera != null)
+                    GameState.Camera.Center = GameState.Player;
 
                 __GameMode = value;
                 DebugHelper.Log("GameMode changed to " + value);
@@ -79,7 +83,9 @@ namespace ReiseZumGrundDesSees
             InputManager = new InputManager();
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
-            editor = new WorldEditor(new Vector3(24, 32, 24), GraphicsDevice, Content);
+            editor = new WorldEditor(new Vector3(24, 32, 24), Content);
+            editor.Initialize(GraphicsDevice);
+            otherRenderables.Add(editor);
 
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
@@ -145,11 +151,9 @@ namespace ReiseZumGrundDesSees
             if (GameMode.HasFlag(GameFlags.GameLoaded) && GameMode.HasFlag(GameFlags.GameRunning))
             {
                 if (!GameMode.HasFlag(GameFlags.EditorMode))
-                {
                     _updateList.Add(GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-                    _updateList.Add(GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-                }
 
+                _updateList.Add(GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                 _updateList.Add(GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             }
             if (GameMode.HasFlag(GameFlags.EditorMode))
@@ -194,6 +198,8 @@ namespace ReiseZumGrundDesSees
             DebugHelper.Information.FPS = 1 / gameTime.ElapsedGameTime.TotalSeconds;// DebugHelper.Information.FPS * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
             DebugHelper.Information.TotalGameTime = gameTime.TotalGameTime;
             DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
+            DebugHelper.Information.EditorCursorPosition = editor?.Position ?? Vector3.Zero;
+            DebugHelper.Information.CameraRotation = GameState.Camera?.Angle ?? 0;
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
@@ -202,15 +208,13 @@ namespace ReiseZumGrundDesSees
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
-
-                if (GameMode.HasFlag(GameFlags.EditorMode))
-                    renderer.WorldEditor(editor, ref _viewMatrix, ref _perspectiveMatrix);
-
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeverR(Lever.LeverList, ref _viewMatrix, ref _perspectiveMatrix);
 
                 foreach (var _renderable in worldRenderables)
+                    _renderable.Render(_viewMatrix, _perspectiveMatrix);
+                foreach (var _renderable in otherRenderables)
                     _renderable.Render(_viewMatrix, _perspectiveMatrix);
             }
 
@@ -227,8 +231,6 @@ namespace ReiseZumGrundDesSees
 
         public void StartNewGame()
         {
-            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
-            GameMode &= ~GameFlags.Menu;
             RenderableWorld _world = CreateWorld();
 
             worldRenderables.Clear();
@@ -237,6 +239,9 @@ namespace ReiseZumGrundDesSees
                 _renderable.Initialize(GraphicsDevice);
 
             GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
+
+            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode &= ~GameFlags.Menu;
         }
 
         private RenderableWorld CreateWorld()
@@ -248,8 +253,6 @@ namespace ReiseZumGrundDesSees
 
         public void LoadGame(string _path)
         {
-            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
-            GameMode &= ~GameFlags.Menu;
             RenderableWorld w = new RenderableWorld(_path, Content);
 
             worldRenderables.Clear();
@@ -258,6 +261,9 @@ namespace ReiseZumGrundDesSees
                 _renderable.Initialize(GraphicsDevice);
 
             GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
+
+            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameMode &= ~GameFlags.Menu;
         }
 
         public void SaveGame(string _path)

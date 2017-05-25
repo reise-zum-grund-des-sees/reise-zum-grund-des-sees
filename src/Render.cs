@@ -14,53 +14,16 @@ namespace ReiseZumGrundDesSees
     {
         private readonly GraphicsDevice graphicsDevice;
 
-        private readonly RasterizerState CounterClockwiseCull, NoCullMode;
-
-        private readonly Model worldEditorCursor;
-
         public Render(GraphicsDevice _graphicsDevice, ContentManager _content)
         {
             graphicsDevice = _graphicsDevice;
-            worldEditorCursor = _content.Load<Model>("cursor");
-
-            CounterClockwiseCull = new RasterizerState();
-            CounterClockwiseCull.CullMode = CullMode.CullCounterClockwiseFace;
-
-            NoCullMode = new RasterizerState();
-            NoCullMode.CullMode = CullMode.None;
-        }
-
-        public void WorldEditor(WorldEditor _editor, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
-        {
-            graphicsDevice.RasterizerState = NoCullMode;
-            foreach (ModelMesh mesh in worldEditorCursor.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    Vector3 _blockPosition = new Vector3((int)_editor.Position.X + 0.5f, (int)_editor.Position.Y + 0.5f, (int)_editor.Position.Z + 0.5f);
-                    effect.World = Matrix.CreateTranslation(_blockPosition);
-
-                    effect.View = _viewMatrix;
-                    effect.Projection = _perspectiveMatrix;
-
-                }
-
-                mesh.Draw();
-            }
-        }
-
-        public void World(World _world, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix, out uint _renderedVertices, out uint _renderedChunks)
-        {
-            _renderedVertices = 0;
-            _renderedChunks = 0;
         }
 
         public void PlayerR(Player _player, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
             //throw new NotImplementedException();
 
-            graphicsDevice.RasterizerState = NoCullMode;
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
             foreach (ModelMesh mesh in _player.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Player : IUpdateable
+    class Player : IUpdateable, IPositionObject
     {
-        public Vector3 Position; //Position des Spielers
+        public Vector3 Position { get; set; } //Position des Spielers
         public Model Model;
         bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
         bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
