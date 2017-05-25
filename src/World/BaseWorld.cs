@@ -126,7 +126,7 @@ namespace ReiseZumGrundDesSees
         {
             private readonly BaseWorld world;
 
-            public delegate void OnBlockChangedEventHandler(WorldBlock _block, int x, int y, int z);
+            public delegate void OnBlockChangedEventHandler(WorldBlock _oldBlock, WorldBlock _newBlock, int x, int y, int z);
             public event OnBlockChangedEventHandler OnBlockChanged;
 
             public BlockWrapper(BaseWorld _world)
@@ -159,8 +159,9 @@ namespace ReiseZumGrundDesSees
                     int by = y;
                     int bz = z - rz * world.RegionSizeZ;
 
+                    WorldBlock _oldBlock = world.Regions[rx, rz].Blocks[bx, by, bz];
                     world.Regions[rx, rz].Blocks[bx, by, bz] = value;
-                    OnBlockChanged?.Invoke(value, x, y, z);
+                    OnBlockChanged?.Invoke(_oldBlock, value, x, y, z);
                 }
             }
         }

@@ -24,6 +24,18 @@ namespace ReiseZumGrundDesSees
 
     static class WorldBlockHelper
     {
+        public static bool IsPartOfWorldObject(this WorldBlock b)
+        {
+            switch (b)
+            {
+                case WorldBlock.Lever:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+
         public static Vector3 GetBounds(this WorldBlock b)
         {
             switch (b)

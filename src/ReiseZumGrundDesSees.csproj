@@ -43,6 +43,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="State\IUpdateable.cs" />
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="Entities\Camera.cs" />
     <Compile Include="Entities\CollisionDetector.cs" />

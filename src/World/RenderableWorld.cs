@@ -30,7 +30,7 @@ namespace ReiseZumGrundDesSees
             VertexBuffers = new VertexBuffer[RegionsCountX, RegionsCountZ];
 
             blockTexture = _content.Load<Texture2D>(BLOCKTEXTURE_NAME);
-            Blocks.OnBlockChanged += (WorldBlock _, int x, int y, int z) =>
+            Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
                 invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
         }
 
@@ -41,7 +41,7 @@ namespace ReiseZumGrundDesSees
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
 
             blockTexture = _content.Load<Texture2D>(BLOCKTEXTURE_NAME);
-            Blocks.OnBlockChanged += (WorldBlock _, int x, int y, int z) =>
+            Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
                 invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
         }
 

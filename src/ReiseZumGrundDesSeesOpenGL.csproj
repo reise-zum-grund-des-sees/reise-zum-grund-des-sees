@@ -41,6 +41,7 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
+    <Compile Include="State\IUpdateable.cs" />
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="World\IWorldObject.cs" />
     <Compile Include="World\Lever.cs" />
