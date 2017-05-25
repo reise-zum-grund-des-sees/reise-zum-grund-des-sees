@@ -35,6 +35,12 @@ namespace ReiseZumGrundDesSees
             }
             set
             {
+                if ((value & GameFlags.Fullscreen) != (__GameMode & GameFlags.Fullscreen))
+                {
+                    graphics.IsFullScreen = (value & GameFlags.Fullscreen) != 0;
+                    graphics.ApplyChanges();
+                }
+
                 __GameMode = value;
                 DebugHelper.Log("GameMode changed to " + value);
             }
@@ -64,6 +70,8 @@ namespace ReiseZumGrundDesSees
             this.graphics.ApplyChanges();
 
             GameMode = GameFlags.Menu | GameFlags.Debug;
+
+            Window.AllowUserResizing = true;
 
             // TEMP: remove to show main menu
             //StartNewGame();
@@ -112,7 +120,7 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
-            if (GameMode.HasFlag(GameFlags.Fullscreen))
+            if (!GameMode.HasFlag(GameFlags.Fullscreen))
                 if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
                     graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
                 {
@@ -120,6 +128,15 @@ namespace ReiseZumGrundDesSees
                     graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
                     graphics.ApplyChanges();
                 }
+            else
+                if (graphics.PreferredBackBufferHeight != GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height ||
+                    graphics.PreferredBackBufferWidth != GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width)
+                {
+                    graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                    graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                    graphics.ApplyChanges();
+                }
+                
 
             InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
             GameState.View _gameStateView = new GameState.View(GameState);
@@ -154,6 +171,8 @@ namespace ReiseZumGrundDesSees
             }
             else if (kb.IsKeyDown(Keys.F1) && keyPressedPause)
                 GameMode ^= GameFlags.Debug;
+            else if (kb.IsKeyDown(Keys.F11) && keyPressedPause)
+                GameMode ^= GameFlags.Fullscreen;
             else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
             {
                 GameMode ^= (GameFlags.Menu | GameFlags.GameRunning);
