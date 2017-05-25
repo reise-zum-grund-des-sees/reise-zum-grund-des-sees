@@ -229,11 +229,19 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Delete;
             }
+
+            List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
+            foreach (PlayerBlock b in Blöcke)
+                blockUpdateList.Add(b.Update(_stateView, _inputArgs, _passedTime));
+
             return (ref GameState _state) =>
             {
                 _state.Player.Position += _movement;
                 _state.Camera.ChangePosition(_movement);   //move Camera with Player   
                 //Console.WriteLine(Position);
+
+                foreach (UpdateDelegate u in blockUpdateList)
+                    u(ref _state);
             };
         }
 

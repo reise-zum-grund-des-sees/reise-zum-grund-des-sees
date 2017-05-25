@@ -22,12 +22,16 @@ namespace ReiseZumGrundDesSees
         private readonly Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
 
+        private List<Point> invalidatedChunks = new List<Point>();
+
         public RenderableWorld(string _basePath, ContentManager _content) : base(_basePath)
         {
             Vertices = new VertexPositionColorTexture[RegionsCountX, RegionsCountZ][];
             VertexBuffers = new VertexBuffer[RegionsCountX, RegionsCountZ];
 
             blockTexture = _content.Load<Texture2D>(BLOCKTEXTURE_NAME);
+            Blocks.OnBlockChanged += (WorldBlock _, int x, int y, int z) =>
+                invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
         }
 
         public RenderableWorld(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos, ContentManager _content)
@@ -37,13 +41,8 @@ namespace ReiseZumGrundDesSees
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
 
             blockTexture = _content.Load<Texture2D>(BLOCKTEXTURE_NAME);
-        }
-
-        public void GenerateVertices(GraphicsDevice _device)
-        {
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int y = 0; y < RegionsCountZ; y++)
-                    LoadVertices(x, y);
+            Blocks.OnBlockChanged += (WorldBlock _, int x, int y, int z) =>
+                invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
         }
 
         private void LoadVertices(int _regionX, int _regionZ)
@@ -69,6 +68,14 @@ namespace ReiseZumGrundDesSees
 
         public override UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
         {
+            foreach (Point v in invalidatedChunks)
+            {
+                Vertices[v.X, v.Y] = null;
+                VertexBuffers[v.X, v.Y]?.Dispose();
+                VertexBuffers[v.X, v.Y] = null;
+            }
+            invalidatedChunks.Clear();
+            
             Vector3 _playerPosition = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
             for (int x = 0; x < RegionsCountX; x++)
                 for (int z = 0; z < RegionsCountZ; z++)
@@ -79,7 +86,7 @@ namespace ReiseZumGrundDesSees
                     {
                         LoadVertices(x, z);
                     }
-                    else if (_distance > 20 && Vertices[x, z] != null)
+                    else if (_distance > 30 && Vertices[x, z] != null)
                     {
                         UnloadVertices(x, z);
                     }

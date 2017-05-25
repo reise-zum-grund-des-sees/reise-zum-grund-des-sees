@@ -112,44 +112,37 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
-            if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
-                graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
-            {
-                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-                graphics.ApplyChanges();
-            }
+            if (GameMode.HasFlag(GameFlags.Fullscreen))
+                if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
+                    graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
+                {
+                    graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                    graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                    graphics.ApplyChanges();
+                }
 
             InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
-            DebugHelper.Log(_args.Events.ToString());
+            GameState.View _gameStateView = new GameState.View(GameState);
+            List<UpdateDelegate> _updateList = new List<UpdateDelegate>();
 
-            if (GameMode.HasFlag(GameFlags.GameLoaded) && GameMode.HasFlag(GameFlags.GameRunning) && !GameMode.HasFlag(GameFlags.EditorMode))
+            if (GameMode.HasFlag(GameFlags.GameLoaded) && GameMode.HasFlag(GameFlags.GameRunning))
             {
-                GameState.View _gameStateView = new GameState.View(GameState);
-
-                UpdateDelegate _playerUpdate = GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-                UpdateDelegate _cameraUpdate = GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-                UpdateDelegate _worldUpdate = GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-
-                _playerUpdate(ref GameState);
-                _cameraUpdate(ref GameState);
-                _worldUpdate(ref GameState);
-
-                for (int i = 0; i < Player.Blöcke.Count; i++)
+                if (!GameMode.HasFlag(GameFlags.EditorMode))
                 {
-                    Player.Blöcke[i].Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
+                    _updateList.Add(GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    _updateList.Add(GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                 }
-            }
-            if (GameMode.HasFlag(GameFlags.Menu))
-            {
-                MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+
+                _updateList.Add(GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             }
             if (GameMode.HasFlag(GameFlags.EditorMode))
-            {
-                GameState.View _gameStateView = new GameState.View(GameState);
-                UpdateDelegate _editorUpdate = editor.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds);
-                _editorUpdate(ref GameState);
-            }
+                _updateList.Add(editor.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+
+            foreach (UpdateDelegate u in _updateList)
+                u(ref GameState);
+
+            if (GameMode.HasFlag(GameFlags.Menu))
+                MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
@@ -179,7 +172,7 @@ namespace ReiseZumGrundDesSees
         protected override void Draw(GameTime gameTime)
         {
             DebugHelper.Information.TotalFrameCount++;
-            DebugHelper.Information.FPS = DebugHelper.Information.FPS * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
+            DebugHelper.Information.FPS = 1 / gameTime.ElapsedGameTime.TotalSeconds;// DebugHelper.Information.FPS * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
             DebugHelper.Information.TotalGameTime = gameTime.TotalGameTime;
             DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
 
