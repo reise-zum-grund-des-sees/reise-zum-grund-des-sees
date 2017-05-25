@@ -107,6 +107,9 @@ namespace ReiseZumGrundDesSees
 
         public void Render(Matrix _viewMatrix, Matrix _perspectiveMatrix)
         {
+            DebugHelper.Information.RenderedWorldChunks = 0;
+            DebugHelper.Information.RenderedWorldVertices = 0;
+
             int maxX = Vertices.GetLength(0);
             int maxZ = Vertices.GetLength(1);
 
@@ -115,6 +118,9 @@ namespace ReiseZumGrundDesSees
                 {
                     if (Vertices[x, z]?.Length > 0)
                     {
+                        DebugHelper.Information.RenderedWorldChunks++;
+                        DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
+
                         effect.View = _viewMatrix;
                         effect.World = Matrix.CreateTranslation(x * RegionSizeX, 0, z * RegionSizeZ);
                         effect.Projection = _perspectiveMatrix;
