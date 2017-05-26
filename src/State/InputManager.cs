@@ -13,6 +13,14 @@ namespace ReiseZumGrundDesSees
     {
         private Point PreviousMousePosition;
         private bool leftMouseDown = false, rightMouseDown = false, middleMouseDown = false;
+
+#if LINUX
+        private bool ignoreMouseBecauseLinuxImplementationIsShit = false;
+
+        private const int RESET_MOUSE_DIFFERENCE = 200;
+        private const int MAGIC_MOUSE_PROBABLY_GOT_RESET_DIFFERENCE = 100;
+#endif
+
         public InputEventArgs Update(GameFlags _flags, Rectangle _windowBounds)
         {
             InputEventList _eventList = InputEventList.None;
@@ -83,24 +91,47 @@ namespace ReiseZumGrundDesSees
 
             Point _mouseMovement = new Point(_mouseState.X - PreviousMousePosition.X, _mouseState.Y - PreviousMousePosition.Y);
 
+#if LINUX
+            if (ignoreMouseBecauseLinuxImplementationIsShit)
+            {
+                if (Vector2.Distance(new Vector2(_mouseState.X, _mouseState.Y), _windowBounds.Size.ToVector2() * 0.5f) < MAGIC_MOUSE_PROBABLY_GOT_RESET_DIFFERENCE)
+                    ignoreMouseBecauseLinuxImplementationIsShit = false;
+                else
+                {
+                    DebugHelper.Log("Ignoring Mouse: " + _mouseState.X + ", " + _mouseState.Y);
+                    Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+                    _mouseMovement = new Point(0, 0);
+                }
+            }
+#endif
+
             Vector2 _mouseMovementRelative = _mouseMovement.ToVector2() / _windowBounds.Size.ToVector2();
 
             InputEventArgs _args = new InputEventArgs(_eventList,
                 new Point(_mouseState.X, _mouseState.Y),
                 _mouseMovement, _mouseMovementRelative);
 
-            if (_flags.HasFlag(GameFlags.GameRunning) &&
-                Vector2.Distance(new Vector2(_mouseState.X, _mouseState.Y), _windowBounds.Size.ToVector2() * 0.5f) > 500)
+#if LINUX
+            if (!ignoreMouseBecauseLinuxImplementationIsShit)
             {
-                //DebugHelper.Log("Current Mouse Pos: " + _mouseState.X + ", " + _mouseState.Y + "\nPrevious Mouse Pos: " + PreviousMousePosition.X + ", " + PreviousMousePosition.Y);
-                Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
-                PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+                if (_flags.HasFlag(GameFlags.GameRunning) &&
+                    Vector2.Distance(new Vector2(_mouseState.X, _mouseState.Y), _windowBounds.Size.ToVector2() * 0.5f) > RESET_MOUSE_DIFFERENCE)
+                {
+                    DebugHelper.Log("Mouse Position set to " + _windowBounds.Size.X / 2 + ", " + _windowBounds.Size.Y / 2);
+                    Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2); //Mouse in die Mitte des Bildschirms einfangen, schlecht zum debuggen
+                    PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+                    ignoreMouseBecauseLinuxImplementationIsShit = true;
+                }
+                else
+                {
+                    PreviousMousePosition.X = _mouseState.X;
+                    PreviousMousePosition.Y = _mouseState.Y;
+                }
             }
-            else
-            {
-                PreviousMousePosition.X = _mouseState.X;
-                PreviousMousePosition.Y = _mouseState.Y;
-            }
+#elif WINDOWS
+            Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+            PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+#endif
 
             return _args;
         }
