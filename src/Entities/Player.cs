@@ -49,8 +49,11 @@ namespace ReiseZumGrundDesSees
             Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
         }
   
-        public UpdateDelegate Update(GameState.View _stateView, InputEventArgs _inputArgs, double _passedTime)
+        public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            if (!_flags.HasFlag(GameFlags.GameRunning) | _flags.HasFlag(GameFlags.EditorMode))
+                return null;
+
             // Nicht die Variablen hier ändern. Aber Kollisionserkennung hier berechnen.
 
             //Sprint noch nicht implementiert
@@ -232,7 +235,7 @@ namespace ReiseZumGrundDesSees
 
             List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
             foreach (PlayerBlock b in Blöcke)
-                blockUpdateList.Add(b.Update(_stateView, _inputArgs, _passedTime));
+                blockUpdateList.Add(b.Update(_stateView, _flags, _inputArgs, _passedTime));
 
             return (ref GameState _state) =>
             {

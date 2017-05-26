@@ -12,6 +12,6 @@ namespace ReiseZumGrundDesSees
     interface IRenderable
     {
         void Initialize(GraphicsDevice _graphicsDevice);
-        void Render(Matrix _viewMatrix, Matrix _perspectiveMatrix);
+        void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix);
     }
 }

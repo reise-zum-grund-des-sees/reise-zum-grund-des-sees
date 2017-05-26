@@ -26,8 +26,11 @@ namespace ReiseZumGrundDesSees
 
         double f, b, l, r, u, d;
         const double movementSpeed = 200;
-        public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            if (!_flags.HasFlag(GameFlags.EditorMode))
+                return null;
+
             Vector3 _difference = new Vector3(0, 0, 0);
 
             f += _passedTime;
@@ -121,8 +124,11 @@ namespace ReiseZumGrundDesSees
             graphicsDevice = _graphicsDevice;
         }
 
-        public void Render(Matrix _viewMatrix, Matrix _projectionMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _projectionMatrix)
         {
+            if (!_flags.HasFlag(GameFlags.EditorMode))
+                return;
+
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
             foreach (ModelMesh mesh in cursorModel.Meshes)
             {

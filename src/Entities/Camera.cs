@@ -44,13 +44,16 @@ namespace ReiseZumGrundDesSees
             Position += _movement;
         }
 
-        public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
 		{
             return (ref GameState _state) =>
             {
-                Angle += _inputArgs.MouseMovementRelative.X * 10f;
-                if (Center != null)
-                    LookAt = Center.Position;
+                if (_flags.HasFlag(GameFlags.GameRunning))
+                {
+                    Angle += _inputArgs.MouseMovementRelative.X * 10f;
+                    if (Center != null)
+                        LookAt = Center.Position;
+                }
             };
         }
 	}

@@ -65,7 +65,7 @@ namespace ReiseZumGrundDesSees
 
         }
 
-        public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
             if(Zustand == (int)ZustandList.Delete)

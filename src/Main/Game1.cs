@@ -26,16 +26,16 @@ namespace ReiseZumGrundDesSees
 
         MainMenu MainMenu;
 
-        GameFlags __GameMode;
-        GameFlags GameMode
+        GameFlags __GameFlags;
+        GameFlags GameFlags
         {
             get
             {
-                return __GameMode;
+                return __GameFlags;
             }
             set
             {
-                if ((value & GameFlags.Fullscreen) != (__GameMode & GameFlags.Fullscreen))
+                if ((value & GameFlags.Fullscreen) != (__GameFlags & GameFlags.Fullscreen))
                 {
                     graphics.IsFullScreen = (value & GameFlags.Fullscreen) != 0;
                     graphics.ApplyChanges();
@@ -45,7 +45,7 @@ namespace ReiseZumGrundDesSees
                 else if (value.HasFlag(GameFlags.GameRunning) && GameState.Camera != null)
                     GameState.Camera.Center = GameState.Player;
 
-                __GameMode = value;
+                __GameFlags = value;
                 DebugHelper.Log("GameMode changed to " + value);
             }
         }
@@ -73,7 +73,7 @@ namespace ReiseZumGrundDesSees
             this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             this.graphics.ApplyChanges();
 
-            GameMode = GameFlags.Menu | GameFlags.Debug;
+            GameFlags = GameFlags.Menu | GameFlags.Debug;
 
             Window.AllowUserResizing = true;
 
@@ -126,7 +126,7 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
-            if (!GameMode.HasFlag(GameFlags.Fullscreen))
+            if (!GameFlags.HasFlag(GameFlags.Fullscreen))
                 if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
                     graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
                 {
@@ -144,25 +144,19 @@ namespace ReiseZumGrundDesSees
                 }
                 
 
-            InputEventArgs _args = InputManager.Update(GameMode, Window.ClientBounds);
+            InputEventArgs _args = InputManager.Update(GameFlags, Window.ClientBounds);
             GameState.View _gameStateView = new GameState.View(GameState);
             List<UpdateDelegate> _updateList = new List<UpdateDelegate>();
 
-            if (GameMode.HasFlag(GameFlags.GameLoaded) && GameMode.HasFlag(GameFlags.GameRunning))
-            {
-                if (!GameMode.HasFlag(GameFlags.EditorMode))
-                    _updateList.Add(GameState.Player.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-
-                _updateList.Add(GameState.Camera.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-                _updateList.Add(GameState.World.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-            }
-            if (GameMode.HasFlag(GameFlags.EditorMode))
-                _updateList.Add(editor.Update(_gameStateView, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            _updateList.Add(GameState.Player?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            _updateList.Add(GameState.Camera?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
 
             foreach (UpdateDelegate u in _updateList)
-                u(ref GameState);
+                u?.Invoke(ref GameState);
 
-            if (GameMode.HasFlag(GameFlags.Menu))
+            if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             KeyboardState kb = Keyboard.GetState();
@@ -170,16 +164,16 @@ namespace ReiseZumGrundDesSees
             {
                 if (kb.IsKeyDown(Keys.E) && keyPressedPause)
                 {
-                    GameMode ^= GameFlags.EditorMode;
+                    GameFlags ^= GameFlags.EditorMode;
                 }
             }
             else if (kb.IsKeyDown(Keys.F1) && keyPressedPause)
-                GameMode ^= GameFlags.Debug;
+                GameFlags ^= GameFlags.Debug;
             else if (kb.IsKeyDown(Keys.F11) && keyPressedPause)
-                GameMode ^= GameFlags.Fullscreen;
+                GameFlags ^= GameFlags.Fullscreen;
             else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
             {
-                GameMode ^= (GameFlags.Menu | GameFlags.GameRunning);
+                GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning);
             }
 
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
@@ -204,7 +198,7 @@ namespace ReiseZumGrundDesSees
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
 
-            if (GameMode.HasFlag(GameFlags.GameLoaded))
+            if (GameFlags.HasFlag(GameFlags.GameLoaded))
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
@@ -213,15 +207,15 @@ namespace ReiseZumGrundDesSees
                 renderer.LeverR(Lever.LeverList, ref _viewMatrix, ref _perspectiveMatrix);
 
                 foreach (var _renderable in worldRenderables)
-                    _renderable.Render(_viewMatrix, _perspectiveMatrix);
+                    _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in otherRenderables)
-                    _renderable.Render(_viewMatrix, _perspectiveMatrix);
+                    _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
             }
 
-            if (GameMode.HasFlag(GameFlags.Menu))
+            if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Render(spriteBatch);
 
-            if (GameMode.HasFlag(GameFlags.Debug))
+            if (GameFlags.HasFlag(GameFlags.Debug))
                 DebugHelper.RenderOverlay(spriteBatch, font);
 
             base.Draw(gameTime);
@@ -240,8 +234,8 @@ namespace ReiseZumGrundDesSees
 
             GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
 
-            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
-            GameMode &= ~GameFlags.Menu;
+            GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameFlags &= ~GameFlags.Menu;
         }
 
         private RenderableWorld CreateWorld()
@@ -262,8 +256,8 @@ namespace ReiseZumGrundDesSees
 
             GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
 
-            GameMode |= GameFlags.GameRunning | GameFlags.GameLoaded;
-            GameMode &= ~GameFlags.Menu;
+            GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
+            GameFlags &= ~GameFlags.Menu;
         }
 
         public void SaveGame(string _path)

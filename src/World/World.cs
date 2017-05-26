@@ -54,12 +54,12 @@ namespace ReiseZumGrundDesSees
             Blocks[_object.Postion.X, _object.Postion.Y, _object.Postion.Z] = WorldBlock.None;
         }
 
-        public override UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-            UpdateDelegate _delegate = base.Update(_view, _inputArgs, _passedTime);
+            UpdateDelegate _delegate = base.Update(_view, _flags, _inputArgs, _passedTime);
 
             foreach (IWorldObject _object in objects)
-                _delegate = _delegate.ContinueWith(_object.Update(_view, _inputArgs, _passedTime));
+                _delegate = _delegate.ContinueWith(_object.Update(_view, _flags, _inputArgs, _passedTime));
 
             return _delegate;
         }

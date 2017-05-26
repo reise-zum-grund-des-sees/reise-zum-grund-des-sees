@@ -23,7 +23,7 @@ namespace ReiseZumGrundDesSees
 		/// <param name="_inputArgs">Nutzer-Ereignisse</param>
 		/// <param name="_passedTime">Verstichene Zeit seit dem letzten Update</param>
 		/// <returns>UpdateDelegate, dass den GameState verändern kann: return (ref GameState _state) => { /* CODE HERE */ };</returns>
-		UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime);
+		UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime);
 	}
 
 }

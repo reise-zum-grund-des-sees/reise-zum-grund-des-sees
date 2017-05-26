@@ -66,7 +66,7 @@ namespace ReiseZumGrundDesSees
             VertexBuffers[_regionX, _regionZ] = null;
         }
 
-        public override UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             foreach (Point v in invalidatedChunks)
             {
@@ -91,7 +91,7 @@ namespace ReiseZumGrundDesSees
                     }
                 }
 
-            return base.Update(_view, _inputArgs, _passedTime);
+            return base.Update(_view, _flags, _inputArgs, _passedTime);
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice)
@@ -104,7 +104,7 @@ namespace ReiseZumGrundDesSees
             effect.VertexColorEnabled = true;
         }                                      
 
-        public void Render(Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
         {
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;

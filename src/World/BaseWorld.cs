@@ -82,7 +82,7 @@ namespace ReiseZumGrundDesSees
                     //Regions[x, z] = new WorldRegion();
         }
 
-        public virtual UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public virtual UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             return (ref GameState _gameState) =>
             {

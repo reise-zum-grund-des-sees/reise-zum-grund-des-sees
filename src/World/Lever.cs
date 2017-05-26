@@ -71,7 +71,7 @@ namespace ReiseZumGrundDesSees
             return null;
         }
 
-        public UpdateDelegate Update(GameState.View _view, InputEventArgs _inputArgs, double _passedTime)
+        public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             throw new NotImplementedException();
         }
