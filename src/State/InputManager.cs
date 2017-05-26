@@ -129,8 +129,11 @@ namespace ReiseZumGrundDesSees
                 }
             }
 #elif WINDOWS
-            Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
-            PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+            if (_flags.HasFlag(GameFlags.GameRunning))
+            {
+                Mouse.SetPosition(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+                PreviousMousePosition = new Point(_windowBounds.Size.X / 2, _windowBounds.Size.Y / 2);
+            }
 #endif
 
             return _args;
