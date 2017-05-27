@@ -48,7 +48,7 @@ namespace ReiseZumGrundDesSees
             Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
             Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
         }
-  
+
         public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) | _flags.HasFlag(GameFlags.EditorMode))
@@ -79,7 +79,7 @@ namespace ReiseZumGrundDesSees
                 else if ((_inputArgs.Events & InputEventList.MoveRight) != 0)
                     BlickrichtungAdd = -MathHelper.PiOver4 * 3;
                 else
-                    BlickrichtungAdd= MathHelper.Pi;
+                    BlickrichtungAdd = MathHelper.Pi;
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
                 BlickrichtungAdd = MathHelper.PiOver2;
@@ -113,9 +113,9 @@ namespace ReiseZumGrundDesSees
                 _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
                 _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
             }
-                
-  
-            if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1==false) {
+
+
+            if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false) {
                 Jump1 = true;
                 _speedY = 1.1f;
                 Jumpcd = true;
@@ -124,21 +124,21 @@ namespace ReiseZumGrundDesSees
             if (Jump1 == true && !_inputArgs.Events.HasFlag(InputEventList.Jump))
                 Jumpcd = false;
 
-            if (Jump1==true && Jump2==false && Jumpcd==false && _inputArgs.Events.HasFlag(InputEventList.Jump))//Doppelsprung
+            if (Jump1 == true && Jump2 == false && Jumpcd == false && _inputArgs.Events.HasFlag(InputEventList.Jump))//Doppelsprung
             {
-                Jump2 = true;                 
+                Jump2 = true;
                 _speedY = 1.1f;
             }
-           
+
             _speedY -= 0.005f * (float)_passedTime;
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView.BlockWorld);
-          
+
             List<Direction> _info2 = new List<Direction>();
             for (int i = 0; i < Blöcke.Count; i++)
-                if(Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
-                _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
+                if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt)
+                    _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X - 0.4f, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
             for (int i = 0; i < _info2.Count; i++)
             {
                 if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
@@ -169,7 +169,7 @@ namespace ReiseZumGrundDesSees
                 Jumpcd = false;
             }*/
             //Lever collisions
-            
+            /*
             List<Direction> _infoLever = new List<Direction>();
             for (int i = 0; i < Lever.LeverList.Count; i++) { 
               _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f),Lever.LeverList[i].Hitbox));
@@ -186,6 +186,20 @@ namespace ReiseZumGrundDesSees
                             Levercd = 0;
                         Lever.LeverList[i].press(); //Bottem ist Starposition vorne
                         }
+            }
+                     */
+
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveDown) && Levercd >= 1000)
+            {
+                for (int i = 0; i < Lever.LeverList.Count; i++)
+                {
+                    if (Vector3.Distance(Position, Vector3.Add(Lever.LeverList[i].Position, new Vector3(0.4f, 0, 0.4f))) < 1.5f)
+                    {
+                        Levercd = 0;
+                        Lever.LeverList[i].press(); //Bottem ist Starposition vorne
+                    }
+
+                }
             }
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
