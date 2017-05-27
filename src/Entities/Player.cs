@@ -19,11 +19,14 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
+        double Healthcd;
         public static float Blickrichtung; //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
         float _speedY = 0;
+        int Health;
+        int MaxHealth;
         public Player(ContentManager contentManager, Vector3 _position)
         {
             ContentManager = contentManager;
@@ -35,6 +38,9 @@ namespace ReiseZumGrundDesSees
             BlickrichtungAdd = 0;
             Blockcd = 0;
             Levercd = 0;
+            Healthcd = 0;     
+            MaxHealth = 3;
+            Health = 3;
             Blöcke = new List<PlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
@@ -193,7 +199,8 @@ namespace ReiseZumGrundDesSees
             {
                 for (int i = 0; i < Lever.LeverList.Count; i++)
                 {
-                    if (Vector3.Distance(Position, Vector3.Add(Lever.LeverList[i].Position, new Vector3(0.4f, 0, 0.4f))) < 1.5f)
+         
+                    if (ChebyshevDistance(Position, Vector3.Add(Lever.LeverList[i].Position, new Vector3(0.5f, 0, 0.5f))) <= 1f)
                     {
                         Levercd = 0;
                         Lever.LeverList[i].press(); //Bottem ist Starposition vorne
@@ -201,8 +208,21 @@ namespace ReiseZumGrundDesSees
 
                 }
             }
+            //Take Damage from Spikes
+          
+            for (int i = 0; i < Spike.SpikeList.Count; i++)
+            {
+                if (Vector3.Distance(Position, new Vector3(Spike.SpikeList[i].Position.X+0.5f, Spike.SpikeList[i].Position.Y, Spike.SpikeList[i].Position.Z + 0.5f)) < 1f && Healthcd>1000)
+                {
+                    Health--;
+                    Healthcd = 0;
+                 
+                }
+            }
+           
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
+            Healthcd += _passedTime;
             
             //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
@@ -261,6 +281,13 @@ namespace ReiseZumGrundDesSees
                     u(ref _state);
             };
         }
-
+    public static float ChebyshevDistance(Vector3 a, Vector3 b)
+            {
+            Vector3 distance= Vector3.Subtract(a, b);
+            float res = Math.Abs(distance.X);
+            if (Math.Abs(distance.Y) > res) res = Math.Abs(distance.Y);
+            if (Math.Abs(distance.Z) > res) res = Math.Abs(distance.Z);
+            return res;
+        }
     }
 }
