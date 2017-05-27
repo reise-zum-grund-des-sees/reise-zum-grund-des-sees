@@ -13,7 +13,7 @@ namespace ReiseZumGrundDesSees
     {
         public static List<Lever> LeverList = new List<Lever>();
         public Model Model;
-        public Vector3 Position;    
+         
         public bool is_pressed;
         ContentManager ContentManager;
         public double Rotation;
@@ -24,7 +24,7 @@ namespace ReiseZumGrundDesSees
             get;        
         }
 
-        public Vector3Int Postion
+        public Vector3Int Position
         {
             get;
         }
@@ -34,8 +34,9 @@ namespace ReiseZumGrundDesSees
             get;
         }
 
-        public Lever(ContentManager _contentManager,Vector3 _position)
+        public Lever(ContentManager _contentManager,Vector3Int _position)
         {
+            if (AtPosition(_position) == null) {
             alive = true;
             Position = _position;
             Hitbox= new Hitbox(_position.X+0.5f, _position.Y, _position.Z + 0.5f, 1f, 1f, 1f);//richtig schieben, im render mus auch Y+0.5f gesetzt werden
@@ -46,7 +47,7 @@ namespace ReiseZumGrundDesSees
             Rotation = 0;
             Model = _contentManager.Load<Model>("schalter_oben");
             LeverList.Add(this);
-         
+            }
         }
         public void press()
         {
@@ -62,18 +63,22 @@ namespace ReiseZumGrundDesSees
             }
             }
         }
-        
-     public static Lever AtPosition(Vector3 _position)
+
+        public static Lever AtPosition(Vector3Int _position)
         {
             for (int i = 0; i < LeverList.Count; i++)
-                if (LeverList[i].Position.Equals(_position)) return LeverList[i];
+                if (LeverList[i].Position==_position) return LeverList[i];
 
             return null;
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-            throw new NotImplementedException();
-        }
+            //throw new NotImplementedException();
+            return (ref GameState _state) =>
+            {
+
+            };
+        }    
     }
 }

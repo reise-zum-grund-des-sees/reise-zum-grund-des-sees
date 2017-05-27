@@ -85,9 +85,14 @@ namespace ReiseZumGrundDesSees
                 /*_state.Camera.LookAt = blockPosition;
                 _state.Camera.Position = blockPosition + new Vector3(0, 10, -7);*/
 
-                if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] == WorldBlock.None && !_inputArgs.Events.HasFlag(InputEventList.LeichterBlock))
+                if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _state.World.Blocks[x, y, z] == WorldBlock.None)
                     _state.World.Blocks[x, y, z] = WorldBlock.Wall;
 
+                else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] == WorldBlock.Lever)
+                { //remove lever, Lever duerfen nicht von anderen Blöcken uebersschrieben werden              
+                    Lever.LeverList.Remove(Lever.AtPosition(new Vector3Int(x,y,z)));
+                    _state.World.Blocks[x, y, z] = WorldBlock.None;
+                }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] != WorldBlock.None)
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
 
@@ -103,19 +108,15 @@ namespace ReiseZumGrundDesSees
                 else if (_inputArgs.Events.HasFlag(InputEventList.PlaceWater4) && _state.World.Blocks[x, y, z] != WorldBlock.Water4)
                     _state.World.Blocks[x, y, z] = WorldBlock.Water4;
 
-                else if (_inputArgs.Events.HasFlag(InputEventList.MouseLeftClick) && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && (_state.World.Blocks[x, y, z] == WorldBlock.None || _state.World.Blocks[x, y, z] == WorldBlock.Lever))//Schalter ertmal auf Taste 1 und Linksklick belegen
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceLever))//Schalter ertmal auf Taste 5 belegen
                 {
-
-                    if (_state.World.Blocks[x, y, z] == WorldBlock.Lever)
-                        Lever.AtPosition(Position).Rotation += Math.PI / 2;
-
-                    else
-                    {
-                        _state.World.Blocks[x, y, z] = WorldBlock.Lever;
-                        Lever lever = new Lever(content, Position);
-                    }
-
+                    Lever lever = new Lever(content, new Vector3Int(x, y, z));
+                    _state.World.Blocks[x, y, z] = WorldBlock.Lever;
                 }
+                else if (_state.World.Blocks[x, y, z] == WorldBlock.Lever && _inputArgs.Events.HasFlag(InputEventList.MouseLeftClick))
+                    Lever.AtPosition(new Vector3Int(x,y,z)).Rotation += Math.PI / 2;
+
+               
             };
         }
 

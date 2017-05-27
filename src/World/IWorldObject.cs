@@ -12,7 +12,7 @@ namespace ReiseZumGrundDesSees
     interface IWorldObject : IUpdateable
     {
         Hitbox Hitbox { get; }
-        Vector3Int Postion { get; }
+        Vector3Int Position { get; }
         WorldBlock Type { get; }
     }
 }

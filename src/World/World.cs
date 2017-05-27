@@ -28,30 +28,39 @@ namespace ReiseZumGrundDesSees
 
         private void OnBaseWorldBlockChanged(WorldBlock _oldBlock, WorldBlock _newBlock, int x, int y, int z)
         {
+          
             if (!onBaseWorldBlockChangedBlocker && _oldBlock.IsPartOfWorldObject() && _oldBlock != _newBlock)
                 RemoveObject(ObjectAt(x, y, z));
+            if (!onBaseWorldBlockChangedBlocker  && _oldBlock != _newBlock && _newBlock == WorldBlock.Lever)
+                AddObject(Lever.LeverList[Lever.LeverList.Count-1]);
+       
             onBaseWorldBlockChangedBlocker = false;
         }
 
         public IWorldObject ObjectAt(int x, int y, int z)
         {
-            foreach (IWorldObject _obj in objects)
-                if (_obj.Postion == new Vector3Int(x, y, z))
+            foreach (IWorldObject _obj in objects) {
+                if (_obj.Position == new Vector3Int(x, y, z))
                     return _obj;
+            }
             throw new ArgumentException("Argument is not an Object.");
         }
 
         public void AddObject(IWorldObject _object)
         {
+            if(!objects.Contains(_object))
             objects.Add(_object);
-            Blocks[_object.Postion.X, _object.Postion.Y, _object.Postion.Z] = _object.Type;
+                      
+            Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = _object.Type;
         }
 
         public void RemoveObject(IWorldObject _object)
-        {
-            objects.Remove(_object);
-            onBaseWorldBlockChangedBlocker = true;
-            Blocks[_object.Postion.X, _object.Postion.Y, _object.Postion.Z] = WorldBlock.None;
+       {
+        
+                objects.Remove(_object);       
+                Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = WorldBlock.None;
+                onBaseWorldBlockChangedBlocker = true;
+
         }
 
         public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
