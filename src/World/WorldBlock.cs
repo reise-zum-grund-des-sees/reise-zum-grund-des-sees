@@ -29,6 +29,7 @@ namespace ReiseZumGrundDesSees
             switch (b)
             {
                 case WorldBlock.Lever:
+                case WorldBlock.Spikes:
                     return true;
                 default:
                     return false;
@@ -51,7 +52,7 @@ namespace ReiseZumGrundDesSees
                     return new Vector3(1.00f, 0.50f, 1.00f);
                 case WorldBlock.Water1:
                 case WorldBlock.Spikes:
-                    return new Vector3(1.00f, 0.25f, 1.00f);
+                    return new Vector3(1.00f, 0.5f, 1.00f);
                 case WorldBlock.Lever:
                     return new Vector3(1f, 1.00f, 1f);
                 default:
@@ -112,7 +113,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water2:
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
-                case WorldBlock.Spikes:
+                //case WorldBlock.Spikes:
            
                     return true;
                 default:

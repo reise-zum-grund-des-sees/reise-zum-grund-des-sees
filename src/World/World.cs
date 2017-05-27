@@ -33,7 +33,8 @@ namespace ReiseZumGrundDesSees
                 RemoveObject(ObjectAt(x, y, z));
             if (!onBaseWorldBlockChangedBlocker  && _oldBlock != _newBlock && _newBlock == WorldBlock.Lever)
                 AddObject(Lever.LeverList[Lever.LeverList.Count-1]);
-       
+            if (!onBaseWorldBlockChangedBlocker && _oldBlock != _newBlock && _newBlock == WorldBlock.Spikes)
+                AddObject(Spike.SpikeList[Spike.SpikeList.Count - 1]);
             onBaseWorldBlockChangedBlocker = false;
         }
 

@@ -93,6 +93,11 @@ namespace ReiseZumGrundDesSees
                     Lever.LeverList.Remove(Lever.AtPosition(new Vector3Int(x,y,z)));
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                 }
+                else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] == WorldBlock.Spikes)
+                { //remove spike, Spike duerfen nicht von anderen Blöcken uebersschrieben werden              
+                    Spike.SpikeList.Remove(Spike.AtPosition(new Vector3Int(x, y, z)));
+                    _state.World.Blocks[x, y, z] = WorldBlock.None;
+                }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] != WorldBlock.None)
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
 
@@ -113,10 +118,16 @@ namespace ReiseZumGrundDesSees
                     Lever lever = new Lever(content, new Vector3Int(x, y, z));
                     _state.World.Blocks[x, y, z] = WorldBlock.Lever;
                 }
+
                 else if (_state.World.Blocks[x, y, z] == WorldBlock.Lever && _inputArgs.Events.HasFlag(InputEventList.MouseLeftClick))
                     Lever.AtPosition(new Vector3Int(x,y,z)).Rotation += Math.PI / 2;
 
-               
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceSpike))//Schalter ertmal auf Taste 5 belegen
+                {
+                    Spike spike = new Spike(content, new Vector3Int(x, y, z));
+                    _state.World.Blocks[x, y, z] = WorldBlock.Spikes;
+                }
+
             };
         }
 

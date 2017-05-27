@@ -62,6 +62,10 @@ namespace ReiseZumGrundDesSees
             {
                 _eventList |= InputEventList.PlaceLever;
             }
+            if (_keyboardState.IsKeyDown(Keys.D6))
+            {
+                _eventList |= InputEventList.PlaceSpike;
+            }
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
@@ -193,6 +197,7 @@ namespace ReiseZumGrundDesSees
         PlaceWater2 = 0x20000,
         PlaceWater3 = 0x40000,
         PlaceWater4 = 0x80000,
-        PlaceLever = 0x100000
+        PlaceLever = 0x100000,
+        PlaceSpike = 0x3200000
     }
 }
