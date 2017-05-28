@@ -44,6 +44,7 @@ namespace ReiseZumGrundDesSees
             AktuelleDauer = 0;
             MaximialDauer = 15000;
             Position = _player.Position;
+           
             Zustand = (int)ZustandList.Bereit;
             if (Art == 0){//leichterBlock
               //  AnzahlL++;
@@ -84,7 +85,8 @@ namespace ReiseZumGrundDesSees
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
                 Vector3 Blick =  Vector3.Transform(new Vector3(0,0,-1), Matrix.CreateRotationY(Player.Blickrichtung));
                 Blick.Normalize();
-                Position -= new Vector3(Blick.X*1.5f,0,Blick.Z*1.5f);
+                Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
+                //Console.WriteLine(Position);
                 AktuelleDauer = 0;
                 Zustand = (int)ZustandList.Gesetzt;
             }
@@ -105,20 +107,73 @@ namespace ReiseZumGrundDesSees
                     _speedY -= 0.005f * (float)_passedTime;
                     _movement.Y += _speedY * (float)_passedTime * 0.015f;
                 }
-                List<Direction> _info2 = new List<Direction>();
+                //unter Block ist kein Wasser 
+              
+               
+                    List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Player.Blöcke.Count; i++)
                     if (Vector3.Distance(Position, Player.Blöcke[i].Position) != 0 && Player.Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
                     {
-                        _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 0.8f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 0.8f, 0.8f, 1f)));                        
+                        _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 1f, 1f, 1f)));                        
                     }
                 for (int i = 0; i < _info2.Count-1; i++)
                     if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
                     _speedY = 0;
+              
 
-                Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z , 0.5f, 0.5f, 1f), _view.BlockWorld);
+                if ((_view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water4 )||(
+                
+                 _view.BlockWorld[(int)(Position.X+0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                  || _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water4) ||(
+
+                           _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                || _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water4 )||(
+
+                           _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                 || _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water4 )||(
+
+                           _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                  || _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water4 )||(
+
+                           _view.BlockWorld[(int)(Position.X ), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                 || _view.BlockWorld[(int)(Position.X), (int)(Position.Y - 0.05f), (int)(Position.Z + 0.5f)] == WorldBlock.Water4 )||(
+
+                           _view.BlockWorld[(int)(Position.X), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                  || _view.BlockWorld[(int)(Position.X), (int)(Position.Y - 0.05f), (int)(Position.Z - 0.5f)] == WorldBlock.Water4) ||(
+
+                           _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z)] == WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                 || _view.BlockWorld[(int)(Position.X + 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z)] == WorldBlock.Water4 )||(
+
+                           _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z)] == WorldBlock.Water1 ||
+             _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z )]== WorldBlock.Water2 || _view.BlockWorld[(int)Position.X, (int)(Position.Y - 0.05f), (int)Position.Z] == WorldBlock.Water3
+                  || _view.BlockWorld[(int)(Position.X - 0.5f), (int)(Position.Y - 0.05f), (int)(Position.Z )] == WorldBlock.Water4 ) )
+                
+                  // Wasser unter Block
+                {
+                    if (Art == 1)
+                    {
+
+                    }
+                    //Art 2 (schwerer Block) keine Kollision
+                }
+                else // kein Wasser unter Block
+                {
+                    Console.WriteLine("Rs");
+                    Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), _view.BlockWorld);
                     if (_info3.HasFlag(Direction.Bottom) && _speedY < 0)
                         _speedY = 0;
-
+                   
+                 
+                }
                 if (Art!=0 && _speedY!=0)
                 Position += _movement;
 
