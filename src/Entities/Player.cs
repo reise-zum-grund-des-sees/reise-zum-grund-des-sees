@@ -182,19 +182,25 @@ namespace ReiseZumGrundDesSees
                     && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4
             */
             //Lever press
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveDown) && Levercd >= 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
             {
-                for (int i = 0; i < Lever.LeverList.Count; i++)
-                {
-         
-                    if (ChebyshevDistance(Position, Vector3.Add(Lever.LeverList[i].Position, new Vector3(0.5f, 0, 0.5f))) <= 1f)
-                    {
-                        Levercd = 0;
-                        Lever.LeverList[i].press(); //Bottem ist Starposition vorne
-                    }
-
-                }
+                for (int x = -2; x < 3; x++)
+                    for (int y = -2; y < 3; y++)
+                        for (int z = -2; z < 3; z++)
+                        {
+                            IWorldObject _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                            if (_obj != null && _obj.Type == WorldBlock.Lever)
+                            {
+                                float _dist = ChebyshevDistance(Position, _obj.Position + new Vector3(0.5f, 0.5f, 0.5f));
+                                if (_dist < 1f)
+                                {
+                                    Levercd = 0;
+                                    (_obj as Lever).press();
+                                }
+                            }
+                        }
             }
+
             //Take Damage from Spikes
           
             for (int i = 0; i < Spike.SpikeList.Count; i++)

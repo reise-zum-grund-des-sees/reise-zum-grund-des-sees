@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    interface IWorldObject : IUpdateable
+    interface IWorldObject : IUpdateable, IRenderable
     {
         Hitbox Hitbox { get; }
         Vector3Int Position { get; }

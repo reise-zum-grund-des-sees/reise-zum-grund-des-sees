@@ -40,6 +40,7 @@ namespace ReiseZumGrundDesSees
 			public float PlayerZ => baseState.Player.Position.Z;
 
             public IReadonlyBlockWorld BlockWorld => baseState.World.Blocks;
+            public IReadonlyWorldObjectContainer WorldObjects => baseState.World;
 		}
 	}
 }

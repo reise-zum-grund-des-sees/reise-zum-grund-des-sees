@@ -29,5 +29,8 @@ namespace ReiseZumGrundDesSees
 
         public static bool operator ==(Vector3Int x, Vector3Int y) => x.X == y.X & x.Y == y.Y & x.Z == y.Z;
         public static bool operator !=(Vector3Int x, Vector3Int y) => !(x.X == y.X & x.Y == y.Y & x.Z == y.Z);
+
+        public override string ToString()
+            => $"{X}, {Y}, {Z}";
     }
 }

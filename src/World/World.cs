@@ -10,9 +10,23 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    class World : BaseWorld, IUpdateable
+    interface IReadonlyWorldObjectContainer
     {
-        private readonly IDictionary<Vector3Int, IWorldObject> objects = new Dictionary<Vector3Int, IWorldObject>();
+        IWorldObject ObjectAt(int x, int y, int z);
+        IWorldObject ObjectAt(Vector3Int _pos);
+    }
+
+    interface IWorldObjectContainer : IReadonlyWorldObjectContainer
+    {
+        void AddObject(IWorldObject _obj);
+
+        void RemoveObject(Vector3Int _pos);
+        void RemoveObject(IWorldObject _obj);
+    }
+
+    class World : BaseWorld, IUpdateable, IWorldObjectContainer
+    {
+        protected readonly IDictionary<Vector3Int, IWorldObject> objects = new Dictionary<Vector3Int, IWorldObject>();
         private bool onBaseWorldBlockChangedBlocker = false;
 
         public World(string _basePath) : base(_basePath)
@@ -33,10 +47,17 @@ namespace ReiseZumGrundDesSees
             onBaseWorldBlockChangedBlocker = false;
         }
 
+        public IWorldObject ObjectAt(Vector3Int _pos)
+        {
+            if (objects.TryGetValue(_pos, out IWorldObject _obj))
+                return _obj;
+            else
+                return null;
+        }
         public IWorldObject ObjectAt(int x, int y, int z)
-            => objects[new Vector3Int(x, y, z)];
+            => ObjectAt(new Vector3Int(x, y, z));
 
-        public void AddObject(IWorldObject _object)
+        public virtual void AddObject(IWorldObject _object)
         {
             if (objects.ContainsKey(_object.Position))
                 throw new ArgumentException("There is already an object at that position.");
@@ -47,9 +68,13 @@ namespace ReiseZumGrundDesSees
 
         public void RemoveObject(IWorldObject _object)
         {
-            objects.Remove(_object.Position);
+            RemoveObject(_object.Position);
+        }
+        public void RemoveObject(Vector3Int _pos)
+        {
+            objects.Remove(_pos);
             onBaseWorldBlockChangedBlocker = true;
-            Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = WorldBlock.None;
+            Blocks[_pos.X, _pos.Y, _pos.Z] = WorldBlock.None;
         }
 
         public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)

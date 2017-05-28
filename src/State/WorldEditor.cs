@@ -90,7 +90,7 @@ namespace ReiseZumGrundDesSees
 
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] == WorldBlock.Lever)
                 { //remove lever, Lever duerfen nicht von anderen Blöcken uebersschrieben werden              
-                    Lever.LeverList.Remove(Lever.AtPosition(new Vector3Int(x,y,z)));
+                    _state.World.RemoveObject(new Vector3Int(x, y, z));
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                 }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] == WorldBlock.Spikes)
@@ -113,14 +113,15 @@ namespace ReiseZumGrundDesSees
                 else if (_inputArgs.Events.HasFlag(InputEventList.PlaceWater4) && _state.World.Blocks[x, y, z] != WorldBlock.Water4)
                     _state.World.Blocks[x, y, z] = WorldBlock.Water4;
 
-                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceLever))//Schalter ertmal auf Taste 5 belegen
+                else if (_inputArgs.Events.HasFlag(InputEventList.PlaceLever) && _state.World.Blocks[x, y, z] != WorldBlock.Lever)//Schalter ertmal auf Taste 5 belegen
                 {
                     Lever lever = new Lever(content, new Vector3Int(x, y, z));
-                    _state.World.Blocks[x, y, z] = WorldBlock.Lever;
+                    _state.World.AddObject(lever);
+                    //_state.World.Blocks[x, y, z] = WorldBlock.Lever;
                 }
 
                 else if (_state.World.Blocks[x, y, z] == WorldBlock.Lever && _inputArgs.Events.HasFlag(InputEventList.MouseLeftClick))
-                    Lever.AtPosition(new Vector3Int(x,y,z)).Rotation += Math.PI / 2;
+                    (_state.World.ObjectAt(x, y, z) as Lever).Rotation += Math.PI / 2;
 
                 else if (_inputArgs.Events.HasFlag(InputEventList.PlaceSpike))//Schalter ertmal auf Taste 5 belegen
                 {

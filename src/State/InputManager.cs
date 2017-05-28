@@ -31,6 +31,7 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.A)) _eventList |= InputEventList.MoveLeft;
             if (_keyboardState.IsKeyDown(Keys.S)) _eventList |= InputEventList.MoveBackwards;
             if (_keyboardState.IsKeyDown(Keys.D)) _eventList |= InputEventList.MoveRight;
+            if (_keyboardState.IsKeyDown(Keys.Q)) _eventList |= InputEventList.Interact;
 
             if (_keyboardState.IsKeyDown(Keys.Q)) _eventList |= InputEventList.MoveUp;
             if (_keyboardState.IsKeyDown(Keys.E)) _eventList |= InputEventList.MoveDown;
@@ -198,6 +199,8 @@ namespace ReiseZumGrundDesSees
         PlaceWater3 = 0x40000,
         PlaceWater4 = 0x80000,
         PlaceLever = 0x100000,
-        PlaceSpike = 0x3200000
+        PlaceSpike = 0x200000,
+
+        Interact = 0x400000
     }
 }

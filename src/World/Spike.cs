@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
@@ -52,6 +53,16 @@ namespace ReiseZumGrundDesSees
             {
 
             };
+        }
+
+        public void Initialize(GraphicsDevice _graphicsDevice)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        {
+            throw new NotImplementedException();
         }
     }
 }

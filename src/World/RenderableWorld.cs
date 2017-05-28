@@ -98,14 +98,25 @@ namespace ReiseZumGrundDesSees
         {
             graphicsDevice = _graphicsDevice;
 
+            foreach (var _obj in objects)
+                _obj.Value.Initialize(graphicsDevice);
+
             effect = new BasicEffect(graphicsDevice);
             effect.TextureEnabled = true;
             effect.Texture = blockTexture;
             effect.VertexColorEnabled = true;
-        }                                      
+        }
+
+        public override void AddObject(IWorldObject _object)
+        {
+            base.AddObject(_object);
+            _object.Initialize(graphicsDevice);
+        }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
         {
+            foreach (var _obj in objects)
+                _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix);
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;
 
