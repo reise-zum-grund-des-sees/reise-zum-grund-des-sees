@@ -161,13 +161,16 @@ namespace ReiseZumGrundDesSees
                 {
                     if (Art == 1)
                     {
-
+                        //hier auch 9 Seiten Kollision möglich z.B. new Hitbox(Position.X+0.5f, Position.Y+0.8f, Position.Z+0.5f, 0.001f, 0.001f, 0.001f)
+                        Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y+0.8f, Position.Z, 0.001f, 0.001f, 0.001f), _view.BlockWorld);
+                        if (_info3.HasFlag(Direction.Bottom) && _speedY < 0)
+                            _speedY = 0;
                     }
                     //Art 2 (schwerer Block) keine Kollision
                 }
                 else // kein Wasser unter Block
                 {
-                    Console.WriteLine("Rs");
+                    
                     Direction _info3 = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), _view.BlockWorld);
                     if (_info3.HasFlag(Direction.Bottom) && _speedY < 0)
                         _speedY = 0;
