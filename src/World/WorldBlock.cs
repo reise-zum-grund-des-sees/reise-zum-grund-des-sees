@@ -51,6 +51,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water2:
                     return new Vector3(1.00f, 0.50f, 1.00f);
                 case WorldBlock.Water1:
+                    return new Vector3(1.00f, 0.25f, 1.00f);
                 case WorldBlock.Spikes:
                     return new Vector3(1.00f, 0.5f, 1.00f);
                 case WorldBlock.Lever:

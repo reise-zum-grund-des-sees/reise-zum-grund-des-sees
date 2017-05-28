@@ -139,6 +139,9 @@ namespace ReiseZumGrundDesSees
             _speedY -= 0.005f * (float)_passedTime;
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
+            if ( _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.65f), (int)Position.Z] != WorldBlock.Water1 &&
+               _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.4f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.15f), (int)Position.Z] != WorldBlock.Water3
+                    && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4){ 
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView.BlockWorld);
 
             List<Direction> _info2 = new List<Direction>();
@@ -157,44 +160,28 @@ namespace ReiseZumGrundDesSees
                 else if (_info2[i].HasFlag(Direction.Top) && _speedY > 0)
                     _speedY = 0;
             }
-
-            if (_info.HasFlag(Direction.Bottom) && _speedY < 0)
+           
+            if (_info.HasFlag(Direction.Bottom) && _speedY < 0 )
             {
                 _speedY = 0;
                 Jump1 = false;
                 Jump2 = false;
                 Jumpcd = false;
             }
-            else if (_info.HasFlag(Direction.Top) && _speedY > 0)
-                _speedY = 0;
-
-            /*if (_speedY == 0)
+            else if (_info.HasFlag(Direction.Top) && _speedY > 0 )
             {
-                Jump1 = false;
-                Jump2 = false;
-                Jumpcd = false;
-            }*/
-            //Lever collisions
+                _speedY = 0;
+            }
+            }
+            else{//Wasser unter Spieler
+                Health = 0; // Spieler stirbt
+            }
             /*
-            List<Direction> _infoLever = new List<Direction>();
-            for (int i = 0; i < Lever.LeverList.Count; i++) { 
-              _infoLever.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f),Lever.LeverList[i].Hitbox));
-            }
-            
-            for (int i = 0; i < _infoLever.Count; i++)
-            {
-                if (_infoLever[i].HasFlag(Direction.Back) && Lever.LeverList[i].Rotation==0 ||
-                   _infoLever[i].HasFlag(Direction.Left) && Lever.LeverList[i].Rotation == Math.PI/2 ||
-                   _infoLever[i].HasFlag(Direction.Front) && Lever.LeverList[i].Rotation == Math.PI ||
-                   _infoLever[i].HasFlag(Direction.Right) && Lever.LeverList[i].Rotation == Math.PI*2/3)
-                    if(_inputArgs.Events.HasFlag(InputEventList.MoveDown))
-                        if (Levercd >= 5000) {
-                            Levercd = 0;
-                        Lever.LeverList[i].press(); //Bottem ist Starposition vorne
-                        }
-            }
-                     */
-
+         _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water1 &&
+               _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water3
+                    && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4
+            */
+            //Lever press
             if (_inputArgs.Events.HasFlag(InputEventList.MoveDown) && Levercd >= 1000)
             {
                 for (int i = 0; i < Lever.LeverList.Count; i++)
@@ -271,6 +258,8 @@ namespace ReiseZumGrundDesSees
             foreach (PlayerBlock b in Blöcke)
                 blockUpdateList.Add(b.Update(_stateView, _flags, _inputArgs, _passedTime));
 
+            //Health<=0 -> sterbe
+            if (Health <= 0) gestorben();
             return (ref GameState _state) =>
             {
                 _state.Player.Position += _movement;
@@ -288,6 +277,13 @@ namespace ReiseZumGrundDesSees
             if (Math.Abs(distance.Y) > res) res = Math.Abs(distance.Y);
             if (Math.Abs(distance.Z) > res) res = Math.Abs(distance.Z);
             return res;
+        }
+        public void gestorben()
+        {
+            Health = MaxHealth; //Leben wieder voll
+            for (int i = 0; i < Blöcke.Count; i++)
+                Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Delete; //Bloeke zuruecksetzen
+            Position = new Vector3(24, 32, 24); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
         }
     }
 }
