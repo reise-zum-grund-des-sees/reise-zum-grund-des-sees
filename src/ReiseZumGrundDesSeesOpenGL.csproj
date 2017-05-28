@@ -64,6 +64,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main\Render.cs" />
     <Compile Include="State\WorldEditor.cs" />
+    <Compile Include="World\Spike.cs" />
     <Compile Include="World\VertexGenerator.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="World\WorldBlock.cs" />

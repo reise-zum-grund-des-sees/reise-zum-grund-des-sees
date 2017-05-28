@@ -12,7 +12,7 @@ namespace ReiseZumGrundDesSees
 {
     class World : BaseWorld, IUpdateable
     {
-        private readonly List<IWorldObject> objects = new List<IWorldObject>();
+        private readonly IDictionary<Vector3Int, IWorldObject> objects = new Dictionary<Vector3Int, IWorldObject>();
         private bool onBaseWorldBlockChangedBlocker = false;
 
         public World(string _basePath) : base(_basePath)
@@ -28,48 +28,36 @@ namespace ReiseZumGrundDesSees
 
         private void OnBaseWorldBlockChanged(WorldBlock _oldBlock, WorldBlock _newBlock, int x, int y, int z)
         {
-          
             if (!onBaseWorldBlockChangedBlocker && _oldBlock.IsPartOfWorldObject() && _oldBlock != _newBlock)
                 RemoveObject(ObjectAt(x, y, z));
-            if (!onBaseWorldBlockChangedBlocker  && _oldBlock != _newBlock && _newBlock == WorldBlock.Lever)
-                AddObject(Lever.LeverList[Lever.LeverList.Count-1]);
-            if (!onBaseWorldBlockChangedBlocker && _oldBlock != _newBlock && _newBlock == WorldBlock.Spikes)
-                AddObject(Spike.SpikeList[Spike.SpikeList.Count - 1]);
             onBaseWorldBlockChangedBlocker = false;
         }
 
         public IWorldObject ObjectAt(int x, int y, int z)
-        {
-            foreach (IWorldObject _obj in objects) {
-                if (_obj.Position == new Vector3Int(x, y, z))
-                    return _obj;
-            }
-            throw new ArgumentException("Argument is not an Object.");
-        }
+            => objects[new Vector3Int(x, y, z)];
 
         public void AddObject(IWorldObject _object)
         {
-            if(!objects.Contains(_object))
-            objects.Add(_object);
-                      
+            if (objects.ContainsKey(_object.Position))
+                throw new ArgumentException("There is already an object at that position.");
+
+            objects[_object.Position] = _object;
             Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = _object.Type;
         }
 
         public void RemoveObject(IWorldObject _object)
-       {
-        
-                objects.Remove(_object);       
-                Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = WorldBlock.None;
-                onBaseWorldBlockChangedBlocker = true;
-
+        {
+            objects.Remove(_object.Position);
+            onBaseWorldBlockChangedBlocker = true;
+            Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = WorldBlock.None;
         }
 
         public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             UpdateDelegate _delegate = base.Update(_view, _flags, _inputArgs, _passedTime);
 
-            foreach (IWorldObject _object in objects)
-                _delegate = _delegate.ContinueWith(_object.Update(_view, _flags, _inputArgs, _passedTime));
+            foreach (var _object in objects)
+                _delegate = _delegate.ContinueWith(_object.Value.Update(_view, _flags, _inputArgs, _passedTime));
 
             return _delegate;
         }
