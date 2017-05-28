@@ -19,7 +19,7 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
-        double Healthcd;
+        public double Healthcd;
         public static float Blickrichtung; //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
@@ -38,7 +38,7 @@ namespace ReiseZumGrundDesSees
             BlickrichtungAdd = 0;
             Blockcd = 0;
             Levercd = 0;
-            Healthcd = 0;     
+            Healthcd = 1001;     
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<PlayerBlock>();

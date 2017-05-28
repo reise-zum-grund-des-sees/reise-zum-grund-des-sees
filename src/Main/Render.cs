@@ -22,7 +22,8 @@ namespace ReiseZumGrundDesSees
         public void PlayerR(Player _player, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
             //throw new NotImplementedException();
-
+            if (_player.Healthcd <= 1000 && _player.Healthcd % 100 < 50) { }
+            else { 
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
             foreach (ModelMesh mesh in _player.Model.Meshes)
             {
@@ -39,7 +40,7 @@ namespace ReiseZumGrundDesSees
 
                 mesh.Draw();
             }
-
+            }
         }
         public void LeichterBlock(List<PlayerBlock> _block, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
