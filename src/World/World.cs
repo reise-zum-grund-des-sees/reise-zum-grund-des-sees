@@ -49,7 +49,8 @@ namespace ReiseZumGrundDesSees
 
         public IWorldObject ObjectAt(Vector3Int _pos)
         {
-            if (objects.TryGetValue(_pos, out IWorldObject _obj))
+            IWorldObject _obj;
+            if (objects.TryGetValue(_pos, out _obj))
                 return _obj;
             else
                 return null;
