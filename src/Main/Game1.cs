@@ -204,7 +204,7 @@ namespace ReiseZumGrundDesSees
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
                 renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.SpikeR(Spike.SpikeList, ref _viewMatrix, ref _perspectiveMatrix);
+              
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in otherRenderables)

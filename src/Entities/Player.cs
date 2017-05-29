@@ -203,17 +203,30 @@ namespace ReiseZumGrundDesSees
             }
 
             //Take Damage from Spikes
-          
-            for (int i = 0; i < Spike.SpikeList.Count; i++)
+
+            for (int x = -2; x < 3; x++)
             {
-                if (Vector3.Distance(Position, new Vector3(Spike.SpikeList[i].Position.X+0.5f, Spike.SpikeList[i].Position.Y, Spike.SpikeList[i].Position.Z + 0.5f)) < 1f && Healthcd>1000)
+                for (int y = -2; y < 3; y++)
                 {
-                    Health--;
-                    Healthcd = 0;
-                 
+                    for (int z = -2; z < 3; z++)
+                    {
+                        {
+                            IWorldObject _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                            if (_obj != null && _obj.Type == WorldBlock.Spikes)
+                            {
+               
+                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y +0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
+                                {
+                                    Health--;
+                                    Healthcd = 0;
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
-           
+
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
