@@ -36,7 +36,7 @@ namespace ReiseZumGrundDesSees
                 Hitbox = new Hitbox(_position.X + 0.5f, _position.Y, _position.Z + 0.5f, 1f, 0.5f, 1f);//richtig schieben, im render mus auch Y+0.5f gesetzt werden
                 Type = WorldBlock.Spikes;
                 ContentManager = _contentManager;
-                Model = _contentManager.Load<Model>("leichter_Block");
+                Model = _contentManager.Load<Model>("Stacheln");
                 SpikeList.Add(this);
             }
         }
