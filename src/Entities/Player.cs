@@ -147,7 +147,7 @@ namespace ReiseZumGrundDesSees
             List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt)
-                    _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
+                    _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X -0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X-0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z-0.5f, 1f, 1f, 1f)));
 
                 for (int i = 0; i < _info2.Count; i++)
             {
