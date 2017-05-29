@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ReiseZumGrundDesSees.State;
 
 namespace ReiseZumGrundDesSees
 {
@@ -25,6 +26,7 @@ namespace ReiseZumGrundDesSees
         private List<IRenderable> otherRenderables = new List<IRenderable>();
 
         MainMenu MainMenu;
+        IGamer IGamer;
 
         GameFlags __GameFlags;
         GameFlags GameFlags
@@ -106,6 +108,7 @@ namespace ReiseZumGrundDesSees
 
             // TODO: use this.Content to load your game content here
             MainMenu = new MainMenu(Content);
+            IGamer = new IGamer(Content);
             renderer = new Render(GraphicsDevice, Content);
         }
 
@@ -159,6 +162,9 @@ namespace ReiseZumGrundDesSees
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
+            if (GameFlags.HasFlag(GameFlags.Menu))
+                IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), _gameState);
+
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
             {
@@ -209,6 +215,8 @@ namespace ReiseZumGrundDesSees
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in otherRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
+
+                IGamer.Render(spriteBatch);
             }
 
             if (GameFlags.HasFlag(GameFlags.Menu))

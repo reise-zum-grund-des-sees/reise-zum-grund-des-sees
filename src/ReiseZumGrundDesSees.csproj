@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Entities\ICollisionObject.cs" />
     <Compile Include="Entities\IPlayer.cs" />
+    <Compile Include="State\IGamer.cs" />
     <Compile Include="State\IUpdateable.cs" />
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="Entities\Camera.cs" />
