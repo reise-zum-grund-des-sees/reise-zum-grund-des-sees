@@ -8,8 +8,55 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-    static class CollisionDetector
+    class CollisionDetector
     {
+        private List<ICollisionObject> objects = new List<ICollisionObject>();
+        private IBlockWorld world;
+
+        public CollisionDetector(IBlockWorld _world)
+        {
+            world = _world;
+        }
+
+        public void AddObject(ICollisionObject _object)
+        {
+            objects.Add(_object);
+        }
+
+        public struct CollisionSource
+        {
+            public ICollisionObject Object;
+            public WorldBlock WorldBlock;
+
+            public Type CollisionType;
+
+            public enum Type
+            {
+                WithObject,
+                WithWorldBlock
+            }
+
+            public CollisionSource(ICollisionObject _object)
+            {
+                CollisionType = Type.WithObject;
+                Object = _object;
+                WorldBlock = WorldBlock.None;
+            }
+
+            public CollisionSource(WorldBlock _worldBlock)
+            {
+                CollisionType = Type.WithWorldBlock;
+                Object = null;
+                WorldBlock = _worldBlock;
+            }
+        }
+
+
+        public KeyValuePair<Direction, CollisionSource>[] CheckCollision(Vector3 _idealMovement, ICollisionObject _object)
+        {
+            throw new NotImplementedException();
+        }
+
         const float FLOATING_POINT_INCORRECTION = 0.0001f;
 
         /// <summary>
@@ -32,7 +79,7 @@ namespace ReiseZumGrundDesSees
                 _hitA.X + _hitA.Width + _movA.X > _hitB.X + FLOATING_POINT_INCORRECTION)
             {
                 xCollFlag = true;
-                if (_movA.X > 0)     
+                if (_movA.X > 0)
                 {
                     xDiff = (_hitB.X - (_hitA.X + _hitA.Width)) - _movA.X;
                     _collInfo |= Direction.Right;

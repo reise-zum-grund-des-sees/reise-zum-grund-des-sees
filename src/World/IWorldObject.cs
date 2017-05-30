@@ -9,9 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    interface IWorldObject : IUpdateable, IRenderable
+    interface ISpecialBlock : IUpdateable, IRenderable
     {
-        Hitbox Hitbox { get; }
         Vector3Int Position { get; }
         WorldBlock Type { get; }
     }

@@ -189,7 +189,7 @@ namespace ReiseZumGrundDesSees
                     for (int y = -2; y < 3; y++)
                         for (int z = -2; z < 3; z++)
                         {
-                            IWorldObject _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                            ISpecialBlock _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
                             if (_obj != null && _obj.Type == WorldBlock.Lever)
                             {
                                 float _dist = ChebyshevDistance(Position, _obj.Position + new Vector3(0.5f, 0.5f, 0.5f));

@@ -107,7 +107,7 @@ namespace ReiseZumGrundDesSees
             effect.VertexColorEnabled = true;
         }
 
-        public override void AddObject(IWorldObject _object)
+        public override void AddObject(ISpecialBlock _object)
         {
             base.AddObject(_object);
             _object.Initialize(graphicsDevice);

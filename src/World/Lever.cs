@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Lever : IWorldObject
+    class Lever : ISpecialBlock
     {
         public Model Model;
 
@@ -17,11 +17,6 @@ namespace ReiseZumGrundDesSees
         ContentManager ContentManager;
         public double Rotation;
         public bool alive;
-
-        public Hitbox Hitbox
-        {
-            get;
-        }
 
         public Vector3Int Position
         {
@@ -37,7 +32,6 @@ namespace ReiseZumGrundDesSees
         {
             alive = true;
             Position = _position;
-            Hitbox = new Hitbox(_position.X + 0.5f, _position.Y, _position.Z + 0.5f, 1f, 1f, 1f);//richtig schieben, im render mus auch Y+0.5f gesetzt werden
             Type = WorldBlock.Lever;
             //Position = _position + new Vector3(0.5f,0.5f,0.5f);
             is_pressed = false;

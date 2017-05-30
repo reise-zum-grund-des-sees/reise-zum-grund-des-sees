@@ -9,15 +9,11 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-    class Spike : IWorldObject
+    class Spike : ISpecialBlock
     {
         ContentManager ContentManager;
         public static List<Spike> SpikeList = new List<Spike>();
         public Model Model;
-        public Hitbox Hitbox
-        {
-            get;
-        }
 
         public Vector3Int Position
         {
@@ -33,7 +29,6 @@ namespace ReiseZumGrundDesSees
             if (AtPosition(_position) == null)
             {
                 Position = _position;
-                Hitbox = new Hitbox(_position.X + 0.5f, _position.Y, _position.Z + 0.5f, 1f, 0.5f, 1f);//richtig schieben, im render mus auch Y+0.5f gesetzt werden
                 Type = WorldBlock.Spikes;
                 ContentManager = _contentManager;
                 Model = _contentManager.Load<Model>("leichter_Block");

@@ -12,21 +12,21 @@ namespace ReiseZumGrundDesSees
 {
     interface IReadonlyWorldObjectContainer
     {
-        IWorldObject ObjectAt(int x, int y, int z);
-        IWorldObject ObjectAt(Vector3Int _pos);
+        ISpecialBlock ObjectAt(int x, int y, int z);
+        ISpecialBlock ObjectAt(Vector3Int _pos);
     }
 
     interface IWorldObjectContainer : IReadonlyWorldObjectContainer
     {
-        void AddObject(IWorldObject _obj);
+        void AddObject(ISpecialBlock _obj);
 
         void RemoveObject(Vector3Int _pos);
-        void RemoveObject(IWorldObject _obj);
+        void RemoveObject(ISpecialBlock _obj);
     }
 
     class World : BaseWorld, IUpdateable, IWorldObjectContainer
     {
-        protected readonly IDictionary<Vector3Int, IWorldObject> objects = new Dictionary<Vector3Int, IWorldObject>();
+        protected readonly IDictionary<Vector3Int, ISpecialBlock> objects = new Dictionary<Vector3Int, ISpecialBlock>();
         private bool onBaseWorldBlockChangedBlocker = false;
 
         public World(string _basePath) : base(_basePath)
@@ -47,17 +47,17 @@ namespace ReiseZumGrundDesSees
             onBaseWorldBlockChangedBlocker = false;
         }
 
-        public IWorldObject ObjectAt(Vector3Int _pos)
+        public ISpecialBlock ObjectAt(Vector3Int _pos)
         {
-            if (objects.TryGetValue(_pos, out IWorldObject _obj))
+            if (objects.TryGetValue(_pos, out ISpecialBlock _obj))
                 return _obj;
             else
                 return null;
         }
-        public IWorldObject ObjectAt(int x, int y, int z)
+        public ISpecialBlock ObjectAt(int x, int y, int z)
             => ObjectAt(new Vector3Int(x, y, z));
 
-        public virtual void AddObject(IWorldObject _object)
+        public virtual void AddObject(ISpecialBlock _object)
         {
             if (objects.ContainsKey(_object.Position))
                 throw new ArgumentException("There is already an object at that position.");
@@ -66,7 +66,7 @@ namespace ReiseZumGrundDesSees
             Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = _object.Type;
         }
 
-        public void RemoveObject(IWorldObject _object)
+        public void RemoveObject(ISpecialBlock _object)
         {
             RemoveObject(_object.Position);
         }
