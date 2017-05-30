@@ -66,37 +66,37 @@ namespace ReiseZumGrundDesSees
             Hitbox _tmpHit = _hitA;
             for (int i = 0; i < _splits.Length; i++)
             {
-                int c = 0;
-                if (_splits[i].X == 0) c++;
-                if (_splits[i].Y == 0) c++;
-                if (_splits[i].Z == 0) c++;
-                if (c < 2) throw new ArgumentException();
                 _dir |= CollisionDetection(ref _splits[i], _tmpHit, _hitB);
+                //DebugHelper.Log(_dir + ": " + )
                 _tmpHit = new Hitbox(_tmpHit.X + _splits[i].X, _tmpHit.Y + _splits[i].Y, _tmpHit.Z + _splits[i].Z,
                     _tmpHit.Width, _tmpHit.Height, _tmpHit.Depth);
             }
 
-            _movA = _splits.Aggregate((v1, v2) => v1 + v2);
+            if (_splits.Length == 0)
+                _movA = Vector3.Zero;
+            else
+                _movA = _splits.Aggregate((v1, v2) => v1 + v2);
+
             return _dir;
         }
 
         const float MAX_SPLIT_PART_LENGTH = 0.1f;
         private static Vector3[] splitVector(Vector3 v)
         {
-            int _splitCountX = (int)Math.Abs(v.X / MAX_SPLIT_PART_LENGTH) + 1;
+            int _splitCountX = (int)Math.Ceiling(Math.Abs(v.X / MAX_SPLIT_PART_LENGTH));
             int _indexX = 0;
-            int _splitCountY = (int)Math.Abs(v.Y / MAX_SPLIT_PART_LENGTH) + 1;
+            int _splitCountY = (int)Math.Ceiling(Math.Abs(v.Y / MAX_SPLIT_PART_LENGTH));
             int _indexY = 0;
-            int _splitCountZ = (int)Math.Abs(v.Z / MAX_SPLIT_PART_LENGTH) + 1;
+            int _splitCountZ = (int)Math.Ceiling(Math.Abs(v.Z / MAX_SPLIT_PART_LENGTH));
             int _indexZ = 0;
-            Console.WriteLine(_splitCountX + ", " + _splitCountY + ", " + _splitCountZ);
+            Console.WriteLine(v.X + ", " + v.Y + ", " + v.Z + " | " + _splitCountX + ", " + _splitCountY + ", " + _splitCountZ);
             Vector3[] _splits = new Vector3[_splitCountX + _splitCountY + _splitCountZ];
 
             for (int i = 0; i < _splits.Length; i++)
             {
-                float _progressX = _indexX / _splitCountX;
-                float _progressY = _indexY / _splitCountY;
-                float _progressZ = _indexZ / _splitCountZ;
+                float _progressX = (_splitCountX > 0) ? _indexX / _splitCountX : float.PositiveInfinity;
+                float _progressY = (_splitCountY > 0) ? _indexY / _splitCountY : float.PositiveInfinity;
+                float _progressZ = (_splitCountZ > 0) ? _indexZ / _splitCountZ : float.PositiveInfinity;
 
                 if (_progressX <= _progressY && _progressX <= _progressZ)
                 {
@@ -118,7 +118,7 @@ namespace ReiseZumGrundDesSees
             return _splits;
         }
 
-        const float FLOATING_POINT_INCORRECTION = 0.0001f;
+        const float FLOATING_POINT_INCORRECTION = 0.00001f;
         /// <summary>
         /// Erkenne Kollisionen zwischen einer bewegten und einer statischen Hitbox
         /// </summary>
@@ -216,21 +216,30 @@ namespace ReiseZumGrundDesSees
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der Welt kollidieren</returns>
         public static Direction CollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
         {
-            int _hitX = (int)_hitbox.X;
-            int _hitY = (int)_hitbox.Y;
-            int _hitZ = (int)_hitbox.Z;
-
+            Vector3[] _splitted = splitVector(_movement);
             Direction _collInfo = Direction.None;
 
-            // test for hitbox surrounding blocks
-            for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
-                for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
-                    for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
-                    {
-                        WorldBlock b = _world[x, y, z];
-                        if (b.HasCollision())
-                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
-                    }
+            for (int i = 0; i < _splitted.Length; i++)
+            {
+                int _hitX = (int)_hitbox.X;
+                int _hitY = (int)_hitbox.Y;
+                int _hitZ = (int)_hitbox.Z;
+
+                // test for hitbox surrounding blocks
+                for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
+                    for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
+                        for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
+                        {
+                            WorldBlock b = _world[x, y, z];
+                            if (b.HasCollision())
+                                _collInfo |= CollisionDetection(ref _splitted[i], _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                        }
+
+                _hitbox += _splitted[i];
+            }
+
+            if (_splitted.Any())
+                _movement = _splitted.Aggregate((v1, v2) => v1 + v2);
 
             return _collInfo;
         }
@@ -257,6 +266,9 @@ namespace ReiseZumGrundDesSees
 
         public Hitbox(float x, float y, float z, Vector3 _size)
             : this(x, y, z, _size.X, _size.Y, _size.Z) { }
+
+        public static Hitbox operator +(Hitbox h, Vector3 v) =>
+            new Hitbox(h.X + v.X, h.Y + v.Y, h.Z + v.Z, h.Width, h.Height, h.Depth);
     }
 
     [Flags]
