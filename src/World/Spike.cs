@@ -12,7 +12,6 @@ namespace ReiseZumGrundDesSees
     class Spike : ISpecialBlock
     {
         ContentManager ContentManager;
-        public static List<Spike> SpikeList = new List<Spike>();
         public Model Model;
 
         public Vector3Int Position
@@ -26,22 +25,14 @@ namespace ReiseZumGrundDesSees
         }
         public Spike(ContentManager _contentManager, Vector3Int _position)
         {
-            if (AtPosition(_position) == null)
-            {
                 Position = _position;
                 Type = WorldBlock.Spikes;
                 ContentManager = _contentManager;
-                Model = _contentManager.Load<Model>("leichter_Block");
-                SpikeList.Add(this);
-            }
+                Model = _contentManager.Load<Model>("Stacheln");
+                //SpikeList.Add(this);
+         
         }
-        public static Spike AtPosition(Vector3Int _position)
-        {
-            for (int i = 0; i < SpikeList.Count; i++)
-                if (SpikeList[i].Position == _position) return SpikeList[i];
 
-            return null;
-        }
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             return (ref GameState _state) =>
@@ -52,12 +43,31 @@ namespace ReiseZumGrundDesSees
 
         public void Initialize(GraphicsDevice _graphicsDevice)
         {
-            throw new NotImplementedException();
+        
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
         {
-            throw new NotImplementedException();
+            {
+
+                    foreach (ModelMesh mesh in Model.Meshes)
+                    {
+                        foreach (BasicEffect effect in mesh.Effects)
+                        {
+                            effect.EnableDefaultLighting();
+                            effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
+
+                            effect.View = _viewMatrix;
+
+                            effect.Projection = _perspectiveMatrix;
+
+                        }
+
+                        mesh.Draw();
+                    }
+
+               
+            }
         }
     }
 }

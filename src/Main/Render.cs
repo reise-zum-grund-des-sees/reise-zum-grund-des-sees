@@ -67,30 +67,7 @@ namespace ReiseZumGrundDesSees
             }
         }
     }
-        public void SpikeR(List<Spike> _spike, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
-        {
-
-            for (int i = 0; i < _spike.Count; i++)
-            {
-
-                foreach (ModelMesh mesh in _spike[i].Model.Meshes)
-                {
-                    foreach (BasicEffect effect in mesh.Effects)
-                    {
-                        effect.EnableDefaultLighting();
-                        effect.World = Matrix.CreateScale(0.5f)*Matrix.CreateTranslation(Vector3.Add(_spike[i].Position, new Vector3(0.5f, 0.5f, 0.5f)));
-
-                        effect.View = _viewMatrix;
-
-                        effect.Projection = _perspectiveMatrix;
-
-                    }
-
-                    mesh.Draw();
-                }
-
-            }
-        }
+    
         // ...
     }
 }

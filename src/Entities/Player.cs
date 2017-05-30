@@ -147,7 +147,7 @@ namespace ReiseZumGrundDesSees
             List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt)
-                    _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X, Blöcke[i].Position.Y, Blöcke[i].Position.Z, 1f, 1f, 1f)));
+                    _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X -0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X-0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z-0.5f, 1f, 1f, 1f)));
 
                 for (int i = 0; i < _info2.Count; i++)
             {
@@ -203,17 +203,30 @@ namespace ReiseZumGrundDesSees
             }
 
             //Take Damage from Spikes
-          
-            for (int i = 0; i < Spike.SpikeList.Count; i++)
+
+            for (int x = -2; x < 3; x++)
             {
-                if (Vector3.Distance(Position, new Vector3(Spike.SpikeList[i].Position.X+0.5f, Spike.SpikeList[i].Position.Y, Spike.SpikeList[i].Position.Z + 0.5f)) < 1f && Healthcd>1000)
+                for (int y = -2; y < 3; y++)
                 {
-                    Health--;
-                    Healthcd = 0;
-                 
+                    for (int z = -2; z < 3; z++)
+                    {
+                        {
+                            IWorldObject _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                            if (_obj != null && _obj.Type == WorldBlock.Spikes)
+                            {
+               
+                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y +0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
+                                {
+                                    Health--;
+                                    Healthcd = 0;
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
-           
+
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
