@@ -66,6 +66,11 @@ namespace ReiseZumGrundDesSees
             Hitbox _tmpHit = _hitA;
             for (int i = 0; i < _splits.Length; i++)
             {
+                int c = 0;
+                if (_splits[i].X == 0) c++;
+                if (_splits[i].Y == 0) c++;
+                if (_splits[i].Z == 0) c++;
+                if (c < 2) throw new ArgumentException();
                 _dir |= CollisionDetection(ref _splits[i], _tmpHit, _hitB);
                 _tmpHit = new Hitbox(_tmpHit.X + _splits[i].X, _tmpHit.Y + _splits[i].Y, _tmpHit.Z + _splits[i].Z,
                     _tmpHit.Width, _tmpHit.Height, _tmpHit.Depth);
@@ -78,12 +83,37 @@ namespace ReiseZumGrundDesSees
         const float MAX_SPLIT_PART_LENGTH = 0.1f;
         private static Vector3[] splitVector(Vector3 v)
         {
-            float _length = v.Length();
-            int _splitCount = (int)(_length / MAX_SPLIT_PART_LENGTH) + 1;
-            Vector3[] _splits = new Vector3[_splitCount];
+            int _splitCountX = (int)Math.Abs(v.X / MAX_SPLIT_PART_LENGTH) + 1;
+            int _indexX = 0;
+            int _splitCountY = (int)Math.Abs(v.Y / MAX_SPLIT_PART_LENGTH) + 1;
+            int _indexY = 0;
+            int _splitCountZ = (int)Math.Abs(v.Z / MAX_SPLIT_PART_LENGTH) + 1;
+            int _indexZ = 0;
+            Console.WriteLine(_splitCountX + ", " + _splitCountY + ", " + _splitCountZ);
+            Vector3[] _splits = new Vector3[_splitCountX + _splitCountY + _splitCountZ];
 
-            for (int i = 0; i < _splitCount; i++)
-                _splits[i] = new Vector3(v.X / _splitCount, v.Y / _splitCount, v.Z / _splitCount);
+            for (int i = 0; i < _splits.Length; i++)
+            {
+                float _progressX = _indexX / _splitCountX;
+                float _progressY = _indexY / _splitCountY;
+                float _progressZ = _indexZ / _splitCountZ;
+
+                if (_progressX <= _progressY && _progressX <= _progressZ)
+                {
+                    _splits[i] = new Vector3(v.X / _splitCountX, 0, 0);
+                    _indexX++;
+                }
+                else if (_progressZ <= _progressY)
+                {
+                    _splits[i] = new Vector3(0, 0, v.Z / _splitCountZ);
+                    _indexZ++;
+                }
+                else
+                {
+                    _splits[i] = new Vector3(0, v.Y / _splitCountY, 0);
+                    _indexY++;
+                }
+            }
 
             return _splits;
         }
@@ -101,7 +131,7 @@ namespace ReiseZumGrundDesSees
         {
             Direction _collInfo = Direction.None;
 
-            float xDiff = float.PositiveInfinity, yDiff = float.PositiveInfinity, zDiff = float.PositiveInfinity;
+            float xDiff = 0, yDiff = 0, zDiff = 0;
             bool xCollFlag = false, yCollFlag = false, zCollFlag = false;
 
             // collision left
@@ -157,16 +187,12 @@ namespace ReiseZumGrundDesSees
 
             if (xCollFlag & yCollFlag & zCollFlag)
             {
-                float xDiffNormalized = Math.Abs(xDiff / _movA.X);
-                float yDiffNormalized = Math.Abs(yDiff / _movA.Y);
-                float zDiffNormalized = Math.Abs(zDiff / _movA.Z);
-
-                if (_collInfo.HasFlag(Direction.Top) | _collInfo.HasFlag(Direction.Bottom) & yDiffNormalized <= xDiffNormalized & yDiffNormalized <= zDiffNormalized)
+                if (_collInfo.HasFlag(Direction.Top) | _collInfo.HasFlag(Direction.Bottom))
                 {
                     _movA.Y += yDiff;
                     return _collInfo & (Direction.Top | Direction.Bottom);
                 }
-                else if (_collInfo.HasFlag(Direction.Left) | _collInfo.HasFlag(Direction.Right) & xDiffNormalized <= zDiffNormalized)
+                else if (_collInfo.HasFlag(Direction.Left) | _collInfo.HasFlag(Direction.Right))
                 {
                     _movA.X += xDiff;
                     return _collInfo & (Direction.Left | Direction.Right);
@@ -196,44 +222,15 @@ namespace ReiseZumGrundDesSees
 
             Direction _collInfo = Direction.None;
 
-            // Bugfix: if we feed all 3 directions into CollisionWithObject it doesnt know in which direction it should move the player
-
-            Vector3 _tmpMovement = new Vector3(_movement.X, 0, 0);
             // test for hitbox surrounding blocks
-            for (int x = _hitX - 1; x <= _hitX + 1; x++)
-                for (int y = _hitY - 1; y <= _hitY + 1; y++)
-                    for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
+            for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
+                for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
+                    for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
                     {
                         WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
-                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _tmpMovement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
                     }
-            _movement.X = _tmpMovement.X;
-
-
-            _tmpMovement = new Vector3(0, _movement.Y, 0);
-            // test for hitbox surrounding blocks
-            for (int x = _hitX - 1; x <= _hitX + 1; x++)
-                for (int y = _hitY - 1; y <= _hitY + 1; y++)
-                    for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
-                    {
-                        WorldBlock b = _world[x, y, z];
-                        if (b.HasCollision())
-                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y, z, b.GetBounds()));
-                    }
-            _movement.Y = _tmpMovement.Y;
-
-            _tmpMovement = new Vector3(0, 0, _movement.Z);
-            // test for hitbox surrounding blocks
-            for (int x = _hitX - 1; x <= _hitX + 1; x++)
-                for (int y = _hitY - 1; y <= _hitY + 1; y++)
-                    for (int z = _hitZ - 1; z <= _hitZ + 1; z++)
-                    {
-                        WorldBlock b = _world[x, y, z];
-                        if (b.HasCollision())
-                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y + _tmpMovement.Y, z, b.GetBounds()));
-                    }
-            _movement.Z = _tmpMovement.Z;
 
             return _collInfo;
         }

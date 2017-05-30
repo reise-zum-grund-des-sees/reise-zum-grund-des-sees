@@ -46,6 +46,7 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\ICollisionObject.cs" />
     <Compile Include="State\IUpdateable.cs" />
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="Entities\Camera.cs" />

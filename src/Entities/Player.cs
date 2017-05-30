@@ -142,8 +142,9 @@ namespace ReiseZumGrundDesSees
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
             if (_stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.65f), (int)Position.Z] != WorldBlock.Water1 &&
-               _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.4f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.15f), (int)Position.Z] != WorldBlock.Water3
-                    && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4)
+                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.4f), (int)Position.Z] != WorldBlock.Water2 &&
+                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.15f), (int)Position.Z] != WorldBlock.Water3 &&
+                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4)
             {
                 Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView.BlockWorld);
 
