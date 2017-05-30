@@ -57,8 +57,38 @@ namespace ReiseZumGrundDesSees
             throw new NotImplementedException();
         }
 
-        const float FLOATING_POINT_INCORRECTION = 0.0001f;
 
+        public static Direction CollisionDetectionWithSplittedMovement(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
+        {
+            Vector3[] _splits = splitVector(_movA);
+            Direction _dir = Direction.None;
+
+            Hitbox _tmpHit = _hitA;
+            for (int i = 0; i < _splits.Length; i++)
+            {
+                _dir |= CollisionDetection(ref _splits[i], _tmpHit, _hitB);
+                _tmpHit = new Hitbox(_tmpHit.X + _splits[i].X, _tmpHit.Y + _splits[i].Y, _tmpHit.Z + _splits[i].Z,
+                    _tmpHit.Width, _tmpHit.Height, _tmpHit.Depth);
+            }
+
+            _movA = _splits.Aggregate((v1, v2) => v1 + v2);
+            return _dir;
+        }
+
+        const float MAX_SPLIT_PART_LENGTH = 0.1f;
+        private static Vector3[] splitVector(Vector3 v)
+        {
+            float _length = v.Length();
+            int _splitCount = (int)(_length / MAX_SPLIT_PART_LENGTH) + 1;
+            Vector3[] _splits = new Vector3[_splitCount];
+
+            for (int i = 0; i < _splitCount; i++)
+                _splits[i] = new Vector3(v.X / _splitCount, v.Y / _splitCount, v.Z / _splitCount);
+
+            return _splits;
+        }
+
+        const float FLOATING_POINT_INCORRECTION = 0.0001f;
         /// <summary>
         /// Erkenne Kollisionen zwischen einer bewegten und einer statischen Hitbox
         /// </summary>
@@ -67,7 +97,7 @@ namespace ReiseZumGrundDesSees
         /// <param name="_hitB">Die Hitbox des statischen Objektes</param>
         /// <param name="_possibleMovements">Mögliche Ausweichbewegungen des bewegten Hitbox</param>
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der statischen Hitbox kollidieren</returns>
-        public static Direction CollisionWithObject(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
+        private static Direction CollisionDetection(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
         {
             Direction _collInfo = Direction.None;
 
@@ -130,12 +160,6 @@ namespace ReiseZumGrundDesSees
                 float xDiffNormalized = Math.Abs(xDiff / _movA.X);
                 float yDiffNormalized = Math.Abs(yDiff / _movA.Y);
                 float zDiffNormalized = Math.Abs(zDiff / _movA.Z);
-                /*if (_movA.Length() < FLOATING_POINT_INCORRECTION)
-                {
-                    xDiffNormalized = Math.Abs(xDiff);
-                    yDiffNormalized = Math.Abs(yDiff);
-                    zDiffNormalized = Math.Abs(zDiff);
-                }*/
 
                 if (_collInfo.HasFlag(Direction.Top) | _collInfo.HasFlag(Direction.Bottom) & yDiffNormalized <= xDiffNormalized & yDiffNormalized <= zDiffNormalized)
                 {
@@ -182,7 +206,7 @@ namespace ReiseZumGrundDesSees
                     {
                         WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
-                            _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _tmpMovement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
                     }
             _movement.X = _tmpMovement.X;
 
@@ -195,7 +219,7 @@ namespace ReiseZumGrundDesSees
                     {
                         WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
-                            _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y, z, b.GetBounds()));
+                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y, z, b.GetBounds()));
                     }
             _movement.Y = _tmpMovement.Y;
 
@@ -207,7 +231,7 @@ namespace ReiseZumGrundDesSees
                     {
                         WorldBlock b = _world[x, y, z];
                         if (b.HasCollision())
-                            _collInfo |= CollisionWithObject(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y + _tmpMovement.Y, z, b.GetBounds()));
+                            _collInfo |= CollisionDetectionWithSplittedMovement(ref _tmpMovement, _hitbox, new Hitbox(x + _tmpMovement.X, y + _tmpMovement.Y, z, b.GetBounds()));
                     }
             _movement.Z = _tmpMovement.Z;
 

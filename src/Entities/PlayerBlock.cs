@@ -114,7 +114,7 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Player.Blöcke.Count; i++)
                     if (Vector3.Distance(Position, Player.Blöcke[i].Position) != 0 && Player.Blöcke[i].Zustand==(int)PlayerBlock.ZustandList.Gesetzt)
                     {
-                        _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 1f, 1f, 1f)));                        
+                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 1f, 1f, 1f)));                        
                     }
                 for (int i = 0; i < _info2.Count-1; i++)
                     if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)

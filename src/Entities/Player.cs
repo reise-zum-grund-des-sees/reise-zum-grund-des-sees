@@ -38,7 +38,7 @@ namespace ReiseZumGrundDesSees
             BlickrichtungAdd = 0;
             Blockcd = 0;
             Levercd = 0;
-            Healthcd = 1001;     
+            Healthcd = 1001;
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<PlayerBlock>();
@@ -110,7 +110,8 @@ namespace ReiseZumGrundDesSees
                 _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
             }
 
-            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft)) {
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
+            {
                 _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
                 _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
             }
@@ -121,7 +122,8 @@ namespace ReiseZumGrundDesSees
             }
 
 
-            if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false) {
+            if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
+            {
                 Jump1 = true;
                 _speedY = 1.1f;
                 Jumpcd = true;
@@ -139,42 +141,44 @@ namespace ReiseZumGrundDesSees
             _speedY -= 0.005f * (float)_passedTime;
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
-            if ( _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.65f), (int)Position.Z] != WorldBlock.Water1 &&
+            if (_stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.65f), (int)Position.Z] != WorldBlock.Water1 &&
                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.4f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.15f), (int)Position.Z] != WorldBlock.Water3
-                    && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4){ 
-            Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView.BlockWorld);
+                    && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4)
+            {
+                Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView.BlockWorld);
 
-            List<Direction> _info2 = new List<Direction>();
+                List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt)
-                    _info2.Add(CollisionDetector.CollisionWithObject(ref _movement, new Hitbox(Position.X -0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X-0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z-0.5f, 1f, 1f, 1f)));
+                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X - 0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z - 0.5f, 1f, 1f, 1f)));
 
                 for (int i = 0; i < _info2.Count; i++)
-            {
-                if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
+                {
+                    if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
+                    {
+                        _speedY = 0;
+                        Jump1 = false;
+                        Jump2 = false;
+                        Jumpcd = false;
+                    }
+                    else if (_info2[i].HasFlag(Direction.Top) && _speedY > 0)
+                        _speedY = 0;
+                }
+
+                if (_info.HasFlag(Direction.Bottom) && _speedY < 0)
                 {
                     _speedY = 0;
                     Jump1 = false;
                     Jump2 = false;
                     Jumpcd = false;
                 }
-                else if (_info2[i].HasFlag(Direction.Top) && _speedY > 0)
+                else if (_info.HasFlag(Direction.Top) && _speedY > 0)
+                {
                     _speedY = 0;
+                }
             }
-           
-            if (_info.HasFlag(Direction.Bottom) && _speedY < 0 )
-            {
-                _speedY = 0;
-                Jump1 = false;
-                Jump2 = false;
-                Jumpcd = false;
-            }
-            else if (_info.HasFlag(Direction.Top) && _speedY > 0 )
-            {
-                _speedY = 0;
-            }
-            }
-            else{//Wasser unter Spieler
+            else
+            {//Wasser unter Spieler
                 Health = 0; // Spieler stirbt
             }
             /*
@@ -211,11 +215,11 @@ namespace ReiseZumGrundDesSees
                     for (int z = -2; z < 3; z++)
                     {
                         {
-                            IWorldObject _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                            ISpecialBlock _obj = _stateView.WorldObjects.ObjectAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
                             if (_obj != null && _obj.Type == WorldBlock.Spikes)
                             {
-               
-                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y +0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
+
+                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
                                 {
                                     Health--;
                                     Healthcd = 0;
@@ -230,11 +234,11 @@ namespace ReiseZumGrundDesSees
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
-            
+
             //Setzen von Blöcken
-            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock)  && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 1000)
             {
-                           
+
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 0)
                     {
@@ -242,11 +246,11 @@ namespace ReiseZumGrundDesSees
                         Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
                         break;
                     }
-               
+
             }
             if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 1000)
             {
-             
+
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 1)
                     {
@@ -257,7 +261,7 @@ namespace ReiseZumGrundDesSees
             }
             if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 1000)
             {
-             
+
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 2)
                     {
@@ -267,7 +271,7 @@ namespace ReiseZumGrundDesSees
                     }
             }
 
-       // Löschen mit Taste
+            // Löschen mit Taste
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -290,9 +294,9 @@ namespace ReiseZumGrundDesSees
                     u(ref _state);
             };
         }
-    public static float ChebyshevDistance(Vector3 a, Vector3 b)
-            {
-            Vector3 distance= Vector3.Subtract(a, b);
+        public static float ChebyshevDistance(Vector3 a, Vector3 b)
+        {
+            Vector3 distance = Vector3.Subtract(a, b);
             float res = Math.Abs(distance.X);
             if (Math.Abs(distance.Y) > res) res = Math.Abs(distance.Y);
             if (Math.Abs(distance.Z) > res) res = Math.Abs(distance.Z);
