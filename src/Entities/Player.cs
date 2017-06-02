@@ -10,9 +10,16 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Player : IUpdateable, IPositionObject
+    class Player : IPlayer
     {
         public Vector3 Position { get; set; } //Position des Spielers
+
+        public IReadOnlyList<IPlayerBlock> Blocks => Blöcke;
+
+        public bool HasMultipleHitboxes => false;
+        public Hitbox Hitbox => new Hitbox(Position, 0.8f, 1.5f, 0.8f);
+        public Hitbox[] Hitboxes => throw new NotImplementedException();
+
         public Model Model;
         bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
         bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
@@ -25,7 +32,7 @@ namespace ReiseZumGrundDesSees
         public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
         float _speedY = 0;
-        int Health;
+        public int Health { get; private set; }
         int MaxHealth;
         public Player(ContentManager contentManager, Vector3 _position)
         {
@@ -150,7 +157,7 @@ namespace ReiseZumGrundDesSees
 
                 List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Gesetzt)
                         _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X - 0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z - 0.5f, 1f, 1f, 1f)));
 
                 for (int i = 0; i < _info2.Count; i++)
@@ -241,10 +248,10 @@ namespace ReiseZumGrundDesSees
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 0)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 0)
                     {
                         Blockcd = 0;
-                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        Blöcke[i].Zustand = (int)PlayerBlock.State.Übergang;
                         break;
                     }
 
@@ -253,10 +260,10 @@ namespace ReiseZumGrundDesSees
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 1)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 1)
                     {
                         Blockcd = 0;
-                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        Blöcke[i].Zustand = (int)PlayerBlock.State.Übergang;
                         break;
                     }
             }
@@ -264,10 +271,10 @@ namespace ReiseZumGrundDesSees
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.ZustandList.Bereit && Blöcke[i].Art == 2)
+                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 2)
                     {
                         Blockcd = 0;
-                        Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Übergang;
+                        Blöcke[i].Zustand = (int)PlayerBlock.State.Übergang;
                         break;
                     }
             }
@@ -276,7 +283,7 @@ namespace ReiseZumGrundDesSees
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
                 for (int i = 0; i < Blöcke.Count; i++)
-                    Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Delete;
+                    Blöcke[i].Zustand = (int)PlayerBlock.State.Delete;
             }
 
             List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
@@ -287,7 +294,7 @@ namespace ReiseZumGrundDesSees
             if (Health <= 0) gestorben();
             return (ref GameState _state) =>
             {
-                _state.Player.Position += _movement;
+                this.Position += _movement;
                 _state.Camera.ChangePosition(_movement);   //move Camera with Player   
                 //Console.WriteLine(Position);
 
@@ -307,8 +314,18 @@ namespace ReiseZumGrundDesSees
         {
             Health = MaxHealth; //Leben wieder voll
             for (int i = 0; i < Blöcke.Count; i++)
-                Blöcke[i].Zustand = (int)PlayerBlock.ZustandList.Delete; //Bloeke zuruecksetzen
+                Blöcke[i].Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
             Position = new Vector3(24, 32, 24); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
+        }
+
+        public bool CollidesWithWorldBlock(WorldBlock _block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CollidesWithObject(ICollisionObject _object)
+        {
+            throw new NotImplementedException();
         }
     }
 }

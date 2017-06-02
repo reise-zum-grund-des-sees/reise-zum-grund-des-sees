@@ -89,7 +89,6 @@ namespace ReiseZumGrundDesSees
             int _indexY = 0;
             int _splitCountZ = (int)Math.Ceiling(Math.Abs(v.Z / MAX_SPLIT_PART_LENGTH));
             int _indexZ = 0;
-            Console.WriteLine(v.X + ", " + v.Y + ", " + v.Z + " | " + _splitCountX + ", " + _splitCountY + ", " + _splitCountZ);
             Vector3[] _splits = new Vector3[_splitCountX + _splitCountY + _splitCountZ];
 
             for (int i = 0; i < _splits.Length; i++)
@@ -266,6 +265,9 @@ namespace ReiseZumGrundDesSees
 
         public Hitbox(float x, float y, float z, Vector3 _size)
             : this(x, y, z, _size.X, _size.Y, _size.Z) { }
+
+        public Hitbox(Vector3 _position, float _width, float _height, float _depth)
+            : this(_position.X, _position.Y, _position.Z, _width, _height, _depth) { }
 
         public static Hitbox operator +(Hitbox h, Vector3 v) =>
             new Hitbox(h.X + v.X, h.Y + v.Y, h.Z + v.Z, h.Width, h.Height, h.Depth);

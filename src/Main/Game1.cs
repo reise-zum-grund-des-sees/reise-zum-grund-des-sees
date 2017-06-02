@@ -202,7 +202,7 @@ namespace ReiseZumGrundDesSees
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
-                renderer.PlayerR(GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.PlayerR((Player)GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
               
                 foreach (var _renderable in worldRenderables)

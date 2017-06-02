@@ -11,10 +11,10 @@ namespace ReiseZumGrundDesSees
 	struct GameState
 	{
 		public readonly Camera Camera;
-		public readonly Player Player;
+		public readonly IPlayer Player;
 		public readonly World World;
 
-		public GameState(World _world, Player _player, Camera _camera)
+		public GameState(World _world, IPlayer _player, Camera _camera)
 		{
 			World = _world;
 			Player = _player;
@@ -38,6 +38,8 @@ namespace ReiseZumGrundDesSees
             public float PlayerX => baseState.Player.Position.X;
 			public float PlayerY => baseState.Player.Position.Y;
 			public float PlayerZ => baseState.Player.Position.Z;
+
+            public IReadOnlyList<IPlayerBlock> PlayerBlocks => baseState.Player.Blocks;
 
             public IReadonlyBlockWorld BlockWorld => baseState.World.Blocks;
             public IReadonlyWorldObjectContainer WorldObjects => baseState.World;

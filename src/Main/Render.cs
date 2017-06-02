@@ -48,7 +48,7 @@ namespace ReiseZumGrundDesSees
 
             for (int i = 0; i < _block.Count; i++)
             {
-                if (_block[i].Zustand == (int)PlayerBlock.ZustandList.Gesetzt) { 
+                if (_block[i].Zustand == (int)PlayerBlock.State.Gesetzt) { 
                 foreach (ModelMesh mesh in _block[i].Model.Meshes)
                 {
                     foreach (BasicEffect effect in mesh.Effects)
