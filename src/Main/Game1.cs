@@ -162,8 +162,8 @@ namespace ReiseZumGrundDesSees
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
-            if (GameFlags.HasFlag(GameFlags.Menu))
-                IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), _gameState);
+            if (GameFlags.HasFlag(GameFlags.GameRunning))
+                IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), GameState);
 
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
@@ -209,7 +209,7 @@ namespace ReiseZumGrundDesSees
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
                 renderer.PlayerR((Player)GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.LeichterBlock(Player.Blöcke, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.LeichterBlock((List<PlayerBlock>)GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
               
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);

@@ -26,14 +26,14 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
-        public double Healthcd;
-        public static float Blickrichtung; //in Rad
+        public double Healthcd{ get; private set; }
+        public float Blickrichtung{ get; private set; } //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
-        public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
+        public List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
         float _speedY = 0;
         public int Health { get; private set; }
-        int MaxHealth;
+        public int MaxHealth { get; private set; }
         public Player(ContentManager contentManager, Vector3 _position)
         {
             ContentManager = contentManager;

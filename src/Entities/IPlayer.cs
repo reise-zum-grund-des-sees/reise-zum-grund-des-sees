@@ -13,13 +13,14 @@ namespace ReiseZumGrundDesSees
         IReadOnlyList<IPlayerBlock> Blocks { get; }
 
         int Health { get; }
+        double Healthcd { get; }
+        float Blickrichtung { get; }
     }
 
-    interface IPlayerBlock : IUpdateable//, IRenderable
+    interface IPlayerBlock : IUpdateable, IPositionObject//, IRenderable
     {
         PlayerBlock.State CurrentState { get; }
         PlayerBlock.Type BlockType { get; }
-
         /// <summary>
         /// Die Prozentangabe des aktuellen Lebenszyklusses zwischen 0.0 und 1.0,
         /// wobei 0.0 ausdrückt, dass der Block grade erst Platziert wurde,

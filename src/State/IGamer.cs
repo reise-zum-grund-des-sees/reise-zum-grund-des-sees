@@ -52,12 +52,14 @@ namespace ReiseZumGrundDesSees.State
         }
         public void Update(InputEventArgs _args, Point _windowSize, GameState _gameState)
         {
-            Herz = vollesHerz;
-            //if (SpielerVerliertLeben == true)
-            //    Herz = leeresHerz;
-            _gameState.Player.Blocks
-
             
+            Herz = vollesHerz;
+            //_gameState.Player.Healthcd für Zeit nach dem Leben verloren wurde, also =0 wenn geradde Leben verloren
+            if (_gameState.Player.Health==1)
+                Herz = leeresHerz;
+            // _gameState.Player.Blocks;
+
+
         }
         public void Render(SpriteBatch _spriteBatch)
         {

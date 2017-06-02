@@ -14,21 +14,15 @@ namespace ReiseZumGrundDesSees
         public State CurrentState => (State)Zustand;
         public Type BlockType => (Type)Art;
 
-        public float LifetimePercentage => throw new NotImplementedException();
-
-        public static int AnzahlL = 0;  
-        public static int MaximumL = 3;
-        public static int AnzahlM = 0;
-        public static int MaximumM = 3;
-        public static int AnzahlS = 0;
-        public static int MaximumS = 3;
-        public static double MaximialDauer;
+        public float LifetimePercentage => LifetimePercentage;
+        float LifetimeP;
+        public double MaximialDauer;
         public double AktuelleDauer;
         float _speedY;
         Vector3 _movement;
         public int Art;
         public Model Model;
-        public Vector3 Position;
+        public Vector3 Position { get; private set; }
         public int Zustand=0;
         public double Deletetime;
         public enum State
@@ -57,8 +51,8 @@ namespace ReiseZumGrundDesSees
             AktuelleDauer = 0;
             MaximialDauer = 15000;
             Position = _player.Position;
-           
-            Zustand = (int)State.Bereit;
+            LifetimeP = 1;
+             Zustand = (int)State.Bereit;
             if (Art == 0){//leichterBlock
               //  AnzahlL++;
                 Model = contentManager.Load<Model>("leichter_Block");
@@ -81,14 +75,21 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            //Livetime
+            
+            if (AktuelleDauer < _view.PlayerBlocks.Count * MaximialDauer)//wenn man hier und in der Zeile darunter "_view.PlayerBlocks.Count *" wegnimmt, erhällt man die Laufzeit von 0 bis 1
+                LifetimeP = (float)(AktuelleDauer) / (float)(_view.PlayerBlocks.Count * MaximialDauer);
+            else
+                LifetimeP = 1;
+
             //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
-            if(Zustand == (int)State.Delete)
+            if (Zustand == (int)State.Delete)
             {
                 Deletetime += _passedTime;
-                AktuelleDauer = 0;
+                AktuelleDauer = _view.PlayerBlocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
                 if (Deletetime >= 5000)
                 {
-                    Deletetime = 0;
+                    Deletetime = 0;                   
                     Zustand = (int)State.Bereit;
                 }
             }
@@ -96,7 +97,7 @@ namespace ReiseZumGrundDesSees
             if (Zustand == (int)State.Übergang) {
                 //Position des Blockes basierend auf Blickrichtung
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
-                Vector3 Blick =  Vector3.Transform(new Vector3(0,0,-1), Matrix.CreateRotationY(Player.Blickrichtung));
+                Vector3 Blick =  Vector3.Transform(new Vector3(0,0,-1), Matrix.CreateRotationY(_view.Blickrichtung));
                 Blick.Normalize();
                 Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
                 //Console.WriteLine(Position);
@@ -124,10 +125,10 @@ namespace ReiseZumGrundDesSees
               
                
                     List<Direction> _info2 = new List<Direction>();
-                for (int i = 0; i < Player.Blöcke.Count; i++)
-                    if (Vector3.Distance(Position, Player.Blöcke[i].Position) != 0 && Player.Blöcke[i].Zustand==(int)PlayerBlock.State.Gesetzt)
+                for (int i = 0; i < _view.PlayerBlocks.Count; i++)
+                    if (Vector3.Distance(Position, _view.PlayerBlocks[i].Position) != 0 && (int)_view.PlayerBlocks[i].CurrentState==(int)PlayerBlock.State.Gesetzt)
                     {
-                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), new Hitbox(Player.Blöcke[i].Position.X, Player.Blöcke[i].Position.Y, Player.Blöcke[i].Position.Z, 1f, 1f, 1f)));                        
+                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X, Position.Y, Position.Z, 1f, 1f, 1f), new Hitbox(_view.PlayerBlocks[i].Position.X, _view.PlayerBlocks[i].Position.Y, _view.PlayerBlocks[i].Position.Z, 1f, 1f, 1f)));                        
                     }
                 for (int i = 0; i < _info2.Count-1; i++)
                     if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
@@ -205,11 +206,11 @@ namespace ReiseZumGrundDesSees
             else
             {
                 //Objekt ist Tot
-                //MaximumL als allgemeines Maximum, müsste addiertes Maximum sein, da ist cd aber zu hoch
-                if (MaximumL * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
+               
+                if (_view.PlayerBlocks.Count * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
                 {
                     Zustand = (int)State.Bereit;
-                    AktuelleDauer = 0;
+                   // AktuelleDauer = 0;
                  
 
                 }

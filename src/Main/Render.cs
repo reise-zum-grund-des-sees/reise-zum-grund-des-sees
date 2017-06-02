@@ -31,8 +31,8 @@ namespace ReiseZumGrundDesSees
                 {
                     effect.EnableDefaultLighting();
        
-                    effect.World = Matrix.CreateRotationY(Player.Blickrichtung) * Matrix.CreateTranslation(_player.Position);
-
+                    effect.World = Matrix.CreateRotationY(_player.Blickrichtung) * Matrix.CreateTranslation(_player.Position);
+                      
                     effect.View = _viewMatrix;
                     effect.Projection = _perspectiveMatrix;
 

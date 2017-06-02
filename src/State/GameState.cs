@@ -39,6 +39,8 @@ namespace ReiseZumGrundDesSees
 			public float PlayerY => baseState.Player.Position.Y;
 			public float PlayerZ => baseState.Player.Position.Z;
 
+            public float Blickrichtung => baseState.Player.Blickrichtung;
+
             public IReadOnlyList<IPlayerBlock> PlayerBlocks => baseState.Player.Blocks;
 
             public IReadonlyBlockWorld BlockWorld => baseState.World.Blocks;
