@@ -112,9 +112,10 @@ namespace ReiseZumGrundDesSees
 
         public virtual void Save(string _baseDir)
         {
-            string[] lines = new string[2];
+            string[] lines = new string[3];
             lines[0] = $"region_size = { RegionSizeX }, { RegionSizeY }, { RegionSizeZ }";
             lines[1] = $"regions_count = { RegionsCountX }, { RegionsCountZ }";
+            lines[2] = $"spawn = { SpawnPosX }, { SpawnPosY }, { SpawnPosZ}";
             File.WriteAllLines(Path.Combine(_baseDir, "index.world"), lines);
 
             for (int x = 0; x < RegionsCountX; x++)
