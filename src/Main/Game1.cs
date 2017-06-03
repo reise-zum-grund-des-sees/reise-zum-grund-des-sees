@@ -92,7 +92,8 @@ namespace ReiseZumGrundDesSees
             
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
-            Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.Climbing); //Create Test Enemy
+            Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.Moving); //Create Test Enemy
+            //Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Climbing); //Create Test Enemy
             base.Initialize();
         }
 
@@ -158,7 +159,7 @@ namespace ReiseZumGrundDesSees
             _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
      
-        if(gameTime.TotalGameTime.TotalMilliseconds > 2000)
+        if(GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                     _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
            

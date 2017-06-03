@@ -197,10 +197,16 @@ namespace ReiseZumGrundDesSees
             for (int i = 0; i < Enemy.EnemyList.Count; i++) {
                 _info3.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref movementtemp, Hitbox, Enemy.EnemyList[i].Hitbox));
             if((_info3[i].HasFlag(Direction.Back) || _info3[i].HasFlag(Direction.Top) ||_info3[i].HasFlag(Direction.Front) || _info3[i].HasFlag(Direction.Left) ||
-                     _info3[i].HasFlag(Direction.Right)) && Healthcd > 1000) {
+                     _info3[i].HasFlag(Direction.Right)) && Healthcd > 1000 && Math.Abs(Position.Y - Enemy.EnemyList[i].Position.Y) < 0.1f) {
                 Enemy.EnemyList[i].HitPlayer = true;
                 Health--;
                 Healthcd = 0;
+                }
+            if(Vector3.Distance(Position, Enemy.EnemyList[i].Position) < 0.1f && Math.Abs(Position.Y - Enemy.EnemyList[i].Position.Y) < 0.1f) //Gegner steht im Spieler ohne das er sich bewegt
+                {
+                    Enemy.EnemyList[i].HitPlayer = true;
+                    Health--;
+                    Healthcd = 0;
                 }
                 if (_info3[i].HasFlag(Direction.Bottom))
                 {
