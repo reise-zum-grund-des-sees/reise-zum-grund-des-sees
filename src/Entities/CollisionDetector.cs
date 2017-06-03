@@ -8,7 +8,17 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-    class CollisionDetector
+    interface IReadonlyCollisionDetector
+    {
+        Dictionary<Direction, CollisionDetector.CollisionSource> CheckCollision(ref Vector3 _movement, ICollisionObject _object);
+    }
+
+    interface ICollisionDetector : IReadonlyCollisionDetector
+    {
+        void AddObject(ICollisionObject _object);
+    }
+
+    class CollisionDetector : IReadonlyCollisionDetector
     {
         private List<ICollisionObject> objects = new List<ICollisionObject>();
         private IBlockWorld world;
@@ -52,9 +62,55 @@ namespace ReiseZumGrundDesSees
         }
 
 
-        public KeyValuePair<Direction, CollisionSource>[] CheckCollision(Vector3 _idealMovement, ICollisionObject _object)
+        public Dictionary<Direction, CollisionSource> CheckCollision(ref Vector3 _movement, ICollisionObject _object)
         {
-            throw new NotImplementedException();
+            Vector3[] _splits = splitVector(_movement);
+            Dictionary<Direction, CollisionSource> _collisionList = new Dictionary<Direction, CollisionSource>();
+
+            Hitbox _tmpHit = _object.Hitbox;
+            for (int i = 0; i < _splits.Length; i++)
+            {
+                _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHit, _object, world));
+                foreach (ICollisionObject _otherObj in objects)
+                    if (_otherObj != _object)
+                        _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHit, _object, _otherObj));
+            }
+
+            if (_splits.Any())
+                _movement = _splits.Aggregate((v1, v2) => v1 + v2);
+
+            return _collisionList;
+        }
+
+        private Dictionary<Direction, CollisionSource> checkCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _obj, IReadonlyBlockWorld _world)
+        {
+            Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
+
+            int _hitX = (int)_hitbox.X;
+            int _hitY = (int)_hitbox.Y;
+            int _hitZ = (int)_hitbox.Z;
+
+            // test for hitbox surrounding blocks
+            for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
+                for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
+                    for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
+                    {
+                        WorldBlock b = _world[x, y, z];
+                        Direction _dir = CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                        if (_dir != Direction.None && _obj.CollidesWithWorldBlock(b))
+                            _dir.Foreach(d => _dict[d] = new CollisionSource(b));
+                    }
+
+            return _dict;
+        }
+
+        private Dictionary<Direction, CollisionSource> checkCollisionWithObject(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _obj, ICollisionObject _otherObj)
+        {
+            Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
+            if (_obj.CollidesWithObject(_otherObj))
+                CollisionDetection(ref _movement, _hitbox, _otherObj.Hitbox)
+                    .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
+            return _dict;
         }
 
 
@@ -220,20 +276,7 @@ namespace ReiseZumGrundDesSees
 
             for (int i = 0; i < _splitted.Length; i++)
             {
-                int _hitX = (int)_hitbox.X;
-                int _hitY = (int)_hitbox.Y;
-                int _hitZ = (int)_hitbox.Z;
-
-                // test for hitbox surrounding blocks
-                for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
-                    for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
-                        for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
-                        {
-                            WorldBlock b = _world[x, y, z];
-                            if (b.HasCollision())
-                                _collInfo |= CollisionDetection(ref _splitted[i], _hitbox, new Hitbox(x, y, z, b.GetBounds()));
-                        }
-
+                _collInfo |= PartialCollisionWithWorld(ref _splitted[i], _hitbox, _world);
                 _hitbox += _splitted[i];
             }
 
@@ -241,6 +284,27 @@ namespace ReiseZumGrundDesSees
                 _movement = _splitted.Aggregate((v1, v2) => v1 + v2);
 
             return _collInfo;
+        }
+
+        public static Direction PartialCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
+        {
+            Direction _dir = Direction.None;
+
+            int _hitX = (int)_hitbox.X;
+            int _hitY = (int)_hitbox.Y;
+            int _hitZ = (int)_hitbox.Z;
+
+            // test for hitbox surrounding blocks
+            for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
+                for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
+                    for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
+                    {
+                        WorldBlock b = _world[x, y, z];
+                        if (b.HasCollision())
+                            _dir |= CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                    }
+
+            return _dir;
         }
     }
 
@@ -284,5 +348,39 @@ namespace ReiseZumGrundDesSees
         Top = 16,
         Bottom = 32,
         All = 63
+    }
+
+    static class DirectionHelper
+    {
+        public static void Foreach(this Direction _dir, Action<Direction> _func)
+        {
+            if (_dir.HasFlag(Direction.Front)) _func(Direction.Front);
+            if (_dir.HasFlag(Direction.Back)) _func(Direction.Back);
+            if (_dir.HasFlag(Direction.Left)) _func(Direction.Left);
+            if (_dir.HasFlag(Direction.Right)) _func(Direction.Right);
+            if (_dir.HasFlag(Direction.Top)) _func(Direction.Top);
+            if (_dir.HasFlag(Direction.Bottom)) _func(Direction.Bottom);
+        }
+
+        public static int SingleDirectionAsInt(this Direction _dir)
+        {
+            switch (_dir)
+            {
+                case Direction.Left:
+                    return 0;
+                case Direction.Right:
+                    return 1;
+                case Direction.Front:
+                    return 2;
+                case Direction.Back:
+                    return 3;
+                case Direction.Top:
+                    return 4;
+                case Direction.Bottom:
+                    return 5;
+                default:
+                    throw new ArgumentException();
+            }
+        }
     }
 }

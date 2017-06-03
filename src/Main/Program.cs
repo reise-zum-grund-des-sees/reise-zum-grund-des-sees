@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ReiseZumGrundDesSees
 {
@@ -19,4 +20,13 @@ namespace ReiseZumGrundDesSees
         }
     }
 #endif
+
+    static class Helper
+    {
+        public static void Update<TKey, TValue>(this IDictionary<TKey, TValue> _dict, IDictionary<TKey, TValue> _newData)
+        {
+            foreach (KeyValuePair<TKey, TValue> i in _newData)
+                _dict[i.Key] = i.Value;
+        }
+    }
 }

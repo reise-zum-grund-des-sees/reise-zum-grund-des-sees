@@ -13,12 +13,14 @@ namespace ReiseZumGrundDesSees
 		public readonly Camera Camera;
 		public readonly IPlayer Player;
 		public readonly World World;
+        public readonly CollisionDetector CollisionDetector;
 
 		public GameState(World _world, IPlayer _player, Camera _camera)
 		{
 			World = _world;
 			Player = _player;
 			Camera = _camera;
+            CollisionDetector = new CollisionDetector(_world.Blocks);
 		}
 
 		public struct View
@@ -28,6 +30,9 @@ namespace ReiseZumGrundDesSees
 			{
 				baseState = s;
 			}
+
+            public IReadonlyCollisionDetector CollisionDetector => baseState.CollisionDetector;
+            public IReadonlyPlayer Player => baseState.Player;
 
 			public float CamX => baseState.Camera.Position.X;
 			public float CamY => baseState.Camera.Position.Y;
