@@ -17,7 +17,8 @@ namespace ReiseZumGrundDesSees
         public IReadOnlyList<IPlayerBlock> Blocks => Blöcke;
 
         public bool HasMultipleHitboxes => false;
-        public Hitbox Hitbox => new Hitbox(Position, 0.8f, 1.5f, 0.8f);
+        public Hitbox Hitbox => new Hitbox(Position - new Vector3(hitboxSize.X * 0.5f, 0, hitboxSize.Z * 0.5f), hitboxSize);
+        private readonly Vector3 hitboxSize = new Vector3(0.8f, 1.5f, 0.8f);
         public Hitbox[] Hitboxes => throw new NotImplementedException();
 
         public Model Model;
@@ -148,6 +149,24 @@ namespace ReiseZumGrundDesSees
             _speedY -= 0.005f * (float)_passedTime;
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
+            var _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
+
+            if (_collisionInformation.ContainsKey(Direction.Bottom))
+            {
+                if (_speedY < 0)
+                {
+                    _speedY = 0;
+                    Jump1 = false;
+                    Jump2 = false;
+                    Jumpcd = false;
+                }
+            }
+            else if (_collisionInformation.ContainsKey(Direction.Top))
+                if (_speedY > 0)
+                    _speedY = 0;
+
+
+            /*
             if (_stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.65f), (int)Position.Z] != WorldBlock.Water1 &&
                 _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.4f), (int)Position.Z] != WorldBlock.Water2 &&
                 _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.15f), (int)Position.Z] != WorldBlock.Water3 &&
@@ -188,7 +207,7 @@ namespace ReiseZumGrundDesSees
             else
             {//Wasser unter Spieler
                 Health = 0; // Spieler stirbt
-            }
+            }*/
             /*
          _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water1 &&
                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water3
@@ -320,12 +339,12 @@ namespace ReiseZumGrundDesSees
 
         public bool CollidesWithWorldBlock(WorldBlock _block)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool CollidesWithObject(ICollisionObject _object)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

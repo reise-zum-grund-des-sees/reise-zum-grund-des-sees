@@ -96,9 +96,12 @@ namespace ReiseZumGrundDesSees
                     for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
                     {
                         WorldBlock b = _world[x, y, z];
-                        Direction _dir = CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
-                        if (_dir != Direction.None && _obj.CollidesWithWorldBlock(b))
-                            _dir.Foreach(d => _dict[d] = new CollisionSource(b));
+                        if (b.HasCollision())
+                        {
+                            Direction _dir = CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
+                            if (_dir != Direction.None && _obj.CollidesWithWorldBlock(b))
+                                _dir.Foreach(d => _dict[d] = new CollisionSource(b));
+                        }
                     }
 
             return _dict;
