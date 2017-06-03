@@ -23,6 +23,9 @@ namespace ReiseZumGrundDesSees
         public int Art;
         public Model Model;
         public Vector3 Position { get; private set; }
+
+        public Hitbox Hitbox{ get; private set; }
+
         public int Zustand=0;
         public double Deletetime;
         public enum State
@@ -52,6 +55,7 @@ namespace ReiseZumGrundDesSees
             MaximialDauer = 15000;
             Position = _player.Position;
             LifetimeP = 1;
+            Hitbox = new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f);
              Zustand = (int)State.Bereit;
             if (Art == 0){//leichterBlock
               //  AnzahlL++;
@@ -75,8 +79,9 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            Hitbox=new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f);
             //Livetime
-            
+
             if (AktuelleDauer < _view.PlayerBlocks.Count * MaximialDauer)//wenn man hier und in der Zeile darunter "_view.PlayerBlocks.Count *" wegnimmt, erhällt man die Laufzeit von 0 bis 1
                 LifetimeP = (float)(AktuelleDauer) / (float)(_view.PlayerBlocks.Count * MaximialDauer);
             else

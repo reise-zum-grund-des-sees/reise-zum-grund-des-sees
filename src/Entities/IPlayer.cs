@@ -21,6 +21,7 @@ namespace ReiseZumGrundDesSees
     {
         PlayerBlock.State CurrentState { get; }
         PlayerBlock.Type BlockType { get; }
+        Hitbox Hitbox { get; }
         /// <summary>
         /// Die Prozentangabe des aktuellen Lebenszyklusses zwischen 0.0 und 1.0,
         /// wobei 0.0 ausdrückt, dass der Block grade erst Platziert wurde,

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ReiseZumGrundDesSees.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -158,7 +159,7 @@ namespace ReiseZumGrundDesSees
                 List<Direction> _info2 = new List<Direction>();
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].Zustand == (int)PlayerBlock.State.Gesetzt)
-                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X - 0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z - 0.5f, 1f, 1f, 1f)));
+                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f),Blöcke[i].Hitbox));
 
                 for (int i = 0; i < _info2.Count; i++)
                 {
@@ -189,6 +190,25 @@ namespace ReiseZumGrundDesSees
             {//Wasser unter Spieler
                 Health = 0; // Spieler stirbt
             }
+
+            //Kollision mit Gegner         
+            List<Direction> _info3 = new List<Direction>();
+            Vector3 movementtemp = _movement;
+            for (int i = 0; i < Enemy.EnemyList.Count; i++) {
+                _info3.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref movementtemp, Hitbox, Enemy.EnemyList[i].Hitbox));
+            if((_info3[i].HasFlag(Direction.Back) || _info3[i].HasFlag(Direction.Top) ||_info3[i].HasFlag(Direction.Front) || _info3[i].HasFlag(Direction.Left) ||
+                     _info3[i].HasFlag(Direction.Right)) && Healthcd > 1000) {
+                Enemy.EnemyList[i].HitPlayer = true;
+                Health--;
+                Healthcd = 0;
+                }
+                if (_info3[i].HasFlag(Direction.Bottom))
+                {
+                    Enemy.EnemyList.RemoveAt(i);
+                }
+                }
+            
+
             /*
          _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water1 &&
                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water3
