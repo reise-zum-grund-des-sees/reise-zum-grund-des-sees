@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReiseZumGrundDesSees.State;
+using ReiseZumGrundDesSees.Entities;
 
 namespace ReiseZumGrundDesSees
 {
@@ -88,9 +89,10 @@ namespace ReiseZumGrundDesSees
             editor = new WorldEditor(new Vector3(24, 32, 24), Content);
             editor.Initialize(GraphicsDevice);
             otherRenderables.Add(editor);
-
+            
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
+            Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.Moving); //Create Test Enemy
             base.Initialize();
         }
 
@@ -155,6 +157,11 @@ namespace ReiseZumGrundDesSees
             _updateList.Add(GameState.Camera?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+     
+        if(gameTime.TotalGameTime.TotalMilliseconds > 1000)
+                for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
+                    _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+           
 
             foreach (UpdateDelegate u in _updateList)
                 u?.Invoke(ref GameState);
@@ -164,7 +171,7 @@ namespace ReiseZumGrundDesSees
 
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), GameState);
-
+          
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
             {
@@ -210,7 +217,10 @@ namespace ReiseZumGrundDesSees
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
                 renderer.PlayerR((Player)GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
                 renderer.LeichterBlock((List<PlayerBlock>)GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
-              
+
+                for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
+                   Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix);
+
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in otherRenderables)

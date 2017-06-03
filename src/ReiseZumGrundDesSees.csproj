@@ -64,6 +64,7 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="State\IGamer.cs" />
