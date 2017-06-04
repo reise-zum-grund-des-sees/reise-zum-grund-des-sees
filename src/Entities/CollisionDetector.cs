@@ -72,7 +72,7 @@ namespace ReiseZumGrundDesSees
             {
                 _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHit, _object, world));
                 foreach (ICollisionObject _otherObj in objects)
-                    if (_otherObj != _object)
+                    if (_otherObj != _object && _otherObj.IsEnabled)
                         _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHit, _object, _otherObj));
                 _tmpHit += _splits[i];
             }

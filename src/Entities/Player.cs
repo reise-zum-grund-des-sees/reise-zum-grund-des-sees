@@ -20,6 +20,7 @@ namespace ReiseZumGrundDesSees
         public Hitbox Hitbox => new Hitbox(Position - new Vector3(hitboxSize.X * 0.5f, 0, hitboxSize.Z * 0.5f), hitboxSize);
         private readonly Vector3 hitboxSize = new Vector3(0.8f, 1.5f, 0.8f);
         public Hitbox[] Hitboxes => throw new NotImplementedException();
+        public bool IsEnabled => true;
 
         public Model Model;
         bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
@@ -34,6 +35,7 @@ namespace ReiseZumGrundDesSees
         ContentManager ContentManager;
         float _speedY = 0;
         public int Health { get; private set; }
+
         int MaxHealth;
         public Player(ContentManager contentManager, Vector3 _position)
         {
@@ -160,59 +162,15 @@ namespace ReiseZumGrundDesSees
                     Jump2 = false;
                     Jumpcd = false;
                 }
+
+                if (_collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithWorldBlock &&
+                    _collisionInformation[Direction.Bottom].WorldBlock.IsWater())
+                    Health = 0;
             }
             else if (_collisionInformation.ContainsKey(Direction.Top))
                 if (_speedY > 0)
                     _speedY = 0;
 
-
-            /*
-            if (_stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.65f), (int)Position.Z] != WorldBlock.Water1 &&
-                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.4f), (int)Position.Z] != WorldBlock.Water2 &&
-                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y + 0.15f), (int)Position.Z] != WorldBlock.Water3 &&
-                _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4)
-            {
-                Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), _stateView.BlockWorld);
-
-                List<Direction> _info2 = new List<Direction>();
-                for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Gesetzt)
-                        _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, new Hitbox(Position.X - 0.4f, Position.Y, Position.Z - 0.4f, 0.8f, 1.5f, 0.8f), new Hitbox(Blöcke[i].Position.X - 0.5f, Blöcke[i].Position.Y, Blöcke[i].Position.Z - 0.5f, 1f, 1f, 1f)));
-
-                for (int i = 0; i < _info2.Count; i++)
-                {
-                    if (_info2[i].HasFlag(Direction.Bottom) && _speedY < 0)
-                    {
-                        _speedY = 0;
-                        Jump1 = false;
-                        Jump2 = false;
-                        Jumpcd = false;
-                    }
-                    else if (_info2[i].HasFlag(Direction.Top) && _speedY > 0)
-                        _speedY = 0;
-                }
-
-                if (_info.HasFlag(Direction.Bottom) && _speedY < 0)
-                {
-                    _speedY = 0;
-                    Jump1 = false;
-                    Jump2 = false;
-                    Jumpcd = false;
-                }
-                else if (_info.HasFlag(Direction.Top) && _speedY > 0)
-                {
-                    _speedY = 0;
-                }
-            }
-            else
-            {//Wasser unter Spieler
-                Health = 0; // Spieler stirbt
-            }*/
-            /*
-         _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water1 &&
-               _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water2 && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water3
-                    && _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water4
-            */
             //Lever press
             if (_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
             {

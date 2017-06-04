@@ -16,6 +16,11 @@ namespace ReiseZumGrundDesSees
 
         public float LifetimePercentage => throw new NotImplementedException();
 
+        public bool HasMultipleHitboxes => false;
+        public Hitbox Hitbox => new Hitbox(Position - new Vector3(0.5f, 0, 0.5f), 1f, 1f, 1f);
+        public Hitbox[] Hitboxes => throw new NotImplementedException();
+        public bool IsEnabled => CurrentState == State.Gesetzt;
+
         public static int AnzahlL = 0;  
         public static int MaximumL = 3;
         public static int AnzahlM = 0;
@@ -31,6 +36,8 @@ namespace ReiseZumGrundDesSees
         public Vector3 Position;
         public int Zustand=0;
         public double Deletetime;
+        private bool wasAddedToCollisionManager = false;
+
         public enum State
         {
             Bereit = 0,
@@ -216,9 +223,23 @@ namespace ReiseZumGrundDesSees
             }
             return (ref GameState _state) =>
             {
-               
+                if (!wasAddedToCollisionManager)
+                {
+                    _state.CollisionDetector.AddObject(this);
+                    wasAddedToCollisionManager = true;
+                }
                 //Console.WriteLine(Position);
             };
+        }
+
+        public bool CollidesWithWorldBlock(WorldBlock _block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CollidesWithObject(ICollisionObject _object)
+        {
+            throw new NotImplementedException();
         }
     }
 }

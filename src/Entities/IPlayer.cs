@@ -18,7 +18,7 @@ namespace ReiseZumGrundDesSees
         int Health { get; }
     }
 
-    interface IPlayerBlock : IUpdateable//, IRenderable
+    interface IPlayerBlock : IUpdateable, ICollisionObject//, IRenderable
     {
         PlayerBlock.State CurrentState { get; }
         PlayerBlock.Type BlockType { get; }

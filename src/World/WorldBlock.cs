@@ -121,5 +121,19 @@ namespace ReiseZumGrundDesSees
                     return false;
             }
         }
+
+        public static bool IsWater(this WorldBlock b)
+        {
+            switch (b)
+            {
+                case WorldBlock.Water1:
+                case WorldBlock.Water2:
+                case WorldBlock.Water3:
+                case WorldBlock.Water4:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }
