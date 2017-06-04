@@ -10,17 +10,29 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ReiseZumGrundDesSees
 {
-	class Camera : IUpdateable
+    interface ICamera : IReadonlyCamera, IUpdateable
+    {
+        new IPositionObject Center { get; set; }
+    }
+
+    interface IReadonlyCamera : IPositionObject
+    {
+        IPositionObject Center { get; }
+        Matrix CalculateViewMatrix();
+        float Angle { get; }
+    }
+
+	class Camera : ICamera
 	{
         public IPositionObject Center { get; set; }
-		public Vector3 Position;
+		public Vector3 Position { get; private set; }
         public Vector3 LookAt;
-        public float Angle;
+        public float Angle { get; private set; }
 
         public Camera()
         {
-               
         }
+
         public Matrix CalculateViewMatrix()
         {
             if (Center != null)

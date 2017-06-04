@@ -273,7 +273,7 @@ namespace ReiseZumGrundDesSees
             return (ref GameState _state) =>
             {
                 this.Position += _movement;
-                _state.Camera.ChangePosition(_movement);   //move Camera with Player   
+                //_state.Camera.ChangePosition(_movement);   //move Camera with Player   
                 //Console.WriteLine(Position);
 
                 foreach (UpdateDelegate u in blockUpdateList)

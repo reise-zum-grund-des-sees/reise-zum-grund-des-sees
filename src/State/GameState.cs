@@ -10,7 +10,7 @@ namespace ReiseZumGrundDesSees
 {
 	struct GameState
 	{
-		public readonly Camera Camera;
+		public readonly ICamera Camera;
 		public readonly IPlayer Player;
 		public readonly World World;
         public readonly CollisionDetector CollisionDetector;
@@ -33,6 +33,7 @@ namespace ReiseZumGrundDesSees
 
             public IReadonlyCollisionDetector CollisionDetector => baseState.CollisionDetector;
             public IReadonlyPlayer Player => baseState.Player;
+            public IReadonlyCamera Camera => baseState.Camera;
 
 			public float CamX => baseState.Camera.Position.X;
 			public float CamY => baseState.Camera.Position.Y;
