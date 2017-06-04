@@ -9,6 +9,15 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
+    interface IWorldObject : IUpdateable, IReadonlyWorldObject
+    {
+        void Activate();
+        void Deactivate();
+    }
+
+    interface IReadonlyWorldObject : IRenderable, ICollisionObject, IPositionObject
+    { }
+
     interface ISpecialBlock : IUpdateable, IRenderable
     {
         Vector3Int Position { get; }

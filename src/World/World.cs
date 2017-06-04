@@ -12,8 +12,10 @@ namespace ReiseZumGrundDesSees
 {
     interface IReadonlyWorldObjectContainer
     {
-        ISpecialBlock ObjectAt(int x, int y, int z);
-        ISpecialBlock ObjectAt(Vector3Int _pos);
+        ISpecialBlock BlockAt(int x, int y, int z);
+        ISpecialBlock BlockAt(Vector3Int _pos);
+
+        IReadOnlyList<IReadonlyWorldObject> Objects { get; }
     }
 
     interface IWorldObjectContainer : IReadonlyWorldObjectContainer
@@ -22,11 +24,18 @@ namespace ReiseZumGrundDesSees
 
         void RemoveObject(Vector3Int _pos);
         void RemoveObject(ISpecialBlock _obj);
+
+        new IList<IWorldObject> Objects { get; }
     }
 
     class World : BaseWorld, IUpdateable, IWorldObjectContainer
     {
-        protected readonly IDictionary<Vector3Int, ISpecialBlock> objects = new Dictionary<Vector3Int, ISpecialBlock>();
+        protected readonly IDictionary<Vector3Int, ISpecialBlock> specialBlocks = new Dictionary<Vector3Int, ISpecialBlock>();
+        protected readonly IList<IWorldObject> objects = new List<IWorldObject>();
+
+        public IList<IWorldObject> Objects => objects;
+        IReadOnlyList<IReadonlyWorldObject> IReadonlyWorldObjectContainer.Objects => (IReadOnlyList<IWorldObject>)objects;
+
         private bool onBaseWorldBlockChangedBlocker = false;
 
         public World(string _basePath) : base(_basePath)
@@ -43,26 +52,26 @@ namespace ReiseZumGrundDesSees
         private void OnBaseWorldBlockChanged(WorldBlock _oldBlock, WorldBlock _newBlock, int x, int y, int z)
         {
             if (!onBaseWorldBlockChangedBlocker && _oldBlock.IsPartOfWorldObject() && _oldBlock != _newBlock)
-                RemoveObject(ObjectAt(x, y, z));
+                RemoveObject(BlockAt(x, y, z));
             onBaseWorldBlockChangedBlocker = false;
         }
 
-        public ISpecialBlock ObjectAt(Vector3Int _pos)
+        public ISpecialBlock BlockAt(Vector3Int _pos)
         {
-            if (objects.TryGetValue(_pos, out ISpecialBlock _obj))
+            if (specialBlocks.TryGetValue(_pos, out ISpecialBlock _obj))
                 return _obj;
             else
                 return null;
         }
-        public ISpecialBlock ObjectAt(int x, int y, int z)
-            => ObjectAt(new Vector3Int(x, y, z));
+        public ISpecialBlock BlockAt(int x, int y, int z)
+            => BlockAt(new Vector3Int(x, y, z));
 
         public virtual void AddObject(ISpecialBlock _object)
         {
-            if (objects.ContainsKey(_object.Position))
+            if (specialBlocks.ContainsKey(_object.Position))
                 throw new ArgumentException("There is already an object at that position.");
 
-            objects[_object.Position] = _object;
+            specialBlocks[_object.Position] = _object;
             Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = _object.Type;
         }
 
@@ -72,7 +81,7 @@ namespace ReiseZumGrundDesSees
         }
         public void RemoveObject(Vector3Int _pos)
         {
-            objects.Remove(_pos);
+            specialBlocks.Remove(_pos);
             onBaseWorldBlockChangedBlocker = true;
             Blocks[_pos.X, _pos.Y, _pos.Z] = WorldBlock.None;
         }
@@ -81,7 +90,7 @@ namespace ReiseZumGrundDesSees
         {
             UpdateDelegate _delegate = base.Update(_view, _flags, _inputArgs, _passedTime);
 
-            foreach (var _object in objects)
+            foreach (var _object in specialBlocks)
                 _delegate = _delegate.ContinueWith(_object.Value.Update(_view, _flags, _inputArgs, _passedTime));
 
             return _delegate;

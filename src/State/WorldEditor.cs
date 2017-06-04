@@ -121,7 +121,7 @@ namespace ReiseZumGrundDesSees
                 }
 
                 else if (_state.World.Blocks[x, y, z] == WorldBlock.Lever && _inputArgs.Events.HasFlag(InputEventList.MouseLeftClick))
-                    (_state.World.ObjectAt(x, y, z) as Lever).Rotation += Math.PI / 2;
+                    (_state.World.BlockAt(x, y, z) as Lever).Rotation += Math.PI / 2;
 
                 else if (_inputArgs.Events.HasFlag(InputEventList.PlaceSpike) && _state.World.Blocks[x, y, z] != WorldBlock.Spikes)//Schalter ertmal auf Taste 5 belegen
                 {

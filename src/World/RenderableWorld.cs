@@ -98,7 +98,7 @@ namespace ReiseZumGrundDesSees
         {
             graphicsDevice = _graphicsDevice;
 
-            foreach (var _obj in objects)
+            foreach (var _obj in specialBlocks)
                 _obj.Value.Initialize(graphicsDevice);
 
             effect = new BasicEffect(graphicsDevice);
@@ -115,7 +115,7 @@ namespace ReiseZumGrundDesSees
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
         {
-            foreach (var _obj in objects)
+            foreach (var _obj in specialBlocks)
                 _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix);
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;
