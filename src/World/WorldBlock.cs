@@ -8,19 +8,19 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-	enum WorldBlock : byte
-	{
-		None,
-		Wall, // add more wall types?
+    enum WorldBlock : byte
+    {
+        None,
+        Wall, // add more wall types?
         InvisibleWall,
-		Water1,
-		Water2,
-		Water3,
-		Water4,
-		Lever,
-		Spikes,
+        Water1,
+        Water2,
+        Water3,
+        Water4,
+        Lever,
+        Spikes,
         Unknown
-	}
+    }
 
     static class WorldBlockHelper
     {
@@ -114,8 +114,6 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water2:
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
-                //case WorldBlock.Spikes:
-           
                     return true;
                 default:
                     return false;

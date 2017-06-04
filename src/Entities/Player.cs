@@ -294,15 +294,5 @@ namespace ReiseZumGrundDesSees
                 Blöcke[i].Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
             Position = new Vector3(24, 32, 24); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
         }
-
-        public bool CollidesWithWorldBlock(WorldBlock _block)
-        {
-            return true;
-        }
-
-        public bool CollidesWithObject(ICollisionObject _object)
-        {
-            return true;
-        }
     }
 }

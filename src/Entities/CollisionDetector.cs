@@ -67,14 +67,35 @@ namespace ReiseZumGrundDesSees
             Vector3[] _splits = splitVector(_movement);
             Dictionary<Direction, CollisionSource> _collisionList = new Dictionary<Direction, CollisionSource>();
 
-            Hitbox _tmpHit = _object.Hitbox;
-            for (int i = 0; i < _splits.Length; i++)
+            if (!_object.HasMultipleHitboxes)
             {
-                _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHit, _object, world));
-                foreach (ICollisionObject _otherObj in objects)
-                    if (_otherObj != _object && _otherObj.IsEnabled)
-                        _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHit, _object, _otherObj));
-                _tmpHit += _splits[i];
+                Hitbox _tmpHit = _object.Hitbox;
+                for (int i = 0; i < _splits.Length; i++)
+                {
+                    _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHit, world));
+                    foreach (ICollisionObject _otherObj in objects)
+                        if (_otherObj != _object && _otherObj.IsEnabled)
+                            _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHit, _otherObj));
+
+                    _tmpHit += _splits[i];
+                }
+            }
+            else
+            {
+                Hitbox[] _tmpHitboxes = _object.Hitboxes;
+                for (int i = 0; i < _splits.Length; i++)
+                {
+                    for (int j = 0; j < _tmpHitboxes.Length; j++)
+                    {
+                        _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHitboxes[j], world));
+                        foreach (ICollisionObject _otherObj in objects)
+                            if (_otherObj != _object && _otherObj.IsEnabled)
+                                _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHitboxes[j], _otherObj));
+                    }
+
+                    for (int j = 0; j < _tmpHitboxes.Length; j++)
+                        _tmpHitboxes[j] += _splits[i];
+                }
             }
 
             if (_splits.Any())
@@ -83,7 +104,7 @@ namespace ReiseZumGrundDesSees
             return _collisionList;
         }
 
-        private Dictionary<Direction, CollisionSource> checkCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _obj, IReadonlyBlockWorld _world)
+        private Dictionary<Direction, CollisionSource> checkCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
         {
             Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
 
@@ -97,10 +118,10 @@ namespace ReiseZumGrundDesSees
                     for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
                     {
                         WorldBlock b = _world[x, y, z];
-                        if (b.HasCollision())
+                        if (b.HasCollision() && _hitbox.CollidesWithWorldBlock(b))
                         {
                             Direction _dir = CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
-                            if (_dir != Direction.None && _obj.CollidesWithWorldBlock(b))
+                            if (_dir != Direction.None)
                                 _dir.Foreach(d => _dict[d] = new CollisionSource(b));
                         }
                     }
@@ -108,12 +129,19 @@ namespace ReiseZumGrundDesSees
             return _dict;
         }
 
-        private Dictionary<Direction, CollisionSource> checkCollisionWithObject(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _obj, ICollisionObject _otherObj)
+        private Dictionary<Direction, CollisionSource> checkCollisionWithObject(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _otherObj)
         {
             Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
-            if (_obj.CollidesWithObject(_otherObj))
-                CollisionDetection(ref _movement, _hitbox, _otherObj.Hitbox)
-                    .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
+            if (_hitbox.CollidesWithObject(_otherObj))
+            {
+                if (_otherObj.HasMultipleHitboxes)
+                    CollisionDetection(ref _movement, _hitbox, _otherObj.Hitbox)
+                        .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
+                else
+                    foreach (Hitbox b in _otherObj.Hitboxes)
+                        CollisionDetection(ref _movement, _hitbox, b)
+                            .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
+            }
             return _dict;
         }
 
@@ -127,7 +155,6 @@ namespace ReiseZumGrundDesSees
             for (int i = 0; i < _splits.Length; i++)
             {
                 _dir |= CollisionDetection(ref _splits[i], _tmpHit, _hitB);
-                //DebugHelper.Log(_dir + ": " + )
                 _tmpHit = new Hitbox(_tmpHit.X + _splits[i].X, _tmpHit.Y + _splits[i].Y, _tmpHit.Z + _splits[i].Z,
                     _tmpHit.Width, _tmpHit.Height, _tmpHit.Depth);
             }
@@ -265,51 +292,6 @@ namespace ReiseZumGrundDesSees
             }
             else return Direction.None;
         }
-
-        /// <summary>
-        /// Erkenne Kollisionen zwischen einer Hitbox und der Welt
-        /// </summary>
-        /// <param name="_movement">Die Referenz des Bewegungsvektors der von der Funktion auf mögliche Werte begrenzt wird</param>
-        /// <param name="_hitbox">Die Hitbox des bewegten Objektes</param>
-        /// <param name="_world">Die Welt, auf der sich das Objekt befindet</param>
-        /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der Welt kollidieren</returns>
-        public static Direction CollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
-        {
-            Vector3[] _splitted = splitVector(_movement);
-            Direction _collInfo = Direction.None;
-
-            for (int i = 0; i < _splitted.Length; i++)
-            {
-                _collInfo |= PartialCollisionWithWorld(ref _splitted[i], _hitbox, _world);
-                _hitbox += _splitted[i];
-            }
-
-            if (_splitted.Any())
-                _movement = _splitted.Aggregate((v1, v2) => v1 + v2);
-
-            return _collInfo;
-        }
-
-        public static Direction PartialCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
-        {
-            Direction _dir = Direction.None;
-
-            int _hitX = (int)_hitbox.X;
-            int _hitY = (int)_hitbox.Y;
-            int _hitZ = (int)_hitbox.Z;
-
-            // test for hitbox surrounding blocks
-            for (int x = _hitX - 1; x <= _hitX + (int)_hitbox.Width + 1; x++)
-                for (int y = _hitY - 1; y <= _hitY + (int)_hitbox.Height + 1; y++)
-                    for (int z = _hitZ - 1; z <= _hitZ + (int)_hitbox.Depth + 1; z++)
-                    {
-                        WorldBlock b = _world[x, y, z];
-                        if (b.HasCollision())
-                            _dir |= CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
-                    }
-
-            return _dir;
-        }
     }
 
     struct Hitbox
@@ -317,7 +299,17 @@ namespace ReiseZumGrundDesSees
         public readonly float X, Y, Z;
         public readonly float Width, Depth, Height;
 
-        public Hitbox(float x, float y, float z, float _width, float _height, float _depth)
+        private static Predicate<WorldBlock> COLLIDES_WITH_ALL_WORLD_BLOCKS = (_) => true;
+        private static Predicate<ICollisionObject> COLLIDES_WITH_ALL_OBJECTS = (_) => true;
+
+        private Predicate<WorldBlock> collidesWithWorldBlock;
+        private Predicate<ICollisionObject> collidesWithObject;
+
+        public Hitbox(float x, float y, float z, float _width, float _height, float _depth) :
+            this(x, y, z, _width, _height, _depth, COLLIDES_WITH_ALL_WORLD_BLOCKS, COLLIDES_WITH_ALL_OBJECTS)
+        { }
+
+        public Hitbox(float x, float y, float z, float _width, float _height, float _depth, Predicate<WorldBlock> _collidesWithWorldBlock, Predicate<ICollisionObject> _collidesWithObject)
         {
             Width = _width;
             Depth = _depth;
@@ -325,7 +317,12 @@ namespace ReiseZumGrundDesSees
             X = x;
             Y = y;
             Z = z;
+            collidesWithWorldBlock = _collidesWithWorldBlock;
+            collidesWithObject = _collidesWithObject;
         }
+
+        public bool CollidesWithWorldBlock(WorldBlock _block) => collidesWithWorldBlock(_block);
+        public bool CollidesWithObject(ICollisionObject _object) => collidesWithObject(_object);
 
         public Hitbox(Vector3 _position, Vector3 _size)
             : this(_position.X, _position.Y, _position.Z, _size.X, _size.Y, _size.Z)
@@ -338,7 +335,8 @@ namespace ReiseZumGrundDesSees
             : this(_position.X, _position.Y, _position.Z, _width, _height, _depth) { }
 
         public static Hitbox operator +(Hitbox h, Vector3 v) =>
-            new Hitbox(h.X + v.X, h.Y + v.Y, h.Z + v.Z, h.Width, h.Height, h.Depth);
+            new Hitbox(h.X + v.X, h.Y + v.Y, h.Z + v.Z, h.Width, h.Height, h.Depth,
+                h.collidesWithWorldBlock, h.collidesWithObject);
     }
 
     [Flags]

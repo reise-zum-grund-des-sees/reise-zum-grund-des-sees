@@ -13,8 +13,5 @@ namespace ReiseZumGrundDesSees
         Hitbox[] Hitboxes { get; }
 
         bool IsEnabled { get; }
-
-        bool CollidesWithWorldBlock(WorldBlock _block);
-        bool CollidesWithObject(ICollisionObject _object);
     }
 }
