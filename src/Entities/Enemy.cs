@@ -20,6 +20,8 @@ namespace ReiseZumGrundDesSees.Entities
         public Vector3 SpawnPosition;//für Idlemovement, damit Gegner nicht wegrennt
         public double IdleTimer;
         Vector2 Random;
+        double Jumptimer;
+        float speedY;
         public static List<Enemy> EnemyList = new List<Enemy>();
         public bool HasMultipleHitboxes{ get; }
 
@@ -33,6 +35,7 @@ namespace ReiseZumGrundDesSees.Entities
         {
             Moving,
             Climbing,
+            Jumping,
             Shooting,
             MandS
         }
@@ -51,6 +54,8 @@ namespace ReiseZumGrundDesSees.Entities
             Rotate = 0;
             SpawnPosition = _position;
             Random = new Vector2();
+            Jumptimer = 1;
+            speedY = 0;
             EnemyList.Add(this);
         }
 
@@ -63,7 +68,7 @@ namespace ReiseZumGrundDesSees.Entities
             
             Vector3 _movement = new Vector3(0, 0, 0);
             _movement.Y-= 0.005f * (float)_passedTime;
-            if (Gegnerart == Art.Moving || Gegnerart == Art.Climbing)
+            if (Gegnerart == Art.Moving || Gegnerart == Art.Climbing || Gegnerart == Art.Jumping)
             { 
             if (Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange )
             {
@@ -112,15 +117,54 @@ namespace ReiseZumGrundDesSees.Entities
                 }
                 if (HitTimer > 1000) HitPlayer = false;
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, Hitbox, _view.BlockWorld);
+               
             List<Direction> _info2 = new List<Direction>();
             for(int i=0;i<_view.PlayerBlocks.Count;i++)
             _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, Hitbox, _view.PlayerBlocks[i].Hitbox));
-                if (Gegnerart == Art.Climbing) //Spring über Bloecke
+                if (Gegnerart == Art.Climbing) //Klettere über Bloecke
                 {
-                    if ((_info.HasFlag(Direction.Front) || _info.HasFlag(Direction.Back) || _info.HasFlag(Direction.Right) || _info.HasFlag(Direction.Left)) )
+                    if ((_info.HasFlag(Direction.Front) || _info.HasFlag(Direction.Back) || _info.HasFlag(Direction.Right) || _info.HasFlag(Direction.Left)))
                     {
                         _movement.Y += (float)(_passedTime * 0.01f);
                     }
+                    else
+                    {
+                        for (int i = 0; i < _info2.Count; i++)
+                        {
+                            if ((_info2[i].HasFlag(Direction.Front) || _info2[i].HasFlag(Direction.Back) || _info2[i].HasFlag(Direction.Right) || _info2[i].HasFlag(Direction.Left)))
+                            {
+                                _movement.Y += (float)(_passedTime * 0.01f);
+                                break;
+                            }
+                        }
+                    }
+
+                }
+                if (Gegnerart == Art.Jumping)//Springe
+                {
+                  
+              if (Jumptimer==0 && (_info.HasFlag(Direction.Front) || _info.HasFlag(Direction.Back) || _info.HasFlag(Direction.Right) || _info.HasFlag(Direction.Left)))
+                    {
+                        speedY += 0.9f;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < _info2.Count; i++)
+                        {
+                            if (Jumptimer == 0 && (_info2[i].HasFlag(Direction.Front) || _info2[i].HasFlag(Direction.Back) || _info2[i].HasFlag(Direction.Right) || _info2[i].HasFlag(Direction.Left)))
+                            {
+                                speedY += 0.9f;
+                                break;
+                            }
+                        }
+                    }
+                    Jumptimer += _passedTime;
+                    
+                    speedY -= 0.005f * (float)_passedTime;
+                    if (speedY < 0) speedY = 0;
+                    if (_info.HasFlag(Direction.Bottom)) Jumptimer = 0;
+                    _movement.Y += speedY * (float)_passedTime * 0.01f;
+               
                 }
             }
 

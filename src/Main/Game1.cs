@@ -92,8 +92,9 @@ namespace ReiseZumGrundDesSees
             
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
-            Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.Moving); //Create Test Enemy
+            Enemy a = new Enemy(Content, new Vector3(20,34,20), Enemy.Art.Jumping); //Create Test Enemy
             //Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Climbing); //Create Test Enemy
+            //Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
             base.Initialize();
         }
 
