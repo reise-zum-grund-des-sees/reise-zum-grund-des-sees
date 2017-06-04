@@ -74,6 +74,7 @@ namespace ReiseZumGrundDesSees
                 foreach (ICollisionObject _otherObj in objects)
                     if (_otherObj != _object)
                         _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHit, _object, _otherObj));
+                _tmpHit += _splits[i];
             }
 
             if (_splits.Any())
