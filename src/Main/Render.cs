@@ -42,14 +42,14 @@ namespace ReiseZumGrundDesSees
             }
             }
         }
-        public void LeichterBlock(List<PlayerBlock> _block, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
+        public void LeichterBlock(IList<IPlayerBlock> _block, ref Matrix _viewMatrix, ref Matrix _perspectiveMatrix)
         {
             // benötige Block mit Größe 1x1x1? und Mittelpunkt in 0.5x0.5x0.5
 
             for (int i = 0; i < _block.Count; i++)
             {
-                if (_block[i].Zustand == (int)PlayerBlock.State.Gesetzt) { 
-                foreach (ModelMesh mesh in _block[i].Model.Meshes)
+                if (_block[i].CurrentState == PlayerBlock.State.Gesetzt) { 
+                foreach (ModelMesh mesh in (_block[i] as PlayerBlock).Model.Meshes)
                 {
                     foreach (BasicEffect effect in mesh.Effects)
                     {

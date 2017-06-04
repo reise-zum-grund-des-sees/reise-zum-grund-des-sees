@@ -40,7 +40,7 @@ namespace ReiseZumGrundDesSees
         Vector3 _movement;
         public int Art;
         public Model Model;
-        public Vector3 Position;
+        public Vector3 Position { get; private set; }
         public int Zustand = 0;
         public double Deletetime;
         private bool wasAddedToCollisionManager = false;

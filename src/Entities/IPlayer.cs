@@ -10,15 +10,21 @@ namespace ReiseZumGrundDesSees
 {
     interface IPlayer : IUpdateable, IReadonlyPlayer//, IRenderable
     {
+        new IList<IPlayerBlock> Blocks { get; }
     }
 
     interface IReadonlyPlayer : IPositionObject, ICollisionObject
     {
-        IReadOnlyList<IPlayerBlock> Blocks { get; }
+        IReadOnlyList<IReadonlyPlayerBlock> Blocks { get; }
         int Health { get; }
     }
 
-    interface IPlayerBlock : IUpdateable, ICollisionObject//, IRenderable
+    interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock//, IRenderable
+    {
+        //void PlaceInWorld(Vector3 _position);
+    }
+
+    interface IReadonlyPlayerBlock : ICollisionObject, IPositionObject
     {
         PlayerBlock.State CurrentState { get; }
         PlayerBlock.Type BlockType { get; }

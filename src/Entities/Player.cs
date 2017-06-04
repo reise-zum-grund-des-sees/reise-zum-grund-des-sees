@@ -14,7 +14,8 @@ namespace ReiseZumGrundDesSees
     {
         public Vector3 Position { get; set; } //Position des Spielers
 
-        public IReadOnlyList<IPlayerBlock> Blocks => Blöcke;
+        public IList<IPlayerBlock> Blocks => Blöcke;
+        IReadOnlyList<IReadonlyPlayerBlock> IReadonlyPlayer.Blocks => (IReadOnlyList<IPlayerBlock>)Blöcke;
 
         public bool HasMultipleHitboxes => false;
         public Hitbox Hitbox => new Hitbox(Position - new Vector3(hitboxSize.X * 0.5f, 0, hitboxSize.Z * 0.5f), hitboxSize);
@@ -31,7 +32,7 @@ namespace ReiseZumGrundDesSees
         public double Healthcd;
         public static float Blickrichtung; //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
-        public static List<PlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
+        public static IList<IPlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
         float _speedY = 0;
         public int Health { get; private set; }
@@ -51,7 +52,7 @@ namespace ReiseZumGrundDesSees
             Healthcd = 1001;
             MaxHealth = 3;
             Health = 3;
-            Blöcke = new List<PlayerBlock>();
+            Blöcke = new List<IPlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
@@ -225,10 +226,10 @@ namespace ReiseZumGrundDesSees
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 0)
+                    if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
                     {
                         Blockcd = 0;
-                        Blöcke[i].Zustand = (int)PlayerBlock.State.Übergang;
+                        (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
                         break;
                     }
 
@@ -237,10 +238,10 @@ namespace ReiseZumGrundDesSees
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 1)
+                    if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
                     {
                         Blockcd = 0;
-                        Blöcke[i].Zustand = (int)PlayerBlock.State.Übergang;
+                        (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
                         break;
                     }
             }
@@ -248,10 +249,10 @@ namespace ReiseZumGrundDesSees
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
-                    if (Blöcke[i].Zustand == (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 2)
+                    if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
                     {
                         Blockcd = 0;
-                        Blöcke[i].Zustand = (int)PlayerBlock.State.Übergang;
+                        (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
                         break;
                     }
             }
@@ -260,7 +261,7 @@ namespace ReiseZumGrundDesSees
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
                 for (int i = 0; i < Blöcke.Count; i++)
-                    Blöcke[i].Zustand = (int)PlayerBlock.State.Delete;
+                    (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
             }
 
             List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
@@ -291,7 +292,7 @@ namespace ReiseZumGrundDesSees
         {
             Health = MaxHealth; //Leben wieder voll
             for (int i = 0; i < Blöcke.Count; i++)
-                Blöcke[i].Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
+                (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
             Position = new Vector3(24, 32, 24); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
         }
     }
