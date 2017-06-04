@@ -21,16 +21,11 @@ namespace ReiseZumGrundDesSees.Entities
         public double IdleTimer;
         Vector2 Random;
         double Jumptimer;
+        double Geschosstimer;
         float speedY;
         public static List<Enemy> EnemyList = new List<Enemy>();
-        public bool HasMultipleHitboxes{ get; }
-
-        public Hitbox Hitbox => new Hitbox(Position, 1f - 0.5f, 1f, 1f - 0.5f);
-
-        public Hitbox[] Hitboxes => throw new NotImplementedException();
-
         public Vector3 Position { get; set; }
-       
+        public Hitbox Hitbox;
         public enum Art
         {
             Moving,
@@ -44,13 +39,14 @@ namespace ReiseZumGrundDesSees.Entities
         {
             
             ContentManager = contentManager;
-            Model = contentManager.Load<Model>("Gegner1");
-            HasMultipleHitboxes = false;
+            Model = contentManager.Load<Model>("Gegner1");      
             Position = _position;
             Gegnerart= _typ;
+            Hitbox = new Hitbox(Position, 1f - 0.5f, 1f, 1f - 0.5f);
             HitPlayer = false;
             HitTimer = 0;
             IdleTimer = 0;
+            Geschosstimer = 0;
             Rotate = 0;
             SpawnPosition = _position;
             Random = new Vector2();
@@ -65,31 +61,34 @@ namespace ReiseZumGrundDesSees.Entities
        
             
             int Aggrorange = 15;
-            
+            Hitbox = new Hitbox(Position, 1f - 0.5f, 1f, 1f - 0.5f);//wenn Mase der Gegner (1,1,1)
+
             Vector3 _movement = new Vector3(0, 0, 0);
-            _movement.Y-= 0.005f * (float)_passedTime;
-            if (Gegnerart == Art.Moving || Gegnerart == Art.Climbing || Gegnerart == Art.Jumping)
-            { 
-            if (Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange )
+
+            Vector3 EnemytoPlayer = Vector3.Subtract(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position);
+            EnemytoPlayer.Normalize();
+            Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), EnemytoPlayer)); //Rotation in Rad
+            if (EnemytoPlayer.X > 0) Rotate *= -1;
+
+            if (Gegnerart == Art.Moving || Gegnerart == Art.Climbing || Gegnerart == Art.Jumping || Gegnerart == Art.MandS)
+            {
+                _movement.Y -= 0.005f * (float)_passedTime;
+                if (Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange )
             {
                     IdleTimer = 0;
-                    Vector3 EnemytoPlayer = Vector3.Subtract(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position);
-                    EnemytoPlayer.Normalize();
-                    Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), EnemytoPlayer)); //Rotation in Rad
-                    if (EnemytoPlayer.X > 0) Rotate *= -1;
-
+               
                     if (HitPlayer == false) {
                         HitTimer = 0;
                       
-                _movement.X += EnemytoPlayer.X * (float)(_passedTime * 0.005f);
-                _movement.Z += EnemytoPlayer.Z * (float)(_passedTime * 0.005f);
+                _movement.X += EnemytoPlayer.X * (float)(_passedTime * 0.0025f);
+                _movement.Z += EnemytoPlayer.Z * (float)(_passedTime * 0.0025f);
                     }
                     if (HitPlayer == true)
                     {
                         HitTimer += _passedTime;
                         Rotate *= -1;
-                        _movement.X -= EnemytoPlayer.X * (float)(_passedTime * 0.005f);
-                        _movement.Z -= EnemytoPlayer.Z * (float)(_passedTime * 0.005f);
+                        _movement.X -= EnemytoPlayer.X * (float)(_passedTime * 0.0025f);
+                        _movement.Z -= EnemytoPlayer.Z * (float)(_passedTime * 0.0025f);
                     }
                 }
                 else //idlemovement
@@ -103,11 +102,11 @@ namespace ReiseZumGrundDesSees.Entities
                     {                    
                         Random = new Vector2((float)rnd.NextDouble()*2-1f, (float)rnd.NextDouble() * 2 - 1f);
                         Random.Normalize();
-                        Console.WriteLine(IdleTimer);
+                       
                     }
                     if (Vector3.Distance(new Vector3(Position.X + Random.X * (float)(_passedTime * 0.0025f), Position.Y,Position.Z + Random.Y * (float)(_passedTime * 0.0025f)),SpawnPosition)<5f) {
-                        _movement.X += Random.X * (float)(_passedTime * 0.0025f);
-                        _movement.Z += Random.Y * (float)(_passedTime * 0.0025f);
+                        _movement.X += Random.X * (float)(_passedTime * 0.00125f);
+                        _movement.Z += Random.Y * (float)(_passedTime * 0.00125f);
                     }
                     //Blickrichtung
 
@@ -116,6 +115,7 @@ namespace ReiseZumGrundDesSees.Entities
                     IdleTimer += _passedTime;
                 }
                 if (HitTimer > 1000) HitPlayer = false;
+            }
             Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, Hitbox, _view.BlockWorld);
                
             List<Direction> _info2 = new List<Direction>();
@@ -166,7 +166,19 @@ namespace ReiseZumGrundDesSees.Entities
                     _movement.Y += speedY * (float)_passedTime * 0.01f;
                
                 }
-            }
+
+                if (Gegnerart == Art.Shooting || Gegnerart == Art.MandS)//Shoot
+                {
+                if (Geschosstimer > 1000) Geschosstimer = 0;//1 Schuss pro Sekunde
+                    if (Geschosstimer== 0 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange
+                    && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
+                {    
+                       new Geschoss(ContentManager, Position, EnemytoPlayer);    
+                }                  
+                    Geschosstimer += _passedTime;
+             
+                }
+               
 
 
             return (ref GameState _state) =>

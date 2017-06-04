@@ -193,7 +193,7 @@ namespace ReiseZumGrundDesSees
 
             //Kollision mit Gegner         
             List<Direction> _info3 = new List<Direction>();
-            Vector3 movementtemp = _movement;
+            Vector3 movementtemp = _movement + new Vector3(0, 0, 0.000000001f);
             for (int i = 0; i < Enemy.EnemyList.Count; i++) {
                 _info3.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref movementtemp, Hitbox, Enemy.EnemyList[i].Hitbox));
             if((_info3[i].HasFlag(Direction.Back) || _info3[i].HasFlag(Direction.Top) ||_info3[i].HasFlag(Direction.Front) || _info3[i].HasFlag(Direction.Left) ||
@@ -202,18 +202,35 @@ namespace ReiseZumGrundDesSees
                 Health--;
                 Healthcd = 0;
                 }
-            if(Vector3.Distance(Position, Enemy.EnemyList[i].Position) < 0.1f && Math.Abs(Position.Y - Enemy.EnemyList[i].Position.Y) < 0.1f) //Gegner steht im Spieler ohne das er sich bewegt
+            /*
+            else if(Vector3.Distance(Position, Enemy.EnemyList[i].Position) < 0.1f && Math.Abs(Position.Y - Enemy.EnemyList[i].Position.Y) < 0.1f && Healthcd > 1000) //Gegner steht im Spieler ohne das er sich bewegt
                 {
                     Enemy.EnemyList[i].HitPlayer = true;
                     Health--;
                     Healthcd = 0;
                 }
+                */
                 if (_info3[i].HasFlag(Direction.Bottom))
                 {
                     Enemy.EnemyList.RemoveAt(i);
                 }
                 }
-            
+            //Kollision mit Geschoss  
+            List<Direction> _info4 = new List<Direction>();
+            movementtemp = _movement+new Vector3(0,0,0.000000001f);
+            for (int i = 0; i < Geschoss.GeschossList.Count; i++) {         
+                _info4.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref movementtemp, Hitbox, Geschoss.GeschossList[i].Hitbox));
+                if ((_info4[i].HasFlag(Direction.Back) || _info4[i].HasFlag(Direction.Top) || _info4[i].HasFlag(Direction.Front) || _info4[i].HasFlag(Direction.Left) ||
+                  _info4[i].HasFlag(Direction.Right) || _info4[i].HasFlag(Direction.Bottom)))
+                {
+                    Geschoss.GeschossList.RemoveAt(i);
+                    if  (Healthcd > 1000) { 
+                    Health--;
+                    Healthcd = 0;
+                    }
+                }
+
+            }
 
             /*
          _stateView.BlockWorld[(int)Position.X, (int)(Position.Y - 0.1f), (int)Position.Z] != WorldBlock.Water1 &&

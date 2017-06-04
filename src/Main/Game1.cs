@@ -92,9 +92,9 @@ namespace ReiseZumGrundDesSees
             
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
-            Enemy a = new Enemy(Content, new Vector3(20,34,20), Enemy.Art.Jumping); //Create Test Enemy
-            //Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Climbing); //Create Test Enemy
-            //Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
+            Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.MandS); //Create Test Enemy
+            Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
+            Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
             base.Initialize();
         }
 
@@ -163,10 +163,12 @@ namespace ReiseZumGrundDesSees
         if(GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                     _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-           
+        if (GameFlags.HasFlag(GameFlags.GameRunning))
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Enemies
+                    _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
 
             foreach (UpdateDelegate u in _updateList)
-                u?.Invoke(ref GameState);
+            u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
@@ -222,7 +224,8 @@ namespace ReiseZumGrundDesSees
 
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
                    Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix);
-
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Draw Geschosse
+                    Geschoss.GeschossList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in otherRenderables)
