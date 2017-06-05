@@ -13,10 +13,14 @@ namespace ReiseZumGrundDesSees
     {
         void Activate();
         void Deactivate();
+
+        void SetState(IReadOnlyDictionary<string, string[]> _state);
     }
 
     interface IReadonlyWorldObject : IRenderable, ICollisionObject, IPositionObject
-    { }
+    {
+        IReadOnlyDictionary<string, string[]> GetState();
+    }
 
     interface ISpecialBlock : IUpdateable, IRenderable
     {

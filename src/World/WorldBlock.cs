@@ -24,7 +24,7 @@ namespace ReiseZumGrundDesSees
 
     static class WorldBlockHelper
     {
-        public static bool IsPartOfWorldObject(this WorldBlock b)
+        public static bool IsSpecialBlock(this WorldBlock b)
         {
             switch (b)
             {

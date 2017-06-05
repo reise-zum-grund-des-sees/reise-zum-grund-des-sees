@@ -51,7 +51,7 @@ namespace ReiseZumGrundDesSees
 
         private void OnBaseWorldBlockChanged(WorldBlock _oldBlock, WorldBlock _newBlock, int x, int y, int z)
         {
-            if (!onBaseWorldBlockChangedBlocker && _oldBlock.IsPartOfWorldObject() && _oldBlock != _newBlock)
+            if (!onBaseWorldBlockChangedBlocker && _oldBlock.IsSpecialBlock() && _oldBlock != _newBlock)
                 RemoveObject(BlockAt(x, y, z));
             onBaseWorldBlockChangedBlocker = false;
         }
