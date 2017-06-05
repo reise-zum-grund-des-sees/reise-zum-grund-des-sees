@@ -84,8 +84,8 @@ namespace ReiseZumGrundDesSees
         {
             //Livetime
 
-            if (AktuelleDauer < _view.PlayerBlocks.Count * MaximialDauer)//wenn man hier und in der Zeile darunter "_view.PlayerBlocks.Count *" wegnimmt, erhällt man die Laufzeit von 0 bis 1
-                LifetimePercentage = (float)(AktuelleDauer) / (float)(_view.PlayerBlocks.Count * MaximialDauer);
+            if (AktuelleDauer < _view.Player.Blocks.Count * MaximialDauer)//wenn man hier und in der Zeile darunter "_view.PlayerBlocks.Count *" wegnimmt, erhällt man die Laufzeit von 0 bis 1
+                LifetimePercentage = (float)(AktuelleDauer) / (float)(_view.Player.Blocks.Count * MaximialDauer);
             else
                 LifetimePercentage = 1;
 
@@ -93,7 +93,7 @@ namespace ReiseZumGrundDesSees
             if (Zustand == (int)State.Delete)
             {
                 Deletetime += _passedTime;
-                AktuelleDauer = _view.PlayerBlocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
+                AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
                 if (Deletetime >= 5000)
                 {
                     Deletetime = 0;
@@ -105,7 +105,7 @@ namespace ReiseZumGrundDesSees
             {
                 //Position des Blockes basierend auf Blickrichtung
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
-                Vector3 Blick =  Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Blickrichtung));
+                Vector3 Blick =  Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Player.Blickrichtung));
                 Blick.Normalize();
                 Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
                 //Console.WriteLine(Position);
@@ -152,7 +152,7 @@ namespace ReiseZumGrundDesSees
             {
                 //Objekt ist Tot
                
-                if (_view.PlayerBlocks.Count * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
+                if (_view.Player.Blocks.Count * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
                 {
                     Zustand = (int)State.Bereit;
                     //AktuelleDauer = 0;

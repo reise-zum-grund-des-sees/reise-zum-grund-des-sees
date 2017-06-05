@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ReiseZumGrundDesSees.State;
-using ReiseZumGrundDesSees.Entities;
 using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees
@@ -224,7 +222,7 @@ namespace ReiseZumGrundDesSees
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
                 renderer.PlayerR((Player)GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.LeichterBlock((List<PlayerBlock>)GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
+                renderer.LeichterBlock(GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
 
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
                    Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix);

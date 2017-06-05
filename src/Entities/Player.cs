@@ -278,11 +278,11 @@ namespace ReiseZumGrundDesSees
 
             for (int i = 0; i < Blöcke.Count; i++)
             {
-                if (Blöcke[i].Zustand != (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 0)
+                if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
                     BlockReadyL = false;
-                if (Blöcke[i].Zustand != (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 1)
+                if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
                     BlockReadyM = false;
-                if (Blöcke[i].Zustand != (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 2)
+                if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
                     BlockReadyS = false;
             }
             if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && BlockReadyL == false)
