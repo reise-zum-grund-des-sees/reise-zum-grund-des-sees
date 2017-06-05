@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees
 {
-    class Enemy : IUpdateable, IPositionObject, IRenderable
+    class Enemy : IUpdateable, IPositionObject, IRenderable, ICollisionObject
     {
         ContentManager ContentManager;
         public Model Model;
@@ -27,7 +27,14 @@ namespace ReiseZumGrundDesSees
         List<SoundEffect> soundEffects;
         public static List<Enemy> EnemyList = new List<Enemy>();
         public Vector3 Position { get; set; }
-        public Hitbox Hitbox;
+
+        private bool wasAddedToCollisionManager = false;
+
+        public bool HasMultipleHitboxes => false;
+        public Hitbox Hitbox { get; private set; }
+        public Hitbox[] Hitboxes => throw new NotImplementedException();
+        public bool IsEnabled => true;
+
         public enum Art
         {
             Moving,
@@ -44,7 +51,9 @@ namespace ReiseZumGrundDesSees
             Model = contentManager.Load<Model>(Content.MODEL_GEGNER_1);
             Position = _position;
             Gegnerart = _typ;
-            Hitbox = new Hitbox(Position, 1f - 0.5f, 1f, 1f - 0.5f);
+            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
+                (_block) => true,
+                (_obj) => !(_obj is Geschoss));
             HitPlayer = false;
             HitTimer = 0;
             IdleTimer = 0;
@@ -65,7 +74,9 @@ namespace ReiseZumGrundDesSees
 
 
             int Aggrorange = 15;
-            Hitbox = new Hitbox(Position, 1f - 0.5f, 1f, 1f - 0.5f);//wenn Mase der Gegner (1,1,1)
+            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
+                (_block) => true,
+                (_obj) => !(_obj is Geschoss));
 
             Vector3 _movement = new Vector3(0, 0, 0);
 
@@ -122,56 +133,36 @@ namespace ReiseZumGrundDesSees
                 }
                 if (HitTimer > 1000) HitPlayer = false;
             }
-            //Direction _info = CollisionDetector.CollisionWithWorld(ref _movement, Hitbox, _view.BlockWorld);
 
-            //List<Direction> _info2 = new List<Direction>();
-            //for (int i = 0; i < _view.PlayerBlocks.Count; i++)
-            //    _info2.Add(CollisionDetector.CollisionDetectionWithSplittedMovement(ref _movement, Hitbox, _view.PlayerBlocks[i].Hitbox));
-            //if (Gegnerart == Art.Climbing) //Klettere über Bloecke
-            //{
-            //    if ((_info.HasFlag(Direction.Front) || _info.HasFlag(Direction.Back) || _info.HasFlag(Direction.Right) || _info.HasFlag(Direction.Left)))
-            //    {
-            //        _movement.Y += (float)(_passedTime * 0.01f);
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < _info2.Count; i++)
-            //        {
-            //            if ((_info2[i].HasFlag(Direction.Front) || _info2[i].HasFlag(Direction.Back) || _info2[i].HasFlag(Direction.Right) || _info2[i].HasFlag(Direction.Left)))
-            //            {
-            //                _movement.Y += (float)(_passedTime * 0.01f);
-            //                break;
-            //            }
-            //        }
-            //    }
+            var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
 
-            //}
-            //if (Gegnerart == Art.Jumping)//Springe
-            //{
+            if (Gegnerart == Art.Climbing) //Klettere über Bloecke
+            {
+                if ((_collInfo.ContainsKey(Direction.Front) ||
+                     _collInfo.ContainsKey(Direction.Back) ||
+                     _collInfo.ContainsKey(Direction.Right) ||
+                     _collInfo.ContainsKey(Direction.Left)))
+                {
+                    _movement.Y += (float)(_passedTime * 0.01f);
+                }
+            }
 
-            //    if (Jumptimer == 0 && (_info.HasFlag(Direction.Front) || _info.HasFlag(Direction.Back) || _info.HasFlag(Direction.Right) || _info.HasFlag(Direction.Left)))
-            //    {
-            //        speedY += 0.9f;
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < _info2.Count; i++)
-            //        {
-            //            if (Jumptimer == 0 && (_info2[i].HasFlag(Direction.Front) || _info2[i].HasFlag(Direction.Back) || _info2[i].HasFlag(Direction.Right) || _info2[i].HasFlag(Direction.Left)))
-            //            {
-            //                speedY += 0.9f;
-            //                break;
-            //            }
-            //        }
-            //    }
-            //    Jumptimer += _passedTime;
+            if (Gegnerart == Art.Jumping)//Springe
+            {
+                if (Jumptimer == 0 && (_collInfo.ContainsKey(Direction.Front) ||
+                                       _collInfo.ContainsKey(Direction.Back) ||
+                                       _collInfo.ContainsKey(Direction.Right) ||
+                                       _collInfo.ContainsKey(Direction.Left)))
+                {
+                    speedY += 0.9f;
+                }
+                Jumptimer += _passedTime;
 
-            //    speedY -= 0.005f * (float)_passedTime;
-            //    if (speedY < 0) speedY = 0;
-            //    if (_info.HasFlag(Direction.Bottom)) Jumptimer = 0;
-            //    _movement.Y += speedY * (float)_passedTime * 0.01f;
-
-            //}
+                speedY -= 0.005f * (float)_passedTime;
+                if (speedY < 0) speedY = 0;
+                if (_collInfo.ContainsKey(Direction.Bottom)) Jumptimer = 0;
+                _movement.Y += speedY * (float)_passedTime * 0.01f;
+            }
 
             if (Gegnerart == Art.Shooting || Gegnerart == Art.MandS)//Shoot
             {
@@ -183,7 +174,6 @@ namespace ReiseZumGrundDesSees
                     soundEffects[0].Play();
                 }
                 Geschosstimer += _passedTime;
-
             }
 
 
@@ -192,6 +182,11 @@ namespace ReiseZumGrundDesSees
             {
                 this.Position += _movement;
 
+                if (!wasAddedToCollisionManager)
+                {
+                    _state.CollisionDetector.AddObject(this);
+                    wasAddedToCollisionManager = true;
+                }
             };
         }
 

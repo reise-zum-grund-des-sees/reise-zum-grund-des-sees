@@ -134,7 +134,7 @@ namespace ReiseZumGrundDesSees
             Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
             if (_hitbox.CollidesWithObject(_otherObj))
             {
-                if (_otherObj.HasMultipleHitboxes)
+                if (!_otherObj.HasMultipleHitboxes)
                     CollisionDetection(ref _movement, _hitbox, _otherObj.Hitbox)
                         .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
                 else

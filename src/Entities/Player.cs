@@ -24,6 +24,8 @@ namespace ReiseZumGrundDesSees
         public Hitbox[] Hitboxes => throw new NotImplementedException();
         public bool IsEnabled => true;
 
+        private bool wasAddedToCollisionManager = false;
+
         public Model Model;
         bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
         bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
@@ -314,6 +316,12 @@ namespace ReiseZumGrundDesSees
 
                 foreach (UpdateDelegate u in blockUpdateList)
                     u(ref _state);
+
+                if (!wasAddedToCollisionManager)
+                {
+                    _state.CollisionDetector.AddObject(this);
+                    wasAddedToCollisionManager = true;
+                }
             };
         }
         public static float ChebyshevDistance(Vector3 a, Vector3 b)
