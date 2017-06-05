@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReiseZumGrundDesSees.State;
 using ReiseZumGrundDesSees.Entities;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees
 {
@@ -95,6 +96,9 @@ namespace ReiseZumGrundDesSees
             Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.MandS); //Create Test Enemy
             Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
+
+            SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
+
             base.Initialize();
         }
 

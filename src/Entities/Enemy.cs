@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees.Entities
 {
@@ -23,6 +24,7 @@ namespace ReiseZumGrundDesSees.Entities
         double Jumptimer;
         double Geschosstimer;
         float speedY;
+        List<SoundEffect> soundEffects;
         public static List<Enemy> EnemyList = new List<Enemy>();
         public Vector3 Position { get; set; }
         public Hitbox Hitbox;
@@ -52,6 +54,8 @@ namespace ReiseZumGrundDesSees.Entities
             Random = new Vector2();
             Jumptimer = 1;
             speedY = 0;
+            soundEffects = new List<SoundEffect>();
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/shootlaser")); //schiesen
             EnemyList.Add(this);
         }
 
@@ -173,7 +177,8 @@ namespace ReiseZumGrundDesSees.Entities
                     if (Geschosstimer== 0 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange
                     && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
                 {    
-                       new Geschoss(ContentManager, Position, EnemytoPlayer);    
+                       new Geschoss(ContentManager, Position, EnemytoPlayer);
+                      soundEffects[0].Play();
                 }                  
                     Geschosstimer += _passedTime;
              
