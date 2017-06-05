@@ -220,9 +220,7 @@ namespace ReiseZumGrundDesSees
 
                                 if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
                                 {
-                                    Health--;
-                                    Healthcd = 0;
-                                    soundEffects[2].Play();
+                                    Hit();
                                 }
                             }
 
@@ -317,6 +315,11 @@ namespace ReiseZumGrundDesSees
                 foreach (UpdateDelegate u in blockUpdateList)
                     u(ref _state);
 
+                if (_collisionInformation.ContainsKey(Direction.Bottom) &&
+                    _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
+                    _collisionInformation[Direction.Bottom].Object is IHitable h)
+                        h.Hit();
+
                 if (!wasAddedToCollisionManager)
                 {
                     _state.CollisionDetector.AddObject(this);
@@ -339,6 +342,13 @@ namespace ReiseZumGrundDesSees
             for (int i = 0; i < Blöcke.Count; i++)
                 (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
             Position = new Vector3(24, 32, 24); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
+        }
+
+        public void Hit()
+        {
+            Health--;
+            Healthcd = 0;
+            soundEffects[2].Play();
         }
     }
 }

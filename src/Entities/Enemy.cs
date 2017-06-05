@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees
 {
-    class Enemy : IUpdateable, IPositionObject, IRenderable, ICollisionObject
+    class Enemy : IUpdateable, IPositionObject, IRenderable, ICollisionObject, IHitable
     {
         ContentManager ContentManager;
         public Model Model;
@@ -29,6 +29,7 @@ namespace ReiseZumGrundDesSees
         public Vector3 Position { get; set; }
 
         private bool wasAddedToCollisionManager = false;
+        private bool disposed = false;
 
         public bool HasMultipleHitboxes => false;
         public Hitbox Hitbox { get; private set; }
@@ -182,7 +183,22 @@ namespace ReiseZumGrundDesSees
             {
                 this.Position += _movement;
 
-                if (!wasAddedToCollisionManager)
+                foreach (var _item in _collInfo)
+                    if (_item.Value.CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
+                        _item.Value.Object is IPlayer p &&
+                        !HitPlayer)
+                    {
+                        p.Hit();
+                        HitPlayer = true;
+                    }
+
+                if (disposed)
+                {
+                    if (wasAddedToCollisionManager)
+                        _state.CollisionDetector.RemoveObject(this);
+                    EnemyList.Remove(this);
+                }
+                else if (!wasAddedToCollisionManager)
                 {
                     _state.CollisionDetector.AddObject(this);
                     wasAddedToCollisionManager = true;
@@ -216,6 +232,11 @@ namespace ReiseZumGrundDesSees
             }
 
 
+        }
+
+        public void Hit()
+        {
+            disposed = true;
         }
     }
 }

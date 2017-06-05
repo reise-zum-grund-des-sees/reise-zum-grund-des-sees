@@ -67,6 +67,7 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Geschoss.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
+    <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
     <Compile Include="State\IGamer.cs" />

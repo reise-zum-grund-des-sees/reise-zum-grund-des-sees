@@ -16,6 +16,7 @@ namespace ReiseZumGrundDesSees
     interface ICollisionDetector : IReadonlyCollisionDetector
     {
         void AddObject(ICollisionObject _object);
+        void RemoveObject(ICollisionObject _object);
     }
 
     class CollisionDetector : IReadonlyCollisionDetector
@@ -31,6 +32,11 @@ namespace ReiseZumGrundDesSees
         public void AddObject(ICollisionObject _object)
         {
             objects.Add(_object);
+        }
+
+        public void RemoveObject(ICollisionObject _object)
+        {
+            objects.Remove(_object);
         }
 
         public struct CollisionSource

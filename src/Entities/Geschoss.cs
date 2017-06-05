@@ -82,6 +82,17 @@ namespace ReiseZumGrundDesSees
             return (ref GameState _state) =>
             {
                 this.Position += _movement;
+
+                if (_collInfo.Any())
+                    _state.CollisionDetector.RemoveObject(this);
+
+                foreach (var _item in _collInfo)
+                {
+                    if (_item.Value.CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
+                        _item.Value.Object is IPlayer p)
+
+                        p.Hit();
+                }
             };
         }
     }
