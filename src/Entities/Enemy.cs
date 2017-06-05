@@ -41,7 +41,7 @@ namespace ReiseZumGrundDesSees
         {
 
             ContentManager = contentManager;
-            Model = contentManager.Load<Model>("Gegner1");
+            Model = contentManager.Load<Model>(Content.MODEL_GEGNER_1);
             Position = _position;
             Gegnerart = _typ;
             Hitbox = new Hitbox(Position, 1f - 0.5f, 1f, 1f - 0.5f);
@@ -55,7 +55,7 @@ namespace ReiseZumGrundDesSees
             Jumptimer = 1;
             speedY = 0;
             soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/shootlaser")); //schiesen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SHOOT)); //schiesen
             EnemyList.Add(this);
         }
 

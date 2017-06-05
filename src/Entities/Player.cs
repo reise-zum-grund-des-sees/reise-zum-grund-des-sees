@@ -54,15 +54,15 @@ namespace ReiseZumGrundDesSees
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
-            Model = contentManager.Load<Model>("spielfigur");
+            Model = contentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
             soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/jumping")); // Springen
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/die")); //Sterben
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/gethit")); //schaden bekommen
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/klong")); //Block setzen
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/blop")); //Gegner stirbt
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/error2")); //wenn cd von Blöcken
-            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/reset")); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_GETHIT)); //schaden bekommen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_KLONG)); //Block setzen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));

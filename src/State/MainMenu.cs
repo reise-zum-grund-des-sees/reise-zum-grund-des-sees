@@ -43,12 +43,12 @@ namespace ReiseZumGrundDesSees
 
         public MainMenu(ContentManager Content)
 		{
-            background = Content.Load<Texture2D>("background");
-            Button_Neues_Spiel_starten = Content.Load<Texture2D>("15");
-            Button_Spiel_Laden = Content.Load<Texture2D>("16");
-            Button_Spiel_Speichern = Content.Load<Texture2D>("17");
-            Button_Verlassen = Content.Load<Texture2D>("19");
-            Button_Credits = Content.Load<Texture2D>("18");
+            background = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.TEXTURE_BACKGROUND);
+            Button_Neues_Spiel_starten = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.BUTTON_NEUES_SPIEL_STARTEN);
+            Button_Spiel_Laden = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.BUTTON_SPIEL_LADEN);
+            Button_Spiel_Speichern = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.BUTTON_SPIEL_SPEICHERN);
+            Button_Verlassen = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.BUTTON_VERLASSEN);
+            Button_Credits = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.BUTTON_CREDITS);
 		}
 
         public void Update(InputEventArgs _args, IMenuCallback _callback, Point _windowSize)

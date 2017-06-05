@@ -22,7 +22,7 @@ namespace ReiseZumGrundDesSees
         public Geschoss(ContentManager contentManager, Vector3 _position, Vector3 _movement)
         {
             ContentManager = contentManager;
-            Model = contentManager.Load<Model>("Block");
+            Model = contentManager.Load<Model>(Content.MODEL_GESCHOSS);
             Position = _position;
             SpawnPosition = _position;
             Movement = _movement;

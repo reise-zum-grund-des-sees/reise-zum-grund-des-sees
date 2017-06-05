@@ -21,7 +21,7 @@ namespace ReiseZumGrundDesSees
         {
             Position = _position;
             content = _content;
-            cursorModel = _content.Load<Model>("cursor");
+            cursorModel = _content.Load<Model>(Content.MODEL_CURSOR);
         }
 
         double f, b, l, r, u, d;

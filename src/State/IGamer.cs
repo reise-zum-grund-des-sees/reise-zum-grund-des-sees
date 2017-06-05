@@ -36,19 +36,19 @@ namespace ReiseZumGrundDesSees
 
 
 
-        public IGamer(ContentManager Content)
+        public IGamer(ContentManager _content)
         {
            
-            vollesHerz = Content.Load<Texture2D>("Herz_ausgefüllt");
-            leeresHerz = Content.Load<Texture2D>("Herz_unausgefüllt");
+            vollesHerz = _content.Load<Texture2D>(Content.ICON_HERZ_AUSGEFUELLT);
+            leeresHerz = _content.Load<Texture2D>(Content.ICON_HERZ_UNAUSGEFUELLT);
 
-            skill1 = Content.Load<Texture2D>("wuerfel_hell_alt");
-            skill2 = Content.Load<Texture2D>("wuerfel_grau_alt");
-            skill3 = Content.Load<Texture2D>("wuerfel_sw_alt");
+            skill1 = _content.Load<Texture2D>(Content.ICON_WUERFEL_HELL);
+            skill2 = _content.Load<Texture2D>(Content.ICON_WUERFEL_GRAU);
+            skill3 = _content.Load<Texture2D>(Content.ICON_WUERFEL_SCHWARZ);
 
-            S1 = Content.Load<SpriteFont>("S1");
-            S2 = Content.Load<SpriteFont>("S2");
-            S3 = Content.Load<SpriteFont>("S3");
+            S1 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
+            S2 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
+            S3 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
         }
         public void Update(InputEventArgs _args, Point _windowSize, GameState _gameState)
         {

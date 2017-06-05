@@ -68,15 +68,15 @@ namespace ReiseZumGrundDesSees
             Zustand = (int)State.Bereit;
             if (Art == 0)
             {//leichterBlock
-                Model = contentManager.Load<Model>("leichter_Block");
+                Model = contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
             }
             if (Art == 1)//MittelschwererBlock
             {
-                Model = contentManager.Load<Model>("mittelschwerer_Block");
+                Model = contentManager.Load<Model>(Content.MODEL_BLOCK_MEDIUM);
             }
             if (Art == 2)//SchwererBlock
             {
-                Model = contentManager.Load<Model>("schwerer_Block");
+                Model = contentManager.Load<Model>(Content.MODEL_BLOCK_SCHWER);
             }
         }
 

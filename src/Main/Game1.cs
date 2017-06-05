@@ -109,8 +109,8 @@ namespace ReiseZumGrundDesSees
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            blocktexture = Content.Load<Texture2D>("blocktexture");
-            font = Content.Load<SpriteFont>("font");
+            blocktexture = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.TEXTURE_BLOCK);
+            font = Content.Load<SpriteFont>(ReiseZumGrundDesSees.Content.FONT_ARIAL_20);
 
             // TODO: use this.Content to load your game content here
             MainMenu = new MainMenu(Content);

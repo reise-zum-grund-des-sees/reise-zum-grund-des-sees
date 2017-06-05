@@ -68,6 +68,7 @@
     <Compile Include="Entities\Geschoss.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
     <Compile Include="Entities\IPlayer.cs" />
+    <Compile Include="Main\Content.cs" />
     <Compile Include="State\IGamer.cs" />
     <Compile Include="State\IUpdateable.cs" />
     <Compile Include="World\BaseWorld.cs" />
