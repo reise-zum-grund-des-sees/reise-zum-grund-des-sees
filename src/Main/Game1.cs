@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ReiseZumGrundDesSees.State;
+using ReiseZumGrundDesSees.Entities;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees
 {
@@ -25,6 +28,7 @@ namespace ReiseZumGrundDesSees
         private List<IRenderable> otherRenderables = new List<IRenderable>();
 
         MainMenu MainMenu;
+        IGamer IGamer;
 
         GameFlags __GameFlags;
         GameFlags GameFlags
@@ -86,9 +90,15 @@ namespace ReiseZumGrundDesSees
             editor = new WorldEditor(new Vector3(24, 32, 24), Content);
             editor.Initialize(GraphicsDevice);
             otherRenderables.Add(editor);
-
+            
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
+            Enemy a = new Enemy(Content, new Vector3(20,32,20), Enemy.Art.MandS); //Create Test Enemy
+            Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
+            Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
+
+            SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
+
             base.Initialize();
         }
 
@@ -106,6 +116,7 @@ namespace ReiseZumGrundDesSees
 
             // TODO: use this.Content to load your game content here
             MainMenu = new MainMenu(Content);
+            IGamer = new IGamer(Content);
             renderer = new Render(GraphicsDevice, Content);
         }
 
@@ -152,13 +163,23 @@ namespace ReiseZumGrundDesSees
             _updateList.Add(GameState.Camera?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+     
+        if(GameFlags.HasFlag(GameFlags.GameRunning))
+                for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
+                    _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+        if (GameFlags.HasFlag(GameFlags.GameRunning))
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Enemies
+                    _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
 
             foreach (UpdateDelegate u in _updateList)
-                u?.Invoke(ref GameState);
+            u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
+            if (GameFlags.HasFlag(GameFlags.GameRunning))
+                IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), GameState);
+          
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
             {
@@ -203,12 +224,18 @@ namespace ReiseZumGrundDesSees
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
                 renderer.PlayerR((Player)GameState.Player, ref _viewMatrix, ref _perspectiveMatrix);
-                renderer.LeichterBlock(Player.BlÃ¶cke, ref _viewMatrix, ref _perspectiveMatrix);
-              
+                renderer.LeichterBlock((List<PlayerBlock>)GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
+
+                for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
+                   Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix);
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Draw Geschosse
+                    Geschoss.GeschossList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
                 foreach (var _renderable in otherRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix);
+
+                IGamer.Render(spriteBatch);
             }
 
             if (GameFlags.HasFlag(GameFlags.Menu))

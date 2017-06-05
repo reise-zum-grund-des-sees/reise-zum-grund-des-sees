@@ -17,6 +17,8 @@ namespace ReiseZumGrundDesSees
     {
         IReadOnlyList<IReadonlyPlayerBlock> Blocks { get; }
         int Health { get; }
+        double Healthcd { get; }
+        float Blickrichtung { get; }
     }
 
     interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock//, IRenderable

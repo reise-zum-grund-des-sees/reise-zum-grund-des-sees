@@ -14,7 +14,7 @@ namespace ReiseZumGrundDesSees
         public State CurrentState => (State)Zustand;
         public Type BlockType => (Type)Art;
 
-        public float LifetimePercentage => throw new NotImplementedException();
+        public float LifetimePercentage { get; private set; }
 
         public bool HasMultipleHitboxes => ((Type)Art == Type.Medium) ? true : false;
         public Hitbox Hitbox => new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f,
@@ -28,13 +28,7 @@ namespace ReiseZumGrundDesSees
         };
         public bool IsEnabled => CurrentState == State.Gesetzt;
 
-        public static int AnzahlL = 0;
-        public static int MaximumL = 3;
-        public static int AnzahlM = 0;
-        public static int MaximumM = 3;
-        public static int AnzahlS = 0;
-        public static int MaximumS = 3;
-        public static double MaximialDauer;
+        public double MaximialDauer;
         public double AktuelleDauer;
         float _speedY;
         Vector3 _movement;
@@ -52,7 +46,6 @@ namespace ReiseZumGrundDesSees
             CD = 2,
             Übergang = 3,
             Delete = 4
-
         }
         public enum Type
         {
@@ -64,43 +57,43 @@ namespace ReiseZumGrundDesSees
 
         public PlayerBlock(ContentManager contentManager, Player _player, int ArtdesBlocks)
         {
-
             Art = ArtdesBlocks;
             _speedY = 0;
             _movement = new Vector3(0, 0, 0);
             AktuelleDauer = 0;
             MaximialDauer = 15000;
             Position = _player.Position;
+            LifetimePercentage = 1f;
 
             Zustand = (int)State.Bereit;
             if (Art == 0)
             {//leichterBlock
-             //  AnzahlL++;
                 Model = contentManager.Load<Model>("leichter_Block");
             }
             if (Art == 1)//MittelschwererBlock
             {
-                // AnzahlM++;
                 Model = contentManager.Load<Model>("mittelschwerer_Block");
             }
             if (Art == 2)//SchwererBlock
             {
-                // AnzahlS++;             
                 Model = contentManager.Load<Model>("schwerer_Block");
             }
-
-
-
-
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            //Livetime
+
+            if (AktuelleDauer < _view.PlayerBlocks.Count * MaximialDauer)//wenn man hier und in der Zeile darunter "_view.PlayerBlocks.Count *" wegnimmt, erhällt man die Laufzeit von 0 bis 1
+                LifetimePercentage = (float)(AktuelleDauer) / (float)(_view.PlayerBlocks.Count * MaximialDauer);
+            else
+                LifetimePercentage = 1;
+
             //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
             if (Zustand == (int)State.Delete)
             {
                 Deletetime += _passedTime;
-                AktuelleDauer = 0;
+                AktuelleDauer = _view.PlayerBlocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
                 if (Deletetime >= 5000)
                 {
                     Deletetime = 0;
@@ -112,7 +105,7 @@ namespace ReiseZumGrundDesSees
             {
                 //Position des Blockes basierend auf Blickrichtung
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
-                Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(Player.Blickrichtung));
+                Vector3 Blick =  Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Blickrichtung));
                 Blick.Normalize();
                 Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
                 //Console.WriteLine(Position);
@@ -158,13 +151,11 @@ namespace ReiseZumGrundDesSees
             else
             {
                 //Objekt ist Tot
-                //MaximumL als allgemeines Maximum, müsste addiertes Maximum sein, da ist cd aber zu hoch
-                if (MaximumL * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
+               
+                if (_view.PlayerBlocks.Count * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
                 {
                     Zustand = (int)State.Bereit;
-                    AktuelleDauer = 0;
-
-
+                    //AktuelleDauer = 0;
                 }
             }
             return (ref GameState _state) =>

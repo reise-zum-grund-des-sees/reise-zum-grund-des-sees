@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -29,15 +30,15 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
-        public double Healthcd;
-        public static float Blickrichtung; //in Rad
+        public double Healthcd{ get; private set; }
+        public float Blickrichtung{ get; private set; } //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
-        public static IList<IPlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
+        public IList<IPlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
         float _speedY = 0;
         public int Health { get; private set; }
-
-        int MaxHealth;
+        public int MaxHealth { get; private set; }
+        List<SoundEffect> soundEffects;
         public Player(ContentManager contentManager, Vector3 _position)
         {
             ContentManager = contentManager;
@@ -54,6 +55,14 @@ namespace ReiseZumGrundDesSees
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
             Model = contentManager.Load<Model>("spielfigur");
+            soundEffects = new List<SoundEffect>();
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/jumping")); // Springen
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/die")); //Sterben
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/gethit")); //schaden bekommen
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/klong")); //Block setzen
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/blop")); //Gegner stirbt
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/error2")); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>("Sound/reset")); //wenn cd von Blöcken
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
             Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
@@ -138,6 +147,7 @@ namespace ReiseZumGrundDesSees
                 Jump1 = true;
                 _speedY = 1.1f;
                 Jumpcd = true;
+                soundEffects[0].Play();
             }
 
             if (Jump1 == true && !_inputArgs.Events.HasFlag(InputEventList.Jump))
@@ -147,6 +157,7 @@ namespace ReiseZumGrundDesSees
             {
                 Jump2 = true;
                 _speedY = 1.1f;
+                soundEffects[0].Play();
             }
 
             _speedY -= 0.005f * (float)_passedTime;
@@ -209,6 +220,7 @@ namespace ReiseZumGrundDesSees
                                 {
                                     Health--;
                                     Healthcd = 0;
+                                    soundEffects[2].Play();
                                 }
                             }
 
@@ -230,6 +242,7 @@ namespace ReiseZumGrundDesSees
                     {
                         Blockcd = 0;
                         (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
+                        soundEffects[3].Play();
                         break;
                     }
 
@@ -242,6 +255,7 @@ namespace ReiseZumGrundDesSees
                     {
                         Blockcd = 0;
                         (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
+                        soundEffects[3].Play();
                         break;
                     }
             }
@@ -253,13 +267,36 @@ namespace ReiseZumGrundDesSees
                     {
                         Blockcd = 0;
                         (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
+                        soundEffects[3].Play();
                         break;
                     }
             }
+            //Soundeffekt wenn nicht bereit
+            bool BlockReadyL = true;
+            bool BlockReadyM = true;
+            bool BlockReadyS = true;
+
+            for (int i = 0; i < Blöcke.Count; i++)
+            {
+                if (Blöcke[i].Zustand != (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 0)
+                    BlockReadyL = false;
+                if (Blöcke[i].Zustand != (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 1)
+                    BlockReadyM = false;
+                if (Blöcke[i].Zustand != (int)PlayerBlock.State.Bereit && Blöcke[i].Art == 2)
+                    BlockReadyS = false;
+            }
+            if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && BlockReadyL == false)
+                soundEffects[5].Play();
+            if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && BlockReadyM == false)
+                soundEffects[5].Play();
+            if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && BlockReadyS == false)
+                soundEffects[5].Play();
+
 
             // Löschen mit Taste
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
+                soundEffects[6].Play();
                 for (int i = 0; i < Blöcke.Count; i++)
                     (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
             }
@@ -273,7 +310,6 @@ namespace ReiseZumGrundDesSees
             return (ref GameState _state) =>
             {
                 this.Position += _movement;
-                //_state.Camera.ChangePosition(_movement);   //move Camera with Player   
                 //Console.WriteLine(Position);
 
                 foreach (UpdateDelegate u in blockUpdateList)
@@ -290,6 +326,7 @@ namespace ReiseZumGrundDesSees
         }
         public void gestorben()
         {
+            soundEffects[1].Play();
             Health = MaxHealth; //Leben wieder voll
             for (int i = 0; i < Blöcke.Count; i++)
                 (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
