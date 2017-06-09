@@ -15,6 +15,9 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_BLOCK_SCHWER = "models/block_schwer";
         public const string MODEL_SPIELFIGUR = "models/spielfigur";
         public const string MODEL_GESCHOSS = "models/block";
+        public const string MODEL_SCHALTER_OBEN = "models/schalter_oben";
+        public const string MODEL_SCHALTER_UNTEN = "models/schalter_unten";
+        public const string MODEL_STACHELN = "models/stacheln";
 
         public const string SOUND_JUMPING = "sound/jumping";
         public const string SOUND_DIE = "sound/die";

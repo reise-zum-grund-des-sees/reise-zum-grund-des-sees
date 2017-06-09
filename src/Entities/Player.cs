@@ -317,9 +317,10 @@ namespace ReiseZumGrundDesSees
 
                 if (_collisionInformation.ContainsKey(Direction.Bottom) &&
                     _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
-                    _collisionInformation[Direction.Bottom].Object is IHitable h)
+                    _collisionInformation[Direction.Bottom].Object is IHitable h){ 
                         h.Hit();
-
+                        soundEffects[4].Play();
+                }
                 if (!wasAddedToCollisionManager)
                 {
                     _state.CollisionDetector.AddObject(this);

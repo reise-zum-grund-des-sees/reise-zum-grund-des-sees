@@ -37,7 +37,7 @@ namespace ReiseZumGrundDesSees
             is_pressed = false;
             ContentManager = _contentManager;
             Rotation = 0;
-            Model = _contentManager.Load<Model>("schalter_oben");
+            Model = _contentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
         }
         public void press()
         {
@@ -45,12 +45,12 @@ namespace ReiseZumGrundDesSees
             {
                 if (is_pressed == false)
                 {
-                    Model = ContentManager.Load<Model>("schalter_unten");
+                    Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_UNTEN);
                     is_pressed = true;
                 }
                 else
                 {
-                    Model = ContentManager.Load<Model>("schalter_oben");
+                    Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
                     is_pressed = false;
                 }
             }

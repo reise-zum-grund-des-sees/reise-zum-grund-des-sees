@@ -28,7 +28,7 @@ namespace ReiseZumGrundDesSees
                 Position = _position;
                 Type = WorldBlock.Spikes;
                 ContentManager = _contentManager;
-                Model = _contentManager.Load<Model>("Stacheln");
+                Model = _contentManager.Load<Model>(Content.MODEL_STACHELN);
                 //SpikeList.Add(this);
          
         }
