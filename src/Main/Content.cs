@@ -10,6 +10,7 @@ namespace ReiseZumGrundDesSees
     {
         public const string MODEL_CURSOR = "models/cursor";
         public const string MODEL_GEGNER_1 = "models/gegner1";
+        public const string MODEL_GEGNER_2 = "models/gegner2";
         public const string MODEL_BLOCK_LEICHT = "models/block_leicht";
         public const string MODEL_BLOCK_MEDIUM = "models/block_medium";
         public const string MODEL_BLOCK_SCHWER = "models/block_schwer";

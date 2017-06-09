@@ -48,10 +48,13 @@ namespace ReiseZumGrundDesSees
         public Enemy(ContentManager contentManager, Vector3 _position, Art _typ)
         {
 
-            ContentManager = contentManager;
-            Model = contentManager.Load<Model>(Content.MODEL_GEGNER_1);
+            ContentManager = contentManager;     
             Position = _position;
             Gegnerart = _typ;
+            if(Gegnerart==Art.Shooting)
+                Model = contentManager.Load<Model>(Content.MODEL_GEGNER_2);
+            else
+                Model = contentManager.Load<Model>(Content.MODEL_GEGNER_1);
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
                 (_block) => true,
                 (_obj) => !(_obj is Geschoss));
@@ -219,8 +222,8 @@ namespace ReiseZumGrundDesSees
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    //effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateScale(0.045f) * Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(Vector3.Add(this.Position, new Vector3(0, 0.5f, 0)));
+                    effect.EnableDefaultLighting();
+                    effect.World = Matrix.CreateRotationX((float)Math.PI * 3 / 2) * Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(Vector3.Add(this.Position, new Vector3(0, 0.01f, 0)));
 
                     effect.View = _viewMatrix;
 
