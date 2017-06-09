@@ -341,18 +341,6 @@
 /processorParam:TextureFormat=Color
 /build:interface/button_verlassen.png
 
-#begin interface/herz_ausgefuellt.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:interface/herz_ausgefuellt.jpg
-
 #begin interface/herz_unausgefuellt.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -414,4 +402,16 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:fonts/arial_20.spritefont
+
+#begin interface/herz_ausgefuellt.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:interface/herz_ausgefuellt.png
 
