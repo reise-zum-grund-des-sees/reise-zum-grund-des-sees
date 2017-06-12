@@ -75,6 +75,7 @@ namespace ReiseZumGrundDesSees
                 throw new ArgumentException("There is already an object at that position.");
 
             specialBlocks[_object.Position] = _object;
+            onBaseWorldBlockChangedBlocker = true;
             Blocks[_object.Position.X, _object.Position.Y, _object.Position.Z] = _object.Type;
         }
 
