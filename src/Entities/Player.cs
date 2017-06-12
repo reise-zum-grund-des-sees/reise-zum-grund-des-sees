@@ -329,7 +329,10 @@ namespace ReiseZumGrundDesSees
                 if (_collisionInformation.ContainsKey(Direction.Bottom) &&
                     _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
                     _collisionInformation[Direction.Bottom].Object is IHitable h)
+                {
                     h.Hit();
+                    soundEffects[4].Play();
+                }
 
                 if (!wasAddedToCollisionManager)
                 {
@@ -367,34 +370,6 @@ namespace ReiseZumGrundDesSees
             Health--;
             Healthcd = 0;
             soundEffects[2].Play();
-        }
-
-        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
-        {
-
-        }
-
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
-        {
-            if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
-            {
-                _grDevice.RasterizerState = RasterizerState.CullNone;
-                foreach (ModelMesh _mesh in model.Meshes)
-                {
-                    foreach (ModelMeshPart _part in _mesh.MeshParts)
-                    {
-                        _part.Effect = effect;
-
-                        effect.Parameters["WorldViewProjection"].SetValue(
-                            Matrix.CreateRotationY(Blickrichtung) *
-                            Matrix.CreateTranslation(Position) *
-                            _viewMatrix *
-                            _perspectiveMatrix);
-                    }
-
-                    _mesh.Draw();
-                }
-            }
         }
     }
 }

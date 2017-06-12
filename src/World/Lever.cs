@@ -43,12 +43,12 @@ namespace ReiseZumGrundDesSees
             {
                 if (is_pressed == false)
                 {
-                    Model = ContentManager.Load<Model>("schalter_unten");
+                    Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_UNTEN);
                     is_pressed = true;
                 }
                 else
                 {
-                    Model = ContentManager.Load<Model>("schalter_oben");
+                    Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
                     is_pressed = false;
                 }
             }
@@ -66,7 +66,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>((is_pressed)? "schalter_oben" : "schalter_unten");
+            Model = _contentManager.Load<Model>((is_pressed)? Content.MODEL_SCHALTER_OBEN : Content.MODEL_SCHALTER_UNTEN);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)

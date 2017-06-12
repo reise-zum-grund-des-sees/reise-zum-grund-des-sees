@@ -10,11 +10,15 @@ namespace ReiseZumGrundDesSees
     {
         public const string MODEL_CURSOR = "models/cursor";
         public const string MODEL_GEGNER_1 = "models/gegner1";
+        public const string MODEL_GEGNER_2 = "models/gegner2";
         public const string MODEL_BLOCK_LEICHT = "models/block_leicht";
         public const string MODEL_BLOCK_MEDIUM = "models/block_medium";
         public const string MODEL_BLOCK_SCHWER = "models/block_schwer";
         public const string MODEL_SPIELFIGUR = "models/spielfigur";
         public const string MODEL_GESCHOSS = "models/block";
+        public const string MODEL_SCHALTER_OBEN = "models/schalter_oben";
+        public const string MODEL_SCHALTER_UNTEN = "models/schalter_unten";
+        public const string MODEL_STACHELN = "models/stacheln";
 
         public const string EFFECT_PLAYER = "effects/player";
 

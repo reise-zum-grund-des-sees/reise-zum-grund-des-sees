@@ -42,7 +42,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>("Stacheln");
+            Model = _contentManager.Load<Model>(Content.MODEL_STACHELN);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)

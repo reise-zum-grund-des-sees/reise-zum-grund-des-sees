@@ -14,13 +14,17 @@ namespace ReiseZumGrundDesSees
         
         public Texture2D vollesHerz;
         public Texture2D leeresHerz;
-        public Texture2D Herz;
+        public Texture2D Herz1;
+        public Texture2D Herz2;
+        public Texture2D Herz3;
 
         public Texture2D skill1;
         public Texture2D skill2;
         public Texture2D skill3;
 
-        private Rectangle RVollesHerz = new Rectangle(300, 70, 100, 70);
+        private Rectangle RHerz1 = new Rectangle(250, 70, 100, 70);
+        private Rectangle RHerz2 = new Rectangle(350, 70, 100, 70);
+        private Rectangle RHerz3 = new Rectangle(450, 70, 100, 70);
 
         private Rectangle RSkill1 = new Rectangle(300, 640, 80, 80);
         private Rectangle RSkill2 = new Rectangle(390, 640, 80, 80);
@@ -53,10 +57,16 @@ namespace ReiseZumGrundDesSees
         public void Update(InputEventArgs _args, Point _windowSize, GameState _gameState)
         {
             
-            Herz = vollesHerz;
+            Herz1 = vollesHerz;
+            Herz2 = vollesHerz;
+            Herz3 = vollesHerz;
             //_gameState.Player.Healthcd für Zeit nach dem Leben verloren wurde, also =0 wenn geradde Leben verloren
-            if (_gameState.Player.Health==1)
-                Herz = leeresHerz;
+            if (_gameState.Player.Health < 1)
+                Herz1 = leeresHerz;
+            if (_gameState.Player.Health < 2)
+                Herz2 = leeresHerz;
+            if (_gameState.Player.Health < 3)
+                Herz3 = leeresHerz;
             // _gameState.Player.Blocks;
 
 
@@ -65,7 +75,9 @@ namespace ReiseZumGrundDesSees
         {
             _spriteBatch.Begin();
            
-            _spriteBatch.Draw(Herz, RVollesHerz, Color.White);
+            _spriteBatch.Draw(Herz1, RHerz1, Color.White);
+            _spriteBatch.Draw(Herz2, RHerz2, Color.White);
+            _spriteBatch.Draw(Herz3, RHerz3, Color.White);
 
             _spriteBatch.Draw(skill1, RSkill1, Color.White);
             _spriteBatch.Draw(skill2, RSkill2, Color.White);
