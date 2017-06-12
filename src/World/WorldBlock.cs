@@ -36,6 +36,18 @@ namespace ReiseZumGrundDesSees
             }
         }
 
+        public static ISpecialBlock Instanciate(this WorldBlock b, Vector3Int _position)
+        {
+            switch (b)
+            {
+                case WorldBlock.Lever:
+                    return new Lever(_position);
+                case WorldBlock.Spikes:
+                    return new Spike(_position);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         public static Vector3 GetBounds(this WorldBlock b)
         {

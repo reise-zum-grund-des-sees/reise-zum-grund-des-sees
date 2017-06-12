@@ -23,12 +23,10 @@ namespace ReiseZumGrundDesSees
         {
             get;
         }
-        public Spike(ContentManager _contentManager, Vector3Int _position)
+        public Spike(Vector3Int _position)
         {
                 Position = _position;
                 Type = WorldBlock.Spikes;
-                ContentManager = _contentManager;
-                Model = _contentManager.Load<Model>("Stacheln");
                 //SpikeList.Add(this);
          
         }
@@ -41,12 +39,13 @@ namespace ReiseZumGrundDesSees
             };
         }
 
-        public void Initialize(GraphicsDevice _graphicsDevice)
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
-        
+            ContentManager = _contentManager;
+            Model = _contentManager.Load<Model>("Stacheln");
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
             {
 

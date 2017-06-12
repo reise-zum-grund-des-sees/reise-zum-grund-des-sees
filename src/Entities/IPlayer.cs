@@ -8,14 +8,12 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-    interface IPlayer : IUpdateable, IHitable, IReadonlyPlayer//, IRenderable
+    interface IPlayer : IMoveable, IUpdateable, IHitable, IPositionObject, ICollisionObject, IReadonlyPlayer, IRenderable
     {
         new IList<IPlayerBlock> Blocks { get; }
-
-        void Hit();
     }
 
-    interface IReadonlyPlayer : IPositionObject, ICollisionObject
+    interface IReadonlyPlayer : IReadonlyPositionObject, ICollisionObject
     {
         IReadOnlyList<IReadonlyPlayerBlock> Blocks { get; }
         int Health { get; }
@@ -23,12 +21,12 @@ namespace ReiseZumGrundDesSees
         float Blickrichtung { get; }
     }
 
-    interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock//, IRenderable
+    interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock, ICollisionObject//, IRenderable
     {
         //void PlaceInWorld(Vector3 _position);
     }
 
-    interface IReadonlyPlayerBlock : ICollisionObject, IPositionObject
+    interface IReadonlyPlayerBlock : ICollisionObject, IReadonlyPositionObject
     {
         PlayerBlock.State CurrentState { get; }
         PlayerBlock.Type BlockType { get; }

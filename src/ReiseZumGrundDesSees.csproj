@@ -67,6 +67,7 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Geschoss.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
+    <Compile Include="Entities\IEnemy.cs" />
     <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Main\Primitives.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\MovingBlock.cs" />
     <Compile Include="World\RenderableWorld.cs" />
     <Compile Include="World\Spike.cs" />
     <Compile Include="World\VertexGenerator.cs" />

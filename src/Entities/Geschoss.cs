@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class Geschoss : IUpdateable, IPositionObject, IRenderable, ICollisionObject
+    class Geschoss : IUpdateable, IReadonlyPositionObject, IRenderable, ICollisionObject
     {
         public Vector3 Position { get; private set; }
         public Vector3 SpawnPosition;
@@ -36,12 +36,12 @@ namespace ReiseZumGrundDesSees
                 (_obj) => !(_obj is Enemy));
             GeschossList.Add(this);
         }
-        public void Initialize(GraphicsDevice _graphicsDevice)
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             //throw new NotImplementedException();
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
 
             foreach (ModelMesh mesh in this.Model.Meshes)

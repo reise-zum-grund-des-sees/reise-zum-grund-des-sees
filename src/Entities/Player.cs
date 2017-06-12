@@ -26,14 +26,16 @@ namespace ReiseZumGrundDesSees
 
         private bool wasAddedToCollisionManager = false;
 
-        public Model Model;
+        private Model model;
+        private Effect effect;
+
         bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
         bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
-        public double Healthcd{ get; private set; }
-        public float Blickrichtung{ get; private set; } //in Rad
+        public double Healthcd { get; private set; }
+        public float Blickrichtung { get; private set; } //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public IList<IPlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
@@ -56,7 +58,8 @@ namespace ReiseZumGrundDesSees
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
-            Model = contentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
+            model = contentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
+            effect = contentManager.Load<Effect>(Content.EFFECT_PLAYER);
             soundEffects = new List<SoundEffect>();
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
@@ -166,6 +169,14 @@ namespace ReiseZumGrundDesSees
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
             var _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
+
+            if (_collisionInformation.ContainsKey(Direction.Bottom) &&
+                _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
+                _collisionInformation[Direction.Bottom].Object is IMovingObject _moving)
+            {
+                _movement += _moving.Velocity;
+                _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
+            }
 
             if (_collisionInformation.ContainsKey(Direction.Bottom))
             {
@@ -318,7 +329,7 @@ namespace ReiseZumGrundDesSees
                 if (_collisionInformation.ContainsKey(Direction.Bottom) &&
                     _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
                     _collisionInformation[Direction.Bottom].Object is IHitable h)
-                        h.Hit();
+                    h.Hit();
 
                 if (!wasAddedToCollisionManager)
                 {
@@ -335,6 +346,13 @@ namespace ReiseZumGrundDesSees
             if (Math.Abs(distance.Z) > res) res = Math.Abs(distance.Z);
             return res;
         }
+
+        public void Move(Vector3 _movement, IReadonlyCollisionDetector _collDetector)
+        {
+            _collDetector.CheckCollision(ref _movement, this);
+            Position += _movement;
+        }
+
         public void gestorben()
         {
             soundEffects[1].Play();
@@ -349,6 +367,34 @@ namespace ReiseZumGrundDesSees
             Health--;
             Healthcd = 0;
             soundEffects[2].Play();
+        }
+
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
+        {
+
+        }
+
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        {
+            if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
+            {
+                _grDevice.RasterizerState = RasterizerState.CullNone;
+                foreach (ModelMesh _mesh in model.Meshes)
+                {
+                    foreach (ModelMeshPart _part in _mesh.MeshParts)
+                    {
+                        _part.Effect = effect;
+
+                        effect.Parameters["WorldViewProjection"].SetValue(
+                            Matrix.CreateRotationY(Blickrichtung) *
+                            Matrix.CreateTranslation(Position) *
+                            _viewMatrix *
+                            _perspectiveMatrix);
+                    }
+
+                    _mesh.Draw();
+                }
+            }
         }
     }
 }

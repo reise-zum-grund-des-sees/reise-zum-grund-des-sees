@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace ReiseZumGrundDesSees
 {
-    class Enemy : IUpdateable, IPositionObject, IRenderable, ICollisionObject, IHitable
+    class Enemy : IEnemy
     {
         ContentManager ContentManager;
         public Model Model;
@@ -206,21 +206,19 @@ namespace ReiseZumGrundDesSees
             };
         }
 
-        public void Initialize(GraphicsDevice _graphicsDevice)
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             // throw new NotImplementedException();
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
-
-
             foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     //effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateScale(0.045f) * Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(Vector3.Add(this.Position, new Vector3(0, 0.5f, 0)));
+                    effect.World = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(Vector3.Add(this.Position, new Vector3(0, 0.5f, 0)));
 
                     effect.View = _viewMatrix;
 

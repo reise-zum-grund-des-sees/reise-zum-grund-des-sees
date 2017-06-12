@@ -12,19 +12,19 @@ namespace ReiseZumGrundDesSees
 {
     interface ICamera : IReadonlyCamera, IUpdateable
     {
-        new IPositionObject Center { get; set; }
+        new IReadonlyPositionObject Center { get; set; }
     }
 
-    interface IReadonlyCamera : IPositionObject
+    interface IReadonlyCamera : IReadonlyPositionObject
     {
-        IPositionObject Center { get; }
+        IReadonlyPositionObject Center { get; }
         Matrix CalculateViewMatrix();
         float Angle { get; }
     }
 
 	class Camera : ICamera
 	{
-        public IPositionObject Center { get; set; }
+        public IReadonlyPositionObject Center { get; set; }
 		public Vector3 Position { get; private set; }
         public Vector3 LookAt;
         public float Angle { get; private set; }
@@ -46,7 +46,7 @@ namespace ReiseZumGrundDesSees
           
         }
 
-        public void CenterOn(IPositionObject _centerObject)
+        public void CenterOn(IReadonlyPositionObject _centerObject)
         {
             Center = _centerObject;
         }

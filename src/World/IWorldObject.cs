@@ -9,15 +9,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    interface IWorldObject : IUpdateable, IReadonlyWorldObject
+    interface IWorldObject : IUpdateable, IReadonlyWorldObject, IRenderable
     {
-        void Activate();
-        void Deactivate();
-
         void SetState(IReadOnlyDictionary<string, string[]> _state);
     }
 
-    interface IReadonlyWorldObject : IRenderable, ICollisionObject, IPositionObject
+    interface IReadonlyWorldObject : ICollisionObject, IReadonlyPositionObject
     {
         IReadOnlyDictionary<string, string[]> GetState();
     }

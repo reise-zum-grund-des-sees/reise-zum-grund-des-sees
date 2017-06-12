@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
     interface IRenderable
     {
-        void Initialize(GraphicsDevice _graphicsDevice);
-        void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix);
+        void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager);
+        void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice);
     }
 }

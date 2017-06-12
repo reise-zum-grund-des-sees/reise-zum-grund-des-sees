@@ -18,18 +18,18 @@ namespace ReiseZumGrundDesSees
 
         private BasicEffect effect;
         private GraphicsDevice graphicsDevice;
+        private ContentManager contentManager;
 
         private readonly Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
 
         private List<Point> invalidatedChunks = new List<Point>();
 
-        public RenderableWorld(string _basePath, ContentManager _content) : base(_basePath)
+        public RenderableWorld(string _basePath) : base(_basePath)
         {
             Vertices = new VertexPositionColorTexture[RegionsCountX, RegionsCountZ][];
             VertexBuffers = new VertexBuffer[RegionsCountX, RegionsCountZ];
 
-            blockTexture = _content.Load<Texture2D>(BLOCKTEXTURE_NAME);
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
                 invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
         }
@@ -94,29 +94,39 @@ namespace ReiseZumGrundDesSees
             return base.Update(_view, _flags, _inputArgs, _passedTime);
         }
 
-        public void Initialize(GraphicsDevice _graphicsDevice)
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             graphicsDevice = _graphicsDevice;
+            contentManager = _contentManager;
 
-            foreach (var _obj in specialBlocks)
-                _obj.Value.Initialize(graphicsDevice);
+            foreach (var _blocks in specialBlocks)
+                _blocks.Value.Initialize(graphicsDevice, contentManager);
+            foreach (var _obj in objects)
+                _obj.Initialize(graphicsDevice, contentManager);
 
+            Texture2D blockTexture = contentManager.Load<Texture2D>(BLOCKTEXTURE_NAME);
             effect = new BasicEffect(graphicsDevice);
             effect.TextureEnabled = true;
             effect.Texture = blockTexture;
             effect.VertexColorEnabled = true;
         }
 
-        public override void AddObject(ISpecialBlock _object)
+        protected override void AddSpecialBlock(ISpecialBlock _object)
         {
-            base.AddObject(_object);
-            _object.Initialize(graphicsDevice);
+            base.AddSpecialBlock(_object);
+            _object.Initialize(graphicsDevice, contentManager);
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        public override void AddObject(IWorldObject _object)
+        {
+            base.AddObject(_object);
+            _object.Initialize(graphicsDevice, contentManager);
+        }
+
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
             foreach (var _obj in specialBlocks)
-                _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix);
+                _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;
 

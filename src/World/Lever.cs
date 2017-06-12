@@ -28,16 +28,14 @@ namespace ReiseZumGrundDesSees
             get;
         }
 
-        public Lever(ContentManager _contentManager, Vector3Int _position)
+        public Lever(Vector3Int _position)
         {
             alive = true;
             Position = _position;
             Type = WorldBlock.Lever;
             //Position = _position + new Vector3(0.5f,0.5f,0.5f);
             is_pressed = false;
-            ContentManager = _contentManager;
             Rotation = 0;
-            Model = _contentManager.Load<Model>("schalter_oben");
         }
         public void press()
         {
@@ -65,12 +63,13 @@ namespace ReiseZumGrundDesSees
             };
         }
 
-        public void Initialize(GraphicsDevice _graphicsDevice)
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
-
+            ContentManager = _contentManager;
+            Model = _contentManager.Load<Model>((is_pressed)? "schalter_oben" : "schalter_unten");
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
             foreach (ModelMesh mesh in Model.Meshes)
             {

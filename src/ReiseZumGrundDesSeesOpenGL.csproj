@@ -44,6 +44,7 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Geschoss.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
+    <Compile Include="Entities\IEnemy.cs" />
     <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="World\IWorldObject.cs" />
     <Compile Include="World\Lever.cs" />
+    <Compile Include="World\MovingBlock.cs" />
     <Compile Include="World\RenderableWorld.cs" />
     <Compile Include="State\ConfigFile.cs" />
     <Compile Include="State\DebugHelper.cs" />

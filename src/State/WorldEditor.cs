@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class WorldEditor : IUpdateable, IPositionObject, IRenderable
+    class WorldEditor : IUpdateable, IReadonlyPositionObject, IRenderable
     {
         public Vector3 Position { get; set; }
         private ContentManager content;
@@ -90,12 +90,10 @@ namespace ReiseZumGrundDesSees
 
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] == WorldBlock.Lever)
                 { //remove lever, Lever duerfen nicht von anderen Blöcken uebersschrieben werden              
-                    _state.World.RemoveObject(new Vector3Int(x, y, z));
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                 }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] == WorldBlock.Spikes)
                 { //remove spike, Spike duerfen nicht von anderen Blöcken uebersschrieben werden              
-                    _state.World.RemoveObject(new Vector3Int(x, y, z));
                     _state.World.Blocks[x, y, z] = WorldBlock.None;
                 }
                 else if (_inputArgs.Events.HasFlag(InputEventList.MouseRightClick) && _state.World.Blocks[x, y, z] != WorldBlock.None)
@@ -114,30 +112,23 @@ namespace ReiseZumGrundDesSees
                     _state.World.Blocks[x, y, z] = WorldBlock.Water4;
 
                 else if (_inputArgs.Events.HasFlag(InputEventList.PlaceLever) && _state.World.Blocks[x, y, z] != WorldBlock.Lever)//Schalter ertmal auf Taste 5 belegen
-                {
-                    Lever lever = new Lever(content, new Vector3Int(x, y, z));
-                    _state.World.AddObject(lever);
-                    //_state.World.Blocks[x, y, z] = WorldBlock.Lever;
-                }
+                    _state.World.Blocks[x, y, z] = WorldBlock.Lever;
 
                 else if (_state.World.Blocks[x, y, z] == WorldBlock.Lever && _inputArgs.Events.HasFlag(InputEventList.MouseLeftClick))
                     (_state.World.BlockAt(x, y, z) as Lever).Rotation += Math.PI / 2;
 
                 else if (_inputArgs.Events.HasFlag(InputEventList.PlaceSpike) && _state.World.Blocks[x, y, z] != WorldBlock.Spikes)//Schalter ertmal auf Taste 5 belegen
-                {
-                    Spike spike = new Spike(content, new Vector3Int(x, y, z));
-                    _state.World.AddObject(spike);
-                }
+                    _state.World.Blocks[x, y, z] = WorldBlock.Spikes;
 
             };
         }
 
-        public void Initialize(GraphicsDevice _graphicsDevice)
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             graphicsDevice = _graphicsDevice;
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _projectionMatrix)
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _projectionMatrix, GraphicsDevice _grDevice)
         {
             if (!_flags.HasFlag(GameFlags.EditorMode))
                 return;

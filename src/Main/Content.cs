@@ -16,6 +16,8 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_SPIELFIGUR = "models/spielfigur";
         public const string MODEL_GESCHOSS = "models/block";
 
+        public const string EFFECT_PLAYER = "effects/player";
+
         public const string SOUND_JUMPING = "sound/jumping";
         public const string SOUND_DIE = "sound/die";
         public const string SOUND_GETHIT = "sound/gethit";
