@@ -65,7 +65,8 @@ namespace ReiseZumGrundDesSees
             testBlock = new MovingBlock(new Vector3[] {
                 new Vector3(24, 34, 24),
                 new Vector3(24, 35, 24),
-                new Vector3(27, 34, 25)
+                new Vector3(27, 34, 25),
+                new Vector3(27, 33, 25)
             });
         }
 

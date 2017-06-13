@@ -125,25 +125,55 @@ namespace ReiseZumGrundDesSees
             {
                 //_movement.Z -= (float)(_passedTime * 0.005);
                 //_movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
+                if (Jump1) {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                }
+                else { 
                 _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
                 _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                }
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
             {
                 //_movement += Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                if (Jump1)
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                }
+                else
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                }
             }
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
             {
-                _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                if (Jump1)
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                }
+                else
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f); 
+                }
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
             {
-                _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                if (Jump1)
+                {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                }
+                else
+                {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                }
             }
 
 
@@ -176,6 +206,9 @@ namespace ReiseZumGrundDesSees
             {
                 _movement += _moving.Velocity;
                 _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
+                Jump1 = false;
+                Jump2 = false;
+                Jumpcd = false;
             }
 
             if (_collisionInformation.ContainsKey(Direction.Bottom))
@@ -186,6 +219,7 @@ namespace ReiseZumGrundDesSees
                     Jump1 = false;
                     Jump2 = false;
                     Jumpcd = false;
+                   
                 }
 
                 if (_collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithWorldBlock &&
