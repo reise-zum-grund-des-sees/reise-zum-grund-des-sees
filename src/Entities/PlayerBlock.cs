@@ -38,7 +38,8 @@ namespace ReiseZumGrundDesSees
         public int Zustand = 0;
         public double Deletetime;
         private bool wasAddedToCollisionManager = false;
-
+        double CD_DISTANCE=20;
+        public double _verbleibenerCD;
         public enum State
         {
             Bereit = 0,
@@ -64,7 +65,7 @@ namespace ReiseZumGrundDesSees
             MaximialDauer = 15000;
             Position = _player.Position;
             LifetimePercentage = 1f;
-
+            _verbleibenerCD = 5;
             Zustand = (int)State.Bereit;
             if (Art == 0)
             {//leichterBlock
@@ -84,8 +85,8 @@ namespace ReiseZumGrundDesSees
         {
             //Livetime
 
-            if (AktuelleDauer < _view.Player.Blocks.Count * MaximialDauer)//wenn man hier und in der Zeile darunter "_view.PlayerBlocks.Count *" wegnimmt, erhällt man die Laufzeit von 0 bis 1
-                LifetimePercentage = (float)(AktuelleDauer) / (float)(_view.Player.Blocks.Count * MaximialDauer);
+            if (AktuelleDauer < MaximialDauer)
+                LifetimePercentage = (float)(AktuelleDauer) / (float)( MaximialDauer);
             else
                 LifetimePercentage = 1;
 
@@ -118,8 +119,9 @@ namespace ReiseZumGrundDesSees
             if (MaximialDauer >= AktuelleDauer && Zustand == (int)State.Gesetzt)
             {
                 _movement = new Vector3(0, 0, 0);
-                //Wenn keine Kolision mit Wand oder Block               
-                if (Art == 1)
+                //Wenn keine Kolision mit Wand oder Block     
+           
+                    if (Art == 1)
                 {
                     _speedY -= 0.005f * (float)_passedTime;
                     _movement.Y += _speedY * (float)_passedTime * 0.01f;
@@ -143,8 +145,9 @@ namespace ReiseZumGrundDesSees
 
             else if (MaximialDauer < AktuelleDauer && Zustand == (int)State.Gesetzt)
             {
-                Zustand = (int)State.CD;
-                //Zerstöre Objekt
+           
+                    Zustand = (int)State.CD;
+
 
 
             }
@@ -152,10 +155,14 @@ namespace ReiseZumGrundDesSees
             {
                 //Objekt ist Tot
                
-                if (_view.Player.Blocks.Count * MaximialDauer <= AktuelleDauer && Zustand == (int)State.CD)
+                if (Zustand == (int)State.CD && Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ))>CD_DISTANCE)
                 {
-                    Zustand = (int)State.Bereit;
-                    //AktuelleDauer = 0;
+                    _verbleibenerCD -= _passedTime;
+                    if (_verbleibenerCD <= 0) { 
+                        Zustand = (int)State.Bereit;
+                        _verbleibenerCD = 5;
+                    }
+
                 }
             }
             return (ref GameState _state) =>

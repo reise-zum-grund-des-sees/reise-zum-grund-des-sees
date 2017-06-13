@@ -150,7 +150,7 @@ namespace ReiseZumGrundDesSees
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
             {
                 Jump1 = true;
-                _speedY = 1.1f;
+                _speedY = 0.9f;//1.1f;
                 Jumpcd = true;
                 soundEffects[0].Play();
             }
@@ -161,7 +161,7 @@ namespace ReiseZumGrundDesSees
             if (Jump1 == true && Jump2 == false && Jumpcd == false && _inputArgs.Events.HasFlag(InputEventList.Jump))//Doppelsprung
             {
                 Jump2 = true;
-                _speedY = 1.1f;
+                _speedY = 0.9f;
                 soundEffects[0].Play();
             }
 
@@ -245,7 +245,7 @@ namespace ReiseZumGrundDesSees
             Healthcd += _passedTime;
 
             //Setzen von Blöcken
-            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 500)
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -258,7 +258,7 @@ namespace ReiseZumGrundDesSees
                     }
 
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 500)
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -270,7 +270,7 @@ namespace ReiseZumGrundDesSees
                         break;
                     }
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 500)
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -311,7 +311,18 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
             }
+            //Davorstehenden Block loeschen
+            Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(Blickrichtung));
+            Blick.Normalize();
+            Vector3 BlickPosition = new Vector3(-Blick.X, 0, -Blick.Z); //Blickrichtung des Spielers
+            Blick = Vector3.Add(Position, BlickPosition);
 
+            if(_inputArgs.Events.HasFlag(InputEventList.Return))
+            for (int i = 0; i < Blöcke.Count; i++)
+               if(Vector3.Distance(Blöcke[i].Position,Blick)<1 && (Blöcke[i] as PlayerBlock).Zustand == (int)PlayerBlock.State.Gesetzt) {
+                    (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
+                     soundEffects[6].Play();
+                    }
             List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
             foreach (PlayerBlock b in Blöcke)
                 blockUpdateList.Add(b.Update(_stateView, _flags, _inputArgs, _passedTime));
