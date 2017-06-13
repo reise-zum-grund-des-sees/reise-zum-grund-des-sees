@@ -68,6 +68,10 @@ namespace ReiseZumGrundDesSees
             {
                 _eventList |= InputEventList.PlaceSpike;
             }
+            if (_keyboardState.IsKeyDown(Keys.D7))
+            {
+                _eventList |= InputEventList.PlacePressurePlate;
+            }
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
@@ -203,6 +207,7 @@ namespace ReiseZumGrundDesSees
         PlaceSpike = 0x200000,
 
         Interact = 0x400000,
-        Return = 0x800000
+        Return = 0x800000,
+        PlacePressurePlate = 0x10000000
     }
 }

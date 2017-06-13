@@ -99,10 +99,11 @@ namespace ReiseZumGrundDesSees
 
             this.IsMouseVisible = true;
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
+            /*
             Enemy a = new Enemy(Content, new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
             Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
-
+            */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
             testBlock.Initialize(GraphicsDevice, Content);
 
@@ -176,7 +177,7 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-
+  
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                 {

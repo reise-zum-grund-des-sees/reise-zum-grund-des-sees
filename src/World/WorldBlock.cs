@@ -19,6 +19,8 @@ namespace ReiseZumGrundDesSees
         Water4,
         Lever,
         Spikes,
+        PressurePlateUp,
+        PressurePlateDown,
         Unknown
     }
 
@@ -30,6 +32,8 @@ namespace ReiseZumGrundDesSees
             {
                 case WorldBlock.Lever:
                 case WorldBlock.Spikes:
+                case WorldBlock.PressurePlateUp:
+                case WorldBlock.PressurePlateDown:
                     return true;
                 default:
                     return false;
@@ -44,6 +48,10 @@ namespace ReiseZumGrundDesSees
                     return new Lever(_position);
                 case WorldBlock.Spikes:
                     return new Spike(_position);
+                case WorldBlock.PressurePlateUp:
+                    return new PressurePlate(_position,0);
+                case WorldBlock.PressurePlateDown:
+                    return new PressurePlate(_position,1);
                 default:
                     throw new NotImplementedException();
             }
@@ -68,6 +76,10 @@ namespace ReiseZumGrundDesSees
                     return new Vector3(1.00f, 0.5f, 1.00f);
                 case WorldBlock.Lever:
                     return new Vector3(1f, 1.00f, 1f);
+                case WorldBlock.PressurePlateUp:
+                    return new Vector3(1f, 0.5f, 1f);
+                case WorldBlock.PressurePlateDown:
+                    return new Vector3(1f, 0.1f, 1f);
                 default:
                     throw new ArgumentException($"{b} has no Bounds");
             }
@@ -111,6 +123,8 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
                 case WorldBlock.Unknown:
+                case WorldBlock.PressurePlateUp:
+                case WorldBlock.PressurePlateDown:
                     return true;
                 default:
                     return false;
@@ -140,6 +154,17 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water2:
                 case WorldBlock.Water3:
                 case WorldBlock.Water4:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        public static bool IsPressurePlate(this WorldBlock b)
+        {
+            switch (b)
+            {
+                case WorldBlock.PressurePlateUp:
+                case WorldBlock.PressurePlateDown:        
                     return true;
                 default:
                     return false;

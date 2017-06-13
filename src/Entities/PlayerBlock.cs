@@ -93,8 +93,34 @@ namespace ReiseZumGrundDesSees
             //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
             if (Zustand == (int)State.Delete)
             {
+                if (Deletetime == 0) //depress
+                {
+                    //Kollision mit Pressure Plate
+                    Vector3 KolHelp = new Vector3(0, -0.01f, 0);
+                    var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                    for (int x = -1; x < 2; x++)
+                    {
+                        for (int y = -1; y < 2; y++)
+                        {
+                            for (int z = -1; z < 2; z++)
+                            {
+                                ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
+                                if (_collInfo.ContainsKey(Direction.Bottom) &&
+                                _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
+                                {
+               
+                                    if ( _obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                    {
+                                        (_obj as PressurePlate).depress();
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
                 Deletetime += _passedTime;
-                AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
+               // AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
                 if (Deletetime >= 5000)
                 {
                     Deletetime = 0;
@@ -133,7 +159,7 @@ namespace ReiseZumGrundDesSees
                 }
                 //unter Block ist kein Wasser 
 
-
+              
                 var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
 
                 if (_collInfo.ContainsKey(Direction.Bottom))
@@ -141,6 +167,35 @@ namespace ReiseZumGrundDesSees
 
                 if (Art != 0)// && _speedY != 0)
                     Position += _movement;
+
+
+                //Kollision mit Pressure Plate
+                Vector3 KolHelp = new Vector3(0, -0.01f, 0);
+                _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                for (int x = -1; x < 2; x++)
+                {
+                    for (int y = -1; y < 2; y++)
+                    {
+                        for (int z = -1; z < 2; z++)
+                        {
+                            ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X+x, (int)(Position.Y) +y, (int)Position.Z+z);
+                            if (_collInfo.ContainsKey(Direction.Bottom) &&
+                            _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
+                            {
+                                if (_obj != null && _obj.Type == WorldBlock.PressurePlateUp)
+                                {
+                                    (_obj as PressurePlate).press();
+                                }
+                                if (MaximialDauer < AktuelleDauer+_passedTime &&_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                {
+                                    (_obj as PressurePlate).depress();
+                                }
+
+                            }
+                        }
+                    }
+                }
+              
             }
 
             else if (MaximialDauer < AktuelleDauer && Zustand == (int)State.Gesetzt)
