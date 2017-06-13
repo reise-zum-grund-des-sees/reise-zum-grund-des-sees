@@ -263,7 +263,7 @@ namespace ReiseZumGrundDesSees
                             if (_obj != null && _obj.Type == WorldBlock.Spikes)
                             {
 
-                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
+                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f)
                                 {
                                     Hit();
                                 }
@@ -412,9 +412,11 @@ namespace ReiseZumGrundDesSees
 
         public void Hit()
         {
+            if(Healthcd > 1000) {
             Health--;
             Healthcd = 0;
             soundEffects[2].Play();
+            }
         }
 
 
