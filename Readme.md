@@ -1,3 +1,9 @@
+# Neues Dateiformat
+
+Um States besser zu speichern wurde ein neues, auf XML-basierendes Dateiformat eingeführt.
+Die Rohdaten der Welt sollten aber identisch sein.
+Um eine alte Welt auf das neue Format umzustellen braucht man also nur eine neue Welt speichern und die state.conf in die vorhandene Welt kopieren (überschreiben).
+
 # Steuerung
 
 | Key               | Effect                     |
