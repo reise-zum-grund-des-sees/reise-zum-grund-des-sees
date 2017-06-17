@@ -72,7 +72,9 @@
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
     <Compile Include="State\IGamer.cs" />
+    <Compile Include="State\IStateObject.cs" />
     <Compile Include="State\IUpdateable.cs" />
+    <Compile Include="State\ObjectIDMapper.cs" />
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="Entities\Camera.cs" />
     <Compile Include="Entities\CollisionDetector.cs" />
@@ -99,7 +101,6 @@
     <Compile Include="World\VertexGenerator.cs" />
     <Compile Include="State\WorldEditor.cs" />
     <Compile Include="World\WorldRegion.cs" />
-    <Compile Include="Main\Render.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="World\WorldBlock.cs" />
   </ItemGroup>

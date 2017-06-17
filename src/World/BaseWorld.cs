@@ -20,66 +20,58 @@ namespace ReiseZumGrundDesSees
         WorldBlock this[int x, int y, int z] { get; }
     }
 
-    class BaseWorld : IUpdateable
+    class BaseWorld : IUpdateable, IStateObject
     {
         public readonly BlockWrapper Blocks;
 
         protected readonly WorldRegion[,] Regions;
 
-        protected readonly int RegionSizeX, RegionSizeY, RegionSizeZ;
-        protected readonly int RegionsCountX, RegionsCountZ;
+        protected readonly Vector3Int RegionSize;
+        protected readonly Vector2Int RegionsCount;
 
-        public readonly float SpawnPosX, SpawnPosY, SpawnPosZ;
+        public readonly Vector3 SpawnPos;
 
-        public BaseWorld(string _basePath)
+        public BaseWorld(ConfigFile.ConfigNode _config, string _regionPath)
         {
             Blocks = new BlockWrapper(this);
-            string _worldIndexFile = Path.Combine(_basePath, "index.world");
 
-            Dictionary<string, string[]> _worldFile = ConfigFile.Load(_worldIndexFile);
+            string _region_size = _config["region_size"];
+            RegionSize = Vector3Int.Parse(_region_size);
 
-            string[] _region_size = _worldFile["region_size"];
-            RegionSizeX = int.Parse(_region_size[0]);
-            RegionSizeY = int.Parse(_region_size[1]);
-            RegionSizeZ = int.Parse(_region_size[2]);
+            string _regions_count = _config["regions_count"];
+            RegionsCount = Vector2Int.Parse(_regions_count);
 
-            string[] _regions_count = _worldFile["regions_count"];
-            RegionsCountX = int.Parse(_regions_count[0]);
-            RegionsCountZ = int.Parse(_regions_count[1]);
+            string _spawn_position = _config["spawn"];
+            SpawnPos = Vector3Int.Parse(_spawn_position);
 
-            string[] _spawn_position = _worldFile["spawn"];
-            SpawnPosX = int.Parse(_spawn_position[0]);
-            SpawnPosY = int.Parse(_spawn_position[1]);
-            SpawnPosZ = int.Parse(_spawn_position[2]);
-
-            Regions = new WorldRegion[RegionsCountX, RegionsCountZ];
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int z = 0; z < RegionsCountZ; z++)
+            Regions = new WorldRegion[RegionsCount.X, RegionsCount.Y];
+            for (int x = 0; x < RegionsCount.X; x++)
+                for (int z = 0; z < RegionsCount.Y; z++)
                     Regions[x, z] =
                         new WorldRegion(
-                            File.OpenRead(Path.Combine(_basePath, $"{x}-{z}.region")),
-                            RegionSizeX, RegionSizeY, RegionSizeZ);
+                            File.OpenRead(Path.Combine(_regionPath, $"{x}-{z}.region")),
+                            RegionSize.X, RegionSize.Y, RegionSize.Z);
         }
 
         public BaseWorld(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos)
         {
             Blocks = new BlockWrapper(this);
 
-            RegionsCountX = _regionsCountX;
-            RegionsCountZ = _regionsCountZ;
-            RegionSizeX = _regionSizeX;
-            RegionSizeY = _regionSizeY;
-            RegionSizeZ = _regionSizeZ;
+            RegionsCount.X = _regionsCountX;
+            RegionsCount.Y = _regionsCountZ;
+            RegionSize.X = _regionSizeX;
+            RegionSize.Y = _regionSizeY;
+            RegionSize.Z = _regionSizeZ;
 
-            SpawnPosX = _spawnPos.X;
-            SpawnPosY = _spawnPos.Y;
-            SpawnPosZ = _spawnPos.Z;
+            SpawnPos.X = _spawnPos.X;
+            SpawnPos.Y = _spawnPos.Y;
+            SpawnPos.Z = _spawnPos.Z;
 
-            Regions = new WorldRegion[RegionsCountX, RegionsCountZ];
+            Regions = new WorldRegion[RegionsCount.X, RegionsCount.Y];
 
             //for (int x = 0; x < RegionsCountX; x++)
-                //for (int z = 0; z < RegionsCountZ; z++)
-                    //Regions[x, z] = new WorldRegion();
+            //for (int z = 0; z < RegionsCountZ; z++)
+            //Regions[x, z] = new WorldRegion();
         }
 
         public virtual UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -94,32 +86,37 @@ namespace ReiseZumGrundDesSees
         {
             Random rnd = new Random();
 
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int z = 0; z < RegionsCountZ; z++)
+            for (int x = 0; x < RegionsCount.X; x++)
+                for (int z = 0; z < RegionsCount.Y; z++)
                 {
                     Regions[x, z] = new WorldRegion();
-                    Regions[x, z].Blocks = new WorldBlock[RegionSizeX, RegionSizeY, RegionSizeZ];
+                    Regions[x, z].Blocks = new WorldBlock[RegionSize.X, RegionSize.Y, RegionSize.Z];
                 }
 
-            for (int x = 0; x < RegionSizeX * RegionsCountX; x++)
-                for (int y = 0; y < RegionSizeY; y++)
-                    for (int z = 0; z < RegionSizeZ * RegionsCountZ; z++)
+            for (int x = 0; x < RegionSize.X * RegionsCount.X; x++)
+                for (int y = 0; y < RegionSize.Y; y++)
+                    for (int z = 0; z < RegionSize.Z * RegionsCount.Y; z++)
                         if (y == 31)
                             Blocks[x, y, z] = WorldBlock.Wall;
                         else if (y == 32)
                             Blocks[x, y, z] = (rnd.Next(0, 20) == 1) ? WorldBlock.Wall : WorldBlock.None;
         }
 
-        public virtual void Save(string _baseDir)
+        public virtual ConfigFile.ConfigNode GetState(ObjectIDMapper _idMapper)
         {
-            string[] lines = new string[3];
-            lines[0] = $"region_size = { RegionSizeX }, { RegionSizeY }, { RegionSizeZ }";
-            lines[1] = $"regions_count = { RegionsCountX }, { RegionsCountZ }";
-            lines[2] = $"spawn = { SpawnPosX }, { SpawnPosY }, { SpawnPosZ}";
-            File.WriteAllLines(Path.Combine(_baseDir, "index.world"), lines);
+            ConfigFile.ConfigNode f = new ConfigFile.ConfigNode();
 
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int z = 0; z < RegionsCountZ; z++)
+            f.Items["region_size"] = RegionSize.ToString();
+            f.Items["regions_count"] = RegionsCount.ToString();
+            f.Items["spawn"] = SpawnPos.ToNiceString();
+
+            return f;
+        }
+
+        public virtual void SaveRegions(string _baseDir)
+        {
+            for (int x = 0; x < RegionsCount.X; x++)
+                for (int z = 0; z < RegionsCount.Y; z++)
                     Regions[x, z].Save(File.OpenWrite(Path.Combine(_baseDir, $"{ x }-{ z }.region")));
         }
 
@@ -139,14 +136,14 @@ namespace ReiseZumGrundDesSees
             {
                 get
                 {
-                    int rx = x / world.RegionSizeX;
-                    int rz = z / world.RegionSizeZ;
-                    int bx = x - rx * world.RegionSizeX;
+                    int rx = x / world.RegionSize.X;
+                    int rz = z / world.RegionSize.Z;
+                    int bx = x - rx * world.RegionSize.X;
                     int by = y;
-                    int bz = z - rz * world.RegionSizeZ;
+                    int bz = z - rz * world.RegionSize.Z;
 
-                    if (rx >= world.RegionsCountX | rx < 0 | rz >= world.RegionsCountZ | rz < 0 |
-                        bx >= world.RegionSizeX | bx < 0 | by >= world.RegionSizeY | by < 0 | bz >= world.RegionSizeZ | bz < 0)
+                    if (rx >= world.RegionsCount.X | rx < 0 | rz >= world.RegionsCount.Y | rz < 0 |
+                        bx >= world.RegionSize.X | bx < 0 | by >= world.RegionSize.Y | by < 0 | bz >= world.RegionSize.Z | bz < 0)
                         return WorldBlock.Wall;
                     else
                         return world.Regions[rx, rz].Blocks[bx, by, bz];
@@ -154,11 +151,11 @@ namespace ReiseZumGrundDesSees
 
                 set
                 {
-                    int rx = x / world.RegionSizeX;
-                    int rz = z / world.RegionSizeZ;
-                    int bx = x - rx * world.RegionSizeX;
+                    int rx = x / world.RegionSize.X;
+                    int rz = z / world.RegionSize.Z;
+                    int bx = x - rx * world.RegionSize.X;
                     int by = y;
-                    int bz = z - rz * world.RegionSizeZ;
+                    int bz = z - rz * world.RegionSize.Z;
 
                     WorldBlock _oldBlock = world.Regions[rx, rz].Blocks[bx, by, bz];
                     world.Regions[rx, rz].Blocks[bx, by, bz] = value;

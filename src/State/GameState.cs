@@ -23,6 +23,31 @@ namespace ReiseZumGrundDesSees
             CollisionDetector = new CollisionDetector(_world.Blocks);
         }
 
+        public void Save(string _baseDir)
+        {
+            ConfigFile f = new ConfigFile();
+
+            ObjectIDMapper _idMapper = new ObjectIDMapper();
+            f.Nodes["world"] = World.GetState(_idMapper);
+            f.Nodes["player"] = Player.GetState(_idMapper);
+
+            f.Write(System.IO.Path.Combine(_baseDir, "state.conf"));
+            World.SaveRegions(_baseDir);
+        }
+
+        public static GameState Load(string _baseDir)
+        {
+            ConfigFile _config = ConfigFile.Load(System.IO.Path.Combine(_baseDir, "state.conf"));
+
+            ObjectIDMapper _idMapper = new ObjectIDMapper();
+            World w = new RenderableWorld(_config.Nodes["world"], _idMapper, _baseDir);
+            Player p = new Player(_config.Nodes["player"]);
+            Camera c = new Camera();
+            c.CenterOn(p);
+
+            return new GameState(w, p, c);
+        }
+
         public struct View
         {
             private GameState baseState;

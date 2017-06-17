@@ -19,9 +19,30 @@ namespace ReiseZumGrundDesSees
         IReadOnlyDictionary<string, string[]> GetState();
     }
 
-    interface ISpecialBlock : IUpdateable, IRenderable
+    interface ISpecialBlock : IUpdateable, IRenderable, IStateObject
     {
         Vector3Int Position { get; }
         WorldBlock Type { get; }
+    }
+
+    static class SpecialBlock
+    {
+        public static ISpecialBlock Instanciate(ConfigFile.ConfigNode _node, ObjectIDMapper _idMapper)
+        {
+            switch (_node.Items["type"])
+            {
+                case "ReiseZumGrundDesSees.Lever":
+                    Lever l = new Lever(_node);
+                    return l;
+                case "ReiseZumGrundDesSees.Spike":
+                    Spike s = new Spike(_node);
+                    return s;
+                case "ReiseZumGrundDesSees.PressurePlate":
+                    PressurePlate pp = new PressurePlate(_node);
+                    return pp;
+                default:
+                    throw new ArgumentException();
+            }
+        }
     }
 }

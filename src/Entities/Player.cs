@@ -43,9 +43,8 @@ namespace ReiseZumGrundDesSees
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
         List<SoundEffect> soundEffects;
-        public Player(ContentManager contentManager, Vector3 _position)
+        public Player(Vector3 _position)
         {
-            ContentManager = contentManager;
             Position = _position;
             Jump1 = false;
             Jump2 = false;
@@ -58,26 +57,22 @@ namespace ReiseZumGrundDesSees
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
-            model = contentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
-            effect = contentManager.Load<Effect>(Content.EFFECT_PLAYER);
-            soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_GETHIT)); //schaden bekommen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_KLONG)); //Block setzen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+            Blöcke.Add(new PlayerBlock(this, 0));
+            Blöcke.Add(new PlayerBlock(this, 0));
+            Blöcke.Add(new PlayerBlock(this, 0));
+            Blöcke.Add(new PlayerBlock(this, 1));
+            Blöcke.Add(new PlayerBlock(this, 1));
+            Blöcke.Add(new PlayerBlock(this, 1));
+            Blöcke.Add(new PlayerBlock(this, 2));
+            Blöcke.Add(new PlayerBlock(this, 2));
+            Blöcke.Add(new PlayerBlock(this, 2));
+        }
+
+        public Player(ConfigFile.ConfigNode _playerNode) :
+            this(_playerNode.Items["position"].ToVector3())
+        {
+            Health = int.Parse(_playerNode.Items["health"]);
         }
 
         public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -422,11 +417,27 @@ namespace ReiseZumGrundDesSees
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
+            ContentManager = _contentManager;
+            model = ContentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
+            effect = ContentManager.Load<Effect>(Content.EFFECT_PLAYER);
+            soundEffects = new List<SoundEffect>();
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_GETHIT)); //schaden bekommen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_KLONG)); //Block setzen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
 
+            foreach (var _block in Blöcke)
+                _block.Initialize(_graphicsDevice, _contentManager);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
+            foreach (var _block in Blöcke)
+                _block.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+
             if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
             {
                 _grDevice.RasterizerState = RasterizerState.CullNone;
@@ -446,6 +457,16 @@ namespace ReiseZumGrundDesSees
                     _mesh.Draw();
                 }
             }
+        }
+
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode n = new ConfigFile.ConfigNode();
+
+            n.Items["position"] = Position.ToNiceString();
+            n.Items["health"] = Health.ToString();
+
+            return n;
         }
     }
 }

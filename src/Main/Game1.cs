@@ -11,17 +11,18 @@ namespace ReiseZumGrundDesSees
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game, IMenuCallback
+    class Game1 : Game, IMenuCallback
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        GameState GameState;
+        public GameState GameState;
         InputManager InputManager;
+
+        List<IRenderable> initializeList = new List<IRenderable>();
 
         Texture2D blocktexture;
 
-        private Render renderer;
         private List<IRenderable> worldRenderables = new List<IRenderable>();
         private List<IRenderable> otherRenderables = new List<IRenderable>();
 
@@ -94,7 +95,7 @@ namespace ReiseZumGrundDesSees
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             editor = new WorldEditor(new Vector3(24, 32, 24), Content);
-            editor.Initialize(GraphicsDevice, Content);
+            initializeList.Add(editor);
             otherRenderables.Add(editor);
 
             this.IsMouseVisible = true;
@@ -105,7 +106,7 @@ namespace ReiseZumGrundDesSees
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
             */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
-            testBlock.Initialize(GraphicsDevice, Content);
+            initializeList.Add(testBlock);
 
             base.Initialize();
         }
@@ -125,7 +126,6 @@ namespace ReiseZumGrundDesSees
             // TODO: use this.Content to load your game content here
             MainMenu = new MainMenu(Content);
             IGamer = new IGamer(Content);
-            renderer = new Render(GraphicsDevice, Content);
         }
 
         /// <summary>
@@ -239,14 +239,16 @@ namespace ReiseZumGrundDesSees
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
 
+            foreach (var i in initializeList)
+                i.Initialize(GraphicsDevice, Content);
+            initializeList.Clear();
+
             if (GameFlags.HasFlag(GameFlags.GameLoaded))
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
 
                 GameState.Player.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-
-                renderer.LeichterBlock(GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
 
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
                     Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
@@ -280,10 +282,10 @@ namespace ReiseZumGrundDesSees
             worldRenderables.Clear();
             worldRenderables.Add(_world);
             foreach (var _renderable in worldRenderables)
-                _renderable.Initialize(GraphicsDevice, Content);
+                initializeList.Add(_renderable);
 
-            GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
-            GameState.Player.Initialize(GraphicsDevice, Content);
+            GameState = new GameState(_world, new Player(new Vector3(_world.SpawnPos.X, _world.SpawnPos.Y, _world.SpawnPos.Z)), new Camera());
+            initializeList.Add(GameState.Player);
 
             GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameFlags &= ~GameFlags.Menu;
@@ -298,15 +300,15 @@ namespace ReiseZumGrundDesSees
 
         public void LoadGame(string _path)
         {
-            RenderableWorld w = new RenderableWorld(_path);
+            GameState = GameState.Load(_path);
 
             worldRenderables.Clear();
-            worldRenderables.Add(w);
-            foreach (var _renderable in worldRenderables)
-                _renderable.Initialize(GraphicsDevice, Content);
+            worldRenderables.Add(GameState.World as IRenderable);
 
-            GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
-            GameState.Player.Initialize(GraphicsDevice, Content);
+            foreach (var _renderable in worldRenderables)
+                initializeList.Add(_renderable);
+
+            initializeList.Add(GameState.Player);
 
             GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameFlags &= ~GameFlags.Menu;
@@ -314,7 +316,7 @@ namespace ReiseZumGrundDesSees
 
         public void SaveGame(string _path)
         {
-            GameState.World.Save(_path);
+            GameState.Save(_path);
         }
 
         public void ShowCredits()

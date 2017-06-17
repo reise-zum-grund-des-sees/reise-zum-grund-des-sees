@@ -13,7 +13,7 @@ namespace ReiseZumGrundDesSees
         new IList<IPlayerBlock> Blocks { get; }
     }
 
-    interface IReadonlyPlayer : IReadonlyPositionObject, ICollisionObject
+    interface IReadonlyPlayer : IReadonlyPositionObject, ICollisionObject, IStateObject
     {
         IReadOnlyList<IReadonlyPlayerBlock> Blocks { get; }
         int Health { get; }
@@ -21,7 +21,7 @@ namespace ReiseZumGrundDesSees
         float Blickrichtung { get; }
     }
 
-    interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock, ICollisionObject//, IRenderable
+    interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock, ICollisionObject, IRenderable
     {
         //void PlaceInWorld(Vector3 _position);
     }

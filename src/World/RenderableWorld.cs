@@ -20,18 +20,18 @@ namespace ReiseZumGrundDesSees
         private GraphicsDevice graphicsDevice;
         private ContentManager contentManager;
 
-        private readonly Texture2D blockTexture;
+        private Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
 
         private List<Point> invalidatedChunks = new List<Point>();
 
-        public RenderableWorld(string _basePath) : base(_basePath)
+        public RenderableWorld(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper, string _baseDir) : base(_config, _idMapper, _baseDir)
         {
-            Vertices = new VertexPositionColorTexture[RegionsCountX, RegionsCountZ][];
-            VertexBuffers = new VertexBuffer[RegionsCountX, RegionsCountZ];
+            Vertices = new VertexPositionColorTexture[RegionsCount.X, RegionsCount.Y][];
+            VertexBuffers = new VertexBuffer[RegionsCount.X, RegionsCount.Y];
 
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
-                invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
+                invalidatedChunks.Add(new Point(x / RegionSize.X, z / RegionSize.Z));
         }
 
         public RenderableWorld(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos, ContentManager _content)
@@ -40,9 +40,8 @@ namespace ReiseZumGrundDesSees
             Vertices = new VertexPositionColorTexture[_regionsCountX, _regionsCountZ][];
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
 
-            blockTexture = _content.Load<Texture2D>(BLOCKTEXTURE_NAME);
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
-                invalidatedChunks.Add(new Point(x / RegionSizeX, z / RegionSizeZ));
+                invalidatedChunks.Add(new Point(x / RegionSize.X, z / RegionSize.Z));
         }
 
         private void LoadVertices(int _regionX, int _regionZ)
@@ -50,7 +49,7 @@ namespace ReiseZumGrundDesSees
             WorldRegion _region = Regions[_regionX, _regionZ];
             List<VertexPositionColorTexture> _vertices = new List<VertexPositionColorTexture>();
 
-            Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(this.Blocks, _regionX * RegionSizeX, 0, _regionZ * RegionSizeZ, RegionSizeX, RegionSizeY, RegionSizeZ);
+            Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(this.Blocks, _regionX * RegionSize.X, 0, _regionZ * RegionSize.Z, RegionSize.X, RegionSize.Y, RegionSize.Z);
             if (Vertices[_regionX, _regionZ].Length != 0)
             {
                 if (VertexBuffers[_regionX, _regionZ] != null)
@@ -68,28 +67,31 @@ namespace ReiseZumGrundDesSees
 
         public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-            foreach (Point v in invalidatedChunks)
+            if (graphicsDevice != null)
             {
-                Vertices[v.X, v.Y] = null;
-                VertexBuffers[v.X, v.Y]?.Dispose();
-                VertexBuffers[v.X, v.Y] = null;
-            }
-            invalidatedChunks.Clear();
-            
-            for (int x = 0; x < RegionsCountX; x++)
-                for (int z = 0; z < RegionsCountZ; z++)
+                foreach (Point v in invalidatedChunks)
                 {
-                    float _distance = Vector2.Distance(new Vector2(_view.CameraCenter.Position.X, _view.CameraCenter.Position.Z), new Vector2((x + 0.5f) * RegionSizeX, (z + 0.5f) * RegionSizeZ));
-
-                    if (_distance < 20 && Vertices[x, z] == null)
-                    {
-                        LoadVertices(x, z);
-                    }
-                    else if (_distance > 30 && Vertices[x, z] != null)
-                    {
-                        UnloadVertices(x, z);
-                    }
+                    Vertices[v.X, v.Y] = null;
+                    VertexBuffers[v.X, v.Y]?.Dispose();
+                    VertexBuffers[v.X, v.Y] = null;
                 }
+                invalidatedChunks.Clear();
+
+                for (int x = 0; x < RegionsCount.X; x++)
+                    for (int z = 0; z < RegionsCount.Y; z++)
+                    {
+                        float _distance = Vector2.Distance(new Vector2(_view.CameraCenter.Position.X, _view.CameraCenter.Position.Z), new Vector2((x + 0.5f) * RegionSize.X, (z + 0.5f) * RegionSize.Z));
+
+                        if (_distance < 20 && Vertices[x, z] == null)
+                        {
+                            LoadVertices(x, z);
+                        }
+                        else if (_distance > 30 && Vertices[x, z] != null)
+                        {
+                            UnloadVertices(x, z);
+                        }
+                    }
+            }
 
             return base.Update(_view, _flags, _inputArgs, _passedTime);
         }
@@ -99,12 +101,13 @@ namespace ReiseZumGrundDesSees
             graphicsDevice = _graphicsDevice;
             contentManager = _contentManager;
 
+            blockTexture = contentManager.Load<Texture2D>(BLOCKTEXTURE_NAME);
+
             foreach (var _blocks in specialBlocks)
                 _blocks.Value.Initialize(graphicsDevice, contentManager);
             foreach (var _obj in objects)
                 _obj.Initialize(graphicsDevice, contentManager);
 
-            Texture2D blockTexture = contentManager.Load<Texture2D>(BLOCKTEXTURE_NAME);
             effect = new BasicEffect(graphicsDevice);
             effect.TextureEnabled = true;
             effect.Texture = blockTexture;
@@ -114,13 +117,17 @@ namespace ReiseZumGrundDesSees
         protected override void AddSpecialBlock(ISpecialBlock _object)
         {
             base.AddSpecialBlock(_object);
-            _object.Initialize(graphicsDevice, contentManager);
+
+            if (graphicsDevice != null && contentManager != null)
+                _object.Initialize(graphicsDevice, contentManager);
         }
 
         public override void AddObject(IWorldObject _object)
         {
             base.AddObject(_object);
-            _object.Initialize(graphicsDevice, contentManager);
+
+            if (graphicsDevice != null && contentManager != null)
+                _object.Initialize(graphicsDevice, contentManager);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
@@ -142,7 +149,7 @@ namespace ReiseZumGrundDesSees
                         DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
 
                         effect.View = _viewMatrix;
-                        effect.World = Matrix.CreateTranslation(x * RegionSizeX, 0, z * RegionSizeZ);
+                        effect.World = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
                         effect.Projection = _perspectiveMatrix;
 
                         graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;

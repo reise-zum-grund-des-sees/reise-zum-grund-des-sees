@@ -37,6 +37,12 @@ namespace ReiseZumGrundDesSees
             is_pressed = false;
             Rotation = 0;
         }
+
+        public Lever(ConfigFile.ConfigNode _config)
+            : this(Vector3Int.Parse(_config.Items["position"]))
+        { }
+
+
         public void press()
         {
             if (alive == true)
@@ -86,6 +92,16 @@ namespace ReiseZumGrundDesSees
 
                 mesh.Draw();
             }
+        }
+
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["pressed"] = is_pressed.ToString();
+            _node.Items["position"] = Position.ToString();
+
+            return _node;
         }
     }
 }

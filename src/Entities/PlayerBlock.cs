@@ -38,7 +38,7 @@ namespace ReiseZumGrundDesSees
         public int Zustand = 0;
         public double Deletetime;
         private bool wasAddedToCollisionManager = false;
-        double CD_DISTANCE=20;
+        double CD_DISTANCE = 20;
         public double _verbleibenerCD;
         public enum State
         {
@@ -56,7 +56,7 @@ namespace ReiseZumGrundDesSees
         }
 
 
-        public PlayerBlock(ContentManager contentManager, Player _player, int ArtdesBlocks)
+        public PlayerBlock(Player _player, int ArtdesBlocks)
         {
             Art = ArtdesBlocks;
             _speedY = 0;
@@ -67,18 +67,6 @@ namespace ReiseZumGrundDesSees
             LifetimePercentage = 1f;
             _verbleibenerCD = 5;
             Zustand = (int)State.Bereit;
-            if (Art == 0)
-            {//leichterBlock
-                Model = contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
-            }
-            if (Art == 1)//MittelschwererBlock
-            {
-                Model = contentManager.Load<Model>(Content.MODEL_BLOCK_MEDIUM);
-            }
-            if (Art == 2)//SchwererBlock
-            {
-                Model = contentManager.Load<Model>(Content.MODEL_BLOCK_SCHWER);
-            }
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -86,7 +74,7 @@ namespace ReiseZumGrundDesSees
             //Livetime
 
             if (AktuelleDauer < MaximialDauer)
-                LifetimePercentage = (float)(AktuelleDauer) / (float)( MaximialDauer);
+                LifetimePercentage = (float)(AktuelleDauer) / (float)(MaximialDauer);
             else
                 LifetimePercentage = 1;
 
@@ -108,8 +96,8 @@ namespace ReiseZumGrundDesSees
                                 if (_collInfo.ContainsKey(Direction.Bottom) &&
                                 _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
                                 {
-               
-                                    if ( _obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+
+                                    if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
                                     {
                                         (_obj as PressurePlate).depress();
                                     }
@@ -120,7 +108,7 @@ namespace ReiseZumGrundDesSees
                     }
                 }
                 Deletetime += _passedTime;
-               // AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
+                // AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
                 if (Deletetime >= 5000)
                 {
                     Deletetime = 0;
@@ -132,7 +120,7 @@ namespace ReiseZumGrundDesSees
             {
                 //Position des Blockes basierend auf Blickrichtung
                 Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
-                Vector3 Blick =  Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Player.Blickrichtung));
+                Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Player.Blickrichtung));
                 Blick.Normalize();
                 Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
                 //Console.WriteLine(Position);
@@ -146,8 +134,8 @@ namespace ReiseZumGrundDesSees
             {
                 _movement = new Vector3(0, 0, 0);
                 //Wenn keine Kolision mit Wand oder Block     
-           
-                    if (Art == 1)
+
+                if (Art == 1)
                 {
                     _speedY -= 0.005f * (float)_passedTime;
                     _movement.Y += _speedY * (float)_passedTime * 0.01f;
@@ -159,7 +147,7 @@ namespace ReiseZumGrundDesSees
                 }
                 //unter Block ist kein Wasser 
 
-              
+
                 var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
 
                 if (_collInfo.ContainsKey(Direction.Bottom))
@@ -178,7 +166,7 @@ namespace ReiseZumGrundDesSees
                     {
                         for (int z = -1; z < 2; z++)
                         {
-                            ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X+x, (int)(Position.Y) +y, (int)Position.Z+z);
+                            ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
                             if (_collInfo.ContainsKey(Direction.Bottom) &&
                             _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
                             {
@@ -186,7 +174,7 @@ namespace ReiseZumGrundDesSees
                                 {
                                     (_obj as PressurePlate).press();
                                 }
-                                if (MaximialDauer < AktuelleDauer+_passedTime &&_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                if (MaximialDauer < AktuelleDauer + _passedTime && _obj != null && _obj.Type == WorldBlock.PressurePlateDown)
                                 {
                                     (_obj as PressurePlate).depress();
                                 }
@@ -195,13 +183,13 @@ namespace ReiseZumGrundDesSees
                         }
                     }
                 }
-              
+
             }
 
             else if (MaximialDauer < AktuelleDauer && Zustand == (int)State.Gesetzt)
             {
-           
-                    Zustand = (int)State.CD;
+
+                Zustand = (int)State.CD;
 
 
 
@@ -209,11 +197,12 @@ namespace ReiseZumGrundDesSees
             else
             {
                 //Objekt ist Tot
-               
-                if (Zustand == (int)State.CD && Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ))>CD_DISTANCE)
+
+                if (Zustand == (int)State.CD && Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
                 {
                     _verbleibenerCD -= _passedTime;
-                    if (_verbleibenerCD <= 0) { 
+                    if (_verbleibenerCD <= 0)
+                    {
                         Zustand = (int)State.Bereit;
                         _verbleibenerCD = 5;
                     }
@@ -229,6 +218,44 @@ namespace ReiseZumGrundDesSees
                 }
                 //Console.WriteLine(Position);
             };
+        }
+
+        public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
+        {
+            if (Art == 0)
+            {//leichterBlock
+                Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+            }
+            if (Art == 1)//MittelschwererBlock
+            {
+                Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_MEDIUM);
+            }
+            if (Art == 2)//SchwererBlock
+            {
+                Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_SCHWER);
+            }
+        }
+
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        {
+            if (CurrentState == PlayerBlock.State.Gesetzt)
+            {
+                foreach (ModelMesh mesh in Model.Meshes)
+                {
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.EnableDefaultLighting();
+                        effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
+
+                        effect.View = _viewMatrix;
+
+                        effect.Projection = _perspectiveMatrix;
+
+                    }
+
+                    mesh.Draw();
+                }
+            }
         }
     }
 }
