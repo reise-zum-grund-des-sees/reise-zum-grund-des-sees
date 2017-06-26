@@ -72,7 +72,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>((is_pressed)? Content.MODEL_SCHALTER_OBEN : Content.MODEL_SCHALTER_UNTEN);
+            Model = _contentManager.Load<Model>((is_pressed)? Content.MODEL_SCHALTER_UNTEN : Content.MODEL_SCHALTER_OBEN);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
