@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Lever : ISpecialBlock
+    class Lever : ISpecialBlock, IRotateable
     {
         public Model Model;
 
@@ -37,6 +37,12 @@ namespace ReiseZumGrundDesSees
             is_pressed = false;
             Rotation = 0;
         }
+
+        public Lever(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
+            : this(Vector3Int.Parse(_config.Items["position"]))
+        { }
+
+
         public void press()
         {
             if (alive == true)
@@ -66,7 +72,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>((is_pressed)? Content.MODEL_SCHALTER_OBEN : Content.MODEL_SCHALTER_UNTEN);
+            Model = _contentManager.Load<Model>((is_pressed)? Content.MODEL_SCHALTER_UNTEN : Content.MODEL_SCHALTER_OBEN);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
@@ -86,6 +92,21 @@ namespace ReiseZumGrundDesSees
 
                 mesh.Draw();
             }
+        }
+
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["pressed"] = is_pressed.ToString();
+            _node.Items["position"] = Position.ToString();
+
+            return _node;
+        }
+
+        public void Rotate(float _angle)
+        {
+            Rotation += _angle;
         }
     }
 }

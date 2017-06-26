@@ -71,8 +71,11 @@
     <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
+    <Compile Include="Main\IOverlay.cs" />
     <Compile Include="State\IGamer.cs" />
+    <Compile Include="State\IStateObject.cs" />
     <Compile Include="State\IUpdateable.cs" />
+    <Compile Include="State\ObjectIDMapper.cs" />
     <Compile Include="World\BaseWorld.cs" />
     <Compile Include="Entities\Camera.cs" />
     <Compile Include="Entities\CollisionDetector.cs" />
@@ -93,12 +96,13 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="World\MovingBlock.cs" />
+    <Compile Include="World\PressurePlate.cs" />
     <Compile Include="World\RenderableWorld.cs" />
     <Compile Include="World\Spike.cs" />
     <Compile Include="World\VertexGenerator.cs" />
     <Compile Include="State\WorldEditor.cs" />
+    <Compile Include="World\WaterSimmulation.cs" />
     <Compile Include="World\WorldRegion.cs" />
-    <Compile Include="Main\Render.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="World\WorldBlock.cs" />
   </ItemGroup>

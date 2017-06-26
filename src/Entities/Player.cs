@@ -43,9 +43,8 @@ namespace ReiseZumGrundDesSees
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
         List<SoundEffect> soundEffects;
-        public Player(ContentManager contentManager, Vector3 _position)
+        public Player(Vector3 _position)
         {
-            ContentManager = contentManager;
             Position = _position;
             Jump1 = false;
             Jump2 = false;
@@ -58,26 +57,22 @@ namespace ReiseZumGrundDesSees
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
-            model = contentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
-            effect = contentManager.Load<Effect>(Content.EFFECT_PLAYER);
-            soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_GETHIT)); //schaden bekommen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_KLONG)); //Block setzen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 0));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 1));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
-            Blöcke.Add(new PlayerBlock(ContentManager, this, 2));
+            Blöcke.Add(new PlayerBlock(this, 0));
+            Blöcke.Add(new PlayerBlock(this, 0));
+            Blöcke.Add(new PlayerBlock(this, 0));
+            Blöcke.Add(new PlayerBlock(this, 1));
+            Blöcke.Add(new PlayerBlock(this, 1));
+            Blöcke.Add(new PlayerBlock(this, 1));
+            Blöcke.Add(new PlayerBlock(this, 2));
+            Blöcke.Add(new PlayerBlock(this, 2));
+            Blöcke.Add(new PlayerBlock(this, 2));
+        }
+
+        public Player(ConfigFile.ConfigNode _playerNode) :
+            this(_playerNode.Items["position"].ToVector3())
+        {
+            Health = int.Parse(_playerNode.Items["health"]);
         }
 
         public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -125,32 +120,62 @@ namespace ReiseZumGrundDesSees
             {
                 //_movement.Z -= (float)(_passedTime * 0.005);
                 //_movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
+                if (Jump1) {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                }
+                else { 
                 _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
                 _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                }
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
             {
                 //_movement += Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                if (Jump1)
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
+                }
+                else
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                }
             }
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
             {
-                _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                if (Jump1)
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                }
+                else
+                {
+                    _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f); 
+                }
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
             {
-                _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                if (Jump1)
+                {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
+                }
+                else
+                {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
+                }
             }
 
 
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
             {
                 Jump1 = true;
-                _speedY = 1.1f;
+                _speedY = 0.9f;//1.1f;
                 Jumpcd = true;
                 soundEffects[0].Play();
             }
@@ -161,7 +186,7 @@ namespace ReiseZumGrundDesSees
             if (Jump1 == true && Jump2 == false && Jumpcd == false && _inputArgs.Events.HasFlag(InputEventList.Jump))//Doppelsprung
             {
                 Jump2 = true;
-                _speedY = 1.1f;
+                _speedY = 0.9f;
                 soundEffects[0].Play();
             }
 
@@ -172,10 +197,14 @@ namespace ReiseZumGrundDesSees
 
             if (_collisionInformation.ContainsKey(Direction.Bottom) &&
                 _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
-                _collisionInformation[Direction.Bottom].Object is IMovingObject _moving)
+                _collisionInformation[Direction.Bottom].Object is IMovingObject _moving &&
+                _moving.Velocity != Vector3.Zero)
             {
                 _movement += _moving.Velocity;
                 _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
+                Jump1 = false;
+                Jump2 = false;
+                Jumpcd = false;
             }
 
             if (_collisionInformation.ContainsKey(Direction.Bottom))
@@ -229,7 +258,7 @@ namespace ReiseZumGrundDesSees
                             if (_obj != null && _obj.Type == WorldBlock.Spikes)
                             {
 
-                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f && Healthcd > 1000)
+                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f)
                                 {
                                     Hit();
                                 }
@@ -245,7 +274,7 @@ namespace ReiseZumGrundDesSees
             Healthcd += _passedTime;
 
             //Setzen von Blöcken
-            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 500)
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -258,7 +287,7 @@ namespace ReiseZumGrundDesSees
                     }
 
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && Blockcd > 500)
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -270,7 +299,7 @@ namespace ReiseZumGrundDesSees
                         break;
                     }
             }
-            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 1000)
+            if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 500)
             {
 
                 for (int i = 0; i < Blöcke.Count; i++)
@@ -311,7 +340,18 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
             }
+            //Davorstehenden Block loeschen
+            Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(Blickrichtung));
+            Blick.Normalize();
+            Vector3 BlickPosition = new Vector3(-Blick.X, 0, -Blick.Z); //Blickrichtung des Spielers
+            Blick = Vector3.Add(Position, BlickPosition);
 
+            if(_inputArgs.Events.HasFlag(InputEventList.Return))
+            for (int i = 0; i < Blöcke.Count; i++)
+               if(Vector3.Distance(Blöcke[i].Position,Blick)<1 && (Blöcke[i] as PlayerBlock).Zustand == (int)PlayerBlock.State.Gesetzt) {
+                    (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
+                     soundEffects[6].Play();
+                    }
             List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
             foreach (PlayerBlock b in Blöcke)
                 blockUpdateList.Add(b.Update(_stateView, _flags, _inputArgs, _passedTime));
@@ -367,19 +407,37 @@ namespace ReiseZumGrundDesSees
 
         public void Hit()
         {
+            if(Healthcd > 1000) {
             Health--;
             Healthcd = 0;
             soundEffects[2].Play();
+            }
         }
 
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
+            ContentManager = _contentManager;
+            model = ContentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
+            effect = ContentManager.Load<Effect>(Content.EFFECT_PLAYER);
+            soundEffects = new List<SoundEffect>();
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_GETHIT)); //schaden bekommen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_KLONG)); //Block setzen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
 
+            foreach (var _block in Blöcke)
+                _block.Initialize(_graphicsDevice, _contentManager);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
+            foreach (var _block in Blöcke)
+                _block.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+
             if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
             {
                 _grDevice.RasterizerState = RasterizerState.CullNone;
@@ -399,6 +457,16 @@ namespace ReiseZumGrundDesSees
                     _mesh.Draw();
                 }
             }
+        }
+
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode n = new ConfigFile.ConfigNode();
+
+            n.Items["position"] = Position.ToNiceString();
+            n.Items["health"] = Health.ToString();
+
+            return n;
         }
     }
 }

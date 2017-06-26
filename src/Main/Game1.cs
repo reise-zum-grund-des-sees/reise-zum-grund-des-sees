@@ -11,17 +11,18 @@ namespace ReiseZumGrundDesSees
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game, IMenuCallback
+    class Game1 : Game, IMenuCallback
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        GameState GameState;
+        public GameState GameState;
         InputManager InputManager;
+
+        List<IRenderable> initializeList = new List<IRenderable>();
 
         Texture2D blocktexture;
 
-        private Render renderer;
         private List<IRenderable> worldRenderables = new List<IRenderable>();
         private List<IRenderable> otherRenderables = new List<IRenderable>();
 
@@ -62,10 +63,11 @@ namespace ReiseZumGrundDesSees
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             //graphics.IsFullScreen = true;
-            testBlock = new MovingBlock(new Vector3[] {
+            testBlock = new MovingBlock(new List<Vector3>{
                 new Vector3(24, 34, 24),
                 new Vector3(24, 35, 24),
-                new Vector3(27, 34, 25)
+                new Vector3(27, 34, 25),
+                new Vector3(27, 33, 25)
             });
         }
 
@@ -93,18 +95,23 @@ namespace ReiseZumGrundDesSees
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             editor = new WorldEditor(new Vector3(24, 32, 24), Content);
-            editor.Initialize(GraphicsDevice, Content);
+            initializeList.Add(editor);
             otherRenderables.Add(editor);
 
             this.IsMouseVisible = true;
+
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
-            Enemy a = new Enemy(Content, new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
+            /*
+            Enemy a = new Enemy(new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
             Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
-
+            */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
-            testBlock.Initialize(GraphicsDevice, Content);
-
+            //initializeList.Add(testBlock);
+            for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)
+                initializeList.Add(MovingBlock.MovingBlockList[i]);
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                initializeList.Add(Enemy.EnemyList[i]);
             base.Initialize();
         }
 
@@ -121,9 +128,8 @@ namespace ReiseZumGrundDesSees
             font = Content.Load<SpriteFont>(ReiseZumGrundDesSees.Content.FONT_ARIAL_20);
 
             // TODO: use this.Content to load your game content here
-            MainMenu = new MainMenu(Content);
+            MainMenu = new MainMenu(Content, this);
             IGamer = new IGamer(Content);
-            renderer = new Render(GraphicsDevice, Content);
         }
 
         /// <summary>
@@ -173,9 +179,9 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-            _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-            _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-
+           // _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+           // _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+  
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                 {
@@ -183,20 +189,25 @@ namespace ReiseZumGrundDesSees
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Enemies
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Geschosse
                 {
                     _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
-
+            if (GameFlags.HasFlag(GameFlags.GameRunning))
+                for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)//Update MovingBlocks
+                {
+                    _updateList.Add(MovingBlock.MovingBlockList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+                }
             //foreach (UpdateDelegate u in _updateList)
-                //u?.Invoke(ref GameState);
+            //u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
-                MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+                MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), GameState);
+                IGamer.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
@@ -237,6 +248,10 @@ namespace ReiseZumGrundDesSees
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
 
+            foreach (var i in initializeList)
+                i.Initialize(GraphicsDevice, Content);
+            initializeList.Clear();
+
             if (GameFlags.HasFlag(GameFlags.GameLoaded))
             {
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
@@ -244,18 +259,18 @@ namespace ReiseZumGrundDesSees
 
                 GameState.Player.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-                renderer.LeichterBlock(GameState.Player.Blocks, ref _viewMatrix, ref _perspectiveMatrix);
-
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
                     Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Draw Geschosse
                     Geschoss.GeschossList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+                for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)//Draw Enemies
+                    MovingBlock.MovingBlockList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 foreach (var _renderable in otherRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-                testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+              //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
                 IGamer.Render(spriteBatch);
             }
@@ -278,10 +293,10 @@ namespace ReiseZumGrundDesSees
             worldRenderables.Clear();
             worldRenderables.Add(_world);
             foreach (var _renderable in worldRenderables)
-                _renderable.Initialize(GraphicsDevice, Content);
+                initializeList.Add(_renderable);
 
-            GameState = new GameState(_world, new Player(Content, new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ)), new Camera());
-            GameState.Player.Initialize(GraphicsDevice, Content);
+            GameState = new GameState(_world, new Player(new Vector3(_world.SpawnPos.X, _world.SpawnPos.Y, _world.SpawnPos.Z)), new Camera());
+            initializeList.Add(GameState.Player);
 
             GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameFlags &= ~GameFlags.Menu;
@@ -296,23 +311,28 @@ namespace ReiseZumGrundDesSees
 
         public void LoadGame(string _path)
         {
-            RenderableWorld w = new RenderableWorld(_path);
+            GameState = GameState.Load(_path);
 
             worldRenderables.Clear();
-            worldRenderables.Add(w);
+            worldRenderables.Add(GameState.World as IRenderable);
+
+            initializeList.Clear();
             foreach (var _renderable in worldRenderables)
-                _renderable.Initialize(GraphicsDevice, Content);
+                initializeList.Add(_renderable);
 
-            GameState = new GameState(w, new Player(Content, new Vector3(w.SpawnPosX, w.SpawnPosY, w.SpawnPosZ)), new Camera());
-            GameState.Player.Initialize(GraphicsDevice, Content);
+            initializeList.Add(GameState.Player);
 
+            for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)
+                initializeList.Add(MovingBlock.MovingBlockList[i]);
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                initializeList.Add(Enemy.EnemyList[i]);
             GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameFlags &= ~GameFlags.Menu;
         }
 
         public void SaveGame(string _path)
         {
-            GameState.World.Save(_path);
+            GameState.Save(_path);
         }
 
         public void ShowCredits()

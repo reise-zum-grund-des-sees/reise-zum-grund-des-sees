@@ -36,9 +36,16 @@ namespace ReiseZumGrundDesSees
 
         private bool onBaseWorldBlockChangedBlocker = false;
 
-        public World(string _basePath) : base(_basePath)
+        public World(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper, string _baseDir) : base(_config, _baseDir)
         {
             Blocks.OnBlockChanged += OnBaseWorldBlockChanged;
+
+            foreach (var _obj in _config.Nodes["special_blocks"].Nodes)
+            {
+                ISpecialBlock _spBlck = SpecialBlock.Instanciate(_obj.Value, _idMapper);
+                _idMapper.AddObject(_spBlck, int.Parse(_obj.Key.Select(c => ((char)(c + '0' - 'a')).ToString()).Aggregate((s1, s2) => s1 + s2)));
+                AddSpecialBlock(_spBlck);
+            }
         }
 
         public World(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos)
@@ -53,7 +60,7 @@ namespace ReiseZumGrundDesSees
             {
                 if (_oldBlock.IsSpecialBlock() && _oldBlock != _newBlock)
                     removeBlock(BlockAt(x, y, z));
-                if (_newBlock.IsSpecialBlock())
+                if (_newBlock.IsSpecialBlock() && _oldBlock != _newBlock)
                     AddSpecialBlock(_newBlock.Instanciate(new Vector3Int(x, y, z)));
             }
             onBaseWorldBlockChangedBlocker = false;
@@ -110,6 +117,24 @@ namespace ReiseZumGrundDesSees
                 _delegate = _delegate.ContinueWith(_object.Update(_view, _flags, _inputArgs, _passedTime));
 
             return _delegate;
+        }
+
+        public override ConfigFile.ConfigNode GetState(ObjectIDMapper _idMapper)
+        {
+            ConfigFile.ConfigNode _objects = new ConfigFile.ConfigNode();
+
+            foreach (var _specialBlock in specialBlocks)
+            {
+                int _id = _idMapper.AddObject(_specialBlock.Value);
+                var _state = _specialBlock.Value.GetState(_idMapper);
+                _state.Items["type"] = _specialBlock.Value.GetType().ToString();
+                _objects.Nodes[new string(_id.ToString().Select(c => (char)(c + 'a' - '0')).ToArray())] =
+                    _state;
+            }
+
+            ConfigFile.ConfigNode _base = base.GetState(_idMapper);
+            _base.Nodes["special_blocks"] = _objects;
+            return _base;
         }
     }
 }

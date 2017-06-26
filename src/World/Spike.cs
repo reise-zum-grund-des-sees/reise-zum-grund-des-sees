@@ -25,11 +25,13 @@ namespace ReiseZumGrundDesSees
         }
         public Spike(Vector3Int _position)
         {
-                Position = _position;
-                Type = WorldBlock.Spikes;
-                //SpikeList.Add(this);
-         
+            Position = _position;
+            Type = WorldBlock.Spikes;
         }
+
+        public Spike(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
+            : this(Vector3Int.Parse(_config.Items["position"]))
+        { }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
@@ -49,24 +51,33 @@ namespace ReiseZumGrundDesSees
         {
             {
 
-                    foreach (ModelMesh mesh in Model.Meshes)
+                foreach (ModelMesh mesh in Model.Meshes)
+                {
+                    foreach (BasicEffect effect in mesh.Effects)
                     {
-                        foreach (BasicEffect effect in mesh.Effects)
-                        {
-                            effect.EnableDefaultLighting();
-                            effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
+                        effect.EnableDefaultLighting();
+                        effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
 
-                            effect.View = _viewMatrix;
+                        effect.View = _viewMatrix;
 
-                            effect.Projection = _perspectiveMatrix;
+                        effect.Projection = _perspectiveMatrix;
 
-                        }
-
-                        mesh.Draw();
                     }
 
-               
+                    mesh.Draw();
+                }
+
+
             }
+        }
+
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["position"] = Position.ToString();
+
+            return _node;
         }
     }
 }

@@ -45,16 +45,12 @@ namespace ReiseZumGrundDesSees
             MandS
         }
 
-        public Enemy(ContentManager contentManager, Vector3 _position, Art _typ)
+        public Enemy(Vector3 _position, Art _typ)
         {
 
-            ContentManager = contentManager;
-            Position = _position;
-            Gegnerart = _typ;
-            if(Gegnerart==Art.Shooting)
-                Model = contentManager.Load<Model>(Content.MODEL_GEGNER_2);
-            else
-                Model = contentManager.Load<Model>(Content.MODEL_GEGNER_1);
+         
+            Position = _position;        
+            Gegnerart = _typ;      
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
                 (_block) => true,
                 (_obj) => !(_obj is Geschoss));
@@ -66,10 +62,22 @@ namespace ReiseZumGrundDesSees
             SpawnPosition = _position;
             Random = new Vector2();
             Jumptimer = 1;
-            speedY = 0;
-            soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SHOOT)); //schiesen
+            speedY = 0;        
             EnemyList.Add(this);
+        }
+
+        public Enemy(ConfigFile.ConfigNode _config)
+            : this((_config.Items["EnemyPosition"]).ToVector3(), (Art)Enum.Parse(typeof(Art), _config.Items["EnemyTyp"]))
+        { }
+
+        public ConfigFile.ConfigNode GetState()
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["EnemyPosition"] = Position.ToNiceString();
+            _node.Items["EnemyTyp"] = Gegnerart.ToString();
+            Console.WriteLine(Gegnerart.ToString());
+            return _node;
         }
 
 
@@ -211,7 +219,13 @@ namespace ReiseZumGrundDesSees
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
-            // throw new NotImplementedException();
+            ContentManager = _contentManager;
+            soundEffects = new List<SoundEffect>();
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SHOOT)); //schiesen
+            if (Gegnerart == Art.Shooting)
+                Model = ContentManager.Load<Model>(Content.MODEL_GEGNER_2);
+            else
+                Model = ContentManager.Load<Model>(Content.MODEL_GEGNER_1);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)

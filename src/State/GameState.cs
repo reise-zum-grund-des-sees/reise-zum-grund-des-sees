@@ -23,6 +23,58 @@ namespace ReiseZumGrundDesSees
             CollisionDetector = new CollisionDetector(_world.Blocks);
         }
 
+        public void Save(string _baseDir)
+        {
+            ConfigFile f = new ConfigFile();
+
+            ObjectIDMapper _idMapper = new ObjectIDMapper();
+            f.Nodes["world"] = World.GetState(_idMapper);
+            f.Nodes["player"] = Player.GetState(_idMapper);
+
+            //Moving Block
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+            _node.Items["count"] = MovingBlock.MovingBlockList.Count.ToString();
+
+            f.Nodes["movingBlockCount"] = _node;
+            for (int i=0;i<MovingBlock.MovingBlockList.Count;i++)
+            f.Nodes["movingBlock"+i] = MovingBlock.MovingBlockList[i].GetState();
+
+            //Enemy
+            ConfigFile.ConfigNode _node2 = new ConfigFile.ConfigNode();
+            _node2.Items["count"] = Enemy.EnemyList.Count.ToString();
+
+            f.Nodes["EnemyCount"] = _node2;
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                f.Nodes["Enemy" + i] = Enemy.EnemyList[i].GetState();
+
+            f.Write(System.IO.Path.Combine(_baseDir, "state.conf"));
+            World.SaveRegions(_baseDir);
+        }
+
+        public static GameState Load(string _baseDir)
+        {
+            ConfigFile _config = ConfigFile.Load(System.IO.Path.Combine(_baseDir, "state.conf"));
+
+            ObjectIDMapper _idMapper = new ObjectIDMapper();
+            World w = new RenderableWorld(_config.Nodes["world"], _idMapper, _baseDir);
+            Player p = new Player(_config.Nodes["player"]);
+            Camera c = new Camera();
+            c.CenterOn(p);
+            MovingBlock.MovingBlockList.Clear();
+            for (int i = 0; i < Int32.Parse(_config.Nodes["movingBlockCount"].Items["count"]); i++)
+            {
+                new MovingBlock(_config.Nodes["movingBlock" + i]);
+            }
+            Enemy.EnemyList.Clear();
+            for (int i = 0; i < Int32.Parse(_config.Nodes["EnemyCount"].Items["count"]); i++)
+            {
+                new Enemy(_config.Nodes["Enemy" + i]);
+            }
+
+
+            return new GameState(w, p, c);
+        }
+
         public struct View
         {
             private GameState baseState;

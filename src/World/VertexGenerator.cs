@@ -47,7 +47,7 @@ namespace ReiseZumGrundDesSees
                             Random rnd = new Random(x * 16 * 16 + y * 16 + z);
 
                             // FRONT
-                            if (_world[x, y, z + 1] != WorldBlock.Wall)
+                            if (!_world[x, y, z + 1].IsFullBlock())
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
@@ -59,9 +59,10 @@ namespace ReiseZumGrundDesSees
                                 r = rnd.Next(0, _textureOffsets.Length);
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
+                            else rnd.Next();
 
                             // BACK
-                            if (_world[x, y, z - 1] != WorldBlock.Wall)
+                            if (!_world[x, y, z - 1].IsFullBlock())
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
@@ -73,9 +74,10 @@ namespace ReiseZumGrundDesSees
                                 r = rnd.Next(0, _textureOffsets.Length);
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
+                            else rnd.Next();
 
                             // LEFT
-                            if (_world[x - 1, y, z] != WorldBlock.Wall)
+                            if (!_world[x - 1, y, z].IsFullBlock())
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
@@ -87,9 +89,10 @@ namespace ReiseZumGrundDesSees
                                 r = rnd.Next(0, _textureOffsets.Length);
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
+                            else rnd.Next();
 
                             // RIGHT
-                            if (_world[x + 1, y, z] != WorldBlock.Wall)
+                            if (!_world[x + 1, y, z].IsFullBlock())
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
@@ -101,9 +104,10 @@ namespace ReiseZumGrundDesSees
                                 r = rnd.Next(0, _textureOffsets.Length);
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
+                            else rnd.Next();
 
                             // TOP
-                            if (_world[x, y + 1, z] != WorldBlock.Wall)
+                            if (!(b.IsFullBlock() && _world[x, y + 1, z].IsFullBlock()))
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
                                 _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
@@ -115,9 +119,10 @@ namespace ReiseZumGrundDesSees
                                 r = rnd.Next(0, _textureOffsets.Length);
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
+                            else rnd.Next();
 
                             // BOTTOM
-                            if (!_optimizationFlag && _world[x, y - 1, z] != WorldBlock.Wall)
+                            if (!_optimizationFlag && _world[x, y - 1, z].IsFullBlock())
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
@@ -129,6 +134,7 @@ namespace ReiseZumGrundDesSees
                                 r = rnd.Next(0, _textureOffsets.Length);
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
+                            else rnd.Next();
 
                             if (_optimizationFlag)
                                 _optimizationFlag = false;

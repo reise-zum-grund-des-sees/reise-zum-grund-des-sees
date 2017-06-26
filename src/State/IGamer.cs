@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class IGamer
+    class IGamer : IOverlay
     {
-        
-        public Texture2D vollesHerz;
-        public Texture2D leeresHerz;
-        public Texture2D Herz1;
-        public Texture2D Herz2;
-        public Texture2D Herz3;
+        private Texture2D vollesHerz;
+        private Texture2D leeresHerz;
+        private Texture2D Herz1;
+        private Texture2D Herz2;
+        private Texture2D Herz3;
 
-        public Texture2D skill1;
-        public Texture2D skill2;
-        public Texture2D skill3;
+        private Texture2D skill1;
+        private Texture2D skill2;
+        private Texture2D skill3;
 
         private Rectangle RHerz1 = new Rectangle(250, 70, 100, 70);
         private Rectangle RHerz2 = new Rectangle(350, 70, 100, 70);
@@ -38,11 +38,10 @@ namespace ReiseZumGrundDesSees
         private Vector2 VS2 = new Vector2(400, 640);
         private Vector2 VS3 = new Vector2(490, 640);
 
-
+        private Vector2 scalingFactor = new Vector2(1f, 1f);
 
         public IGamer(ContentManager _content)
         {
-           
             vollesHerz = _content.Load<Texture2D>(Content.ICON_HERZ_AUSGEFUELLT);
             leeresHerz = _content.Load<Texture2D>(Content.ICON_HERZ_UNAUSGEFUELLT);
 
@@ -54,9 +53,10 @@ namespace ReiseZumGrundDesSees
             S2 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
             S3 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
         }
-        public void Update(InputEventArgs _args, Point _windowSize, GameState _gameState)
+
+        public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize)
         {
-            
+            scalingFactor = _windowSize.ToVector2() * 0.001f;
             Herz1 = vollesHerz;
             Herz2 = vollesHerz;
             Herz3 = vollesHerz;
@@ -68,32 +68,24 @@ namespace ReiseZumGrundDesSees
             if (_gameState.Player.Health < 3)
                 Herz3 = leeresHerz;
             // _gameState.Player.Blocks;
-
-
         }
+
         public void Render(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Begin();
            
-            _spriteBatch.Draw(Herz1, RHerz1, Color.White);
-            _spriteBatch.Draw(Herz2, RHerz2, Color.White);
-            _spriteBatch.Draw(Herz3, RHerz3, Color.White);
+            _spriteBatch.Draw(Herz1, RHerz1.Scale(scalingFactor), Color.White);
+            _spriteBatch.Draw(Herz2, RHerz2.Scale(scalingFactor), Color.White);
+            _spriteBatch.Draw(Herz3, RHerz3.Scale(scalingFactor), Color.White);
 
-            _spriteBatch.Draw(skill1, RSkill1, Color.White);
-            _spriteBatch.Draw(skill2, RSkill2, Color.White);
-            _spriteBatch.Draw(skill3, RSkill3, Color.White);
-            _spriteBatch.DrawString(S1, "1", VS1, Color.White);
-            _spriteBatch.DrawString(S2, "2", VS2, Color.White);
-            _spriteBatch.DrawString(S3, "3", VS3, Color.White);
-
-           
-
+            _spriteBatch.Draw(skill1, RSkill1.Scale(scalingFactor), Color.White);
+            _spriteBatch.Draw(skill2, RSkill2.Scale(scalingFactor), Color.White);
+            _spriteBatch.Draw(skill3, RSkill3.Scale(scalingFactor), Color.White);
+            _spriteBatch.DrawString(S1, "1", VS1 * scalingFactor, Color.White);
+            _spriteBatch.DrawString(S2, "2", VS2 * scalingFactor, Color.White);
+            _spriteBatch.DrawString(S3, "3", VS3 * scalingFactor, Color.White);
 
             _spriteBatch.End();
-
-
-
         }
-       // throw new NotImplementedException();
     }
 }

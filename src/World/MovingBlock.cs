@@ -20,11 +20,18 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Position { get; set; }
 
-
-        public MovingBlock(Vector3[] _positionMarks)
+        public static List<MovingBlock> MovingBlockList = new List<MovingBlock>() //statische Liste für alle erstellten Mocing Blocks, müsste gespeichert werden in der xml Datei
+            ;
+        public MovingBlock(List<Vector3> _positionMarks)
         {
-            positionMarks = _positionMarks;
+           
+            if (_positionMarks.Count > 1) {
+                positionMarks = new Vector3[_positionMarks.Count];
+            for(int i=0; i<_positionMarks.Count;i++)
+            positionMarks[i] = _positionMarks.ElementAt(i);
             Position = positionMarks[0];
+                MovingBlockList.Add(this);
+            }
         }
 
         public bool HasMultipleHitboxes => false;
@@ -34,10 +41,44 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Velocity { get; private set; }
 
-        public IReadOnlyDictionary<string, string[]> GetState()
+        public MovingBlock(ConfigFile.ConfigNode _MovingBlockNode)
         {
-            return null;
+            List<Vector3> _positionMarks = new List<Vector3>();
+            for (int i=0; i<int.Parse(_MovingBlockNode.Items["MarksLength"]);i++)
+                _positionMarks.Add(_MovingBlockNode.Items["positionMarks"+i].ToVector3());
+
+            //normaler Konstruktor
+            if (_positionMarks.Count > 1)
+            {
+                positionMarks = new Vector3[_positionMarks.Count];
+                for (int i = 0; i < _positionMarks.Count; i++)
+                    positionMarks[i] = _positionMarks.ElementAt(i);
+                Position = positionMarks[0];
+                MovingBlockList.Add(this);
+            }
         }
+
+        public ConfigFile.ConfigNode GetState()
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["MarksLength"] = positionMarks.Length.ToString();
+            for (int i = 0; i < positionMarks.Length; i++)
+                _node.Items["positionMarks" + i] = positionMarks[i].ToNiceString();
+
+            return _node;
+        }
+
+        public void SetState(IReadOnlyDictionary<string, string[]> _state)
+        {
+
+        }
+
+        IReadOnlyDictionary<string, string[]> IReadonlyWorldObject.GetState()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
@@ -61,21 +102,19 @@ namespace ReiseZumGrundDesSees
             }
         }
 
-        public void SetState(IReadOnlyDictionary<string, string[]> _state)
-        {
-
-        }
-
+    
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) || !_flags.HasFlag(GameFlags.GameLoaded))
                 return null;
-            
-            Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
-            Vector3 _nextPosition = positionMarks[status];
 
+           Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
+           Vector3 _nextPosition = positionMarks[status];
+
+          
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
+            Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
             if (moving)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;
@@ -90,11 +129,18 @@ namespace ReiseZumGrundDesSees
                     if (_item.Value.Object is IMoveable _moveable)
                         _moveable.Move(_movement - _testMovement, _view.CollisionDetector);
 
+                _oldCollisionInfo = _collisionInfo;
                 if (_movement.Length() < 10)
                     _collisionInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
 
                 if (!_collisionInfo.Any())
                     percentage = _newPercentage;
+                else
+                {
+                    foreach (var _item in _oldCollisionInfo)
+                        if (_item.Value.Object is IMoveable _moveable)
+                            _moveable.Move(-_movement + _testMovement, _view.CollisionDetector);
+                }
             }
 
 
@@ -121,5 +167,7 @@ namespace ReiseZumGrundDesSees
                 else Velocity = Vector3.Zero;
             };
         }
+
+      
     }
 }
