@@ -124,7 +124,7 @@ namespace ReiseZumGrundDesSees
             font = Content.Load<SpriteFont>(ReiseZumGrundDesSees.Content.FONT_ARIAL_20);
 
             // TODO: use this.Content to load your game content here
-            MainMenu = new MainMenu(Content);
+            MainMenu = new MainMenu(Content, this);
             IGamer = new IGamer(Content);
         }
 
@@ -195,10 +195,10 @@ namespace ReiseZumGrundDesSees
                 //u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
-                MainMenu.Update(_args, this, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+                MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                IGamer.Update(_args, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), GameState);
+                IGamer.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))

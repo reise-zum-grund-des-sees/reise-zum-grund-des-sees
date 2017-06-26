@@ -40,6 +40,13 @@ namespace ReiseZumGrundDesSees
             if (_keyboardState.IsKeyDown(Keys.LeftShift)) _eventList |= InputEventList.Sprint;
             if (_keyboardState.IsKeyDown(Keys.B)) _eventList |= InputEventList.Delete;
             if (_keyboardState.IsKeyDown(Keys.Q)) _eventList |= InputEventList.Return;
+            if (_keyboardState.IsKeyDown(Keys.R)) _eventList |= InputEventList.Rotate;
+
+            if (_keyboardState.IsKeyDown(Keys.F12))
+            {
+                if (_keyboardState.IsKeyDown(Keys.LeftControl)) _eventList |= InputEventList.Replay;
+                else _eventList |= InputEventList.Record;
+            }
 
             if (_keyboardState.IsKeyDown(Keys.D1))
             {
@@ -58,7 +65,10 @@ namespace ReiseZumGrundDesSees
             }
             if (_keyboardState.IsKeyDown(Keys.D4))
             {
-                _eventList |= InputEventList.PlaceWater4;
+                if (_keyboardState.IsKeyDown(Keys.LeftControl))
+                    _eventList |= InputEventList.PlaceWater4Infinite;
+                else
+                    _eventList |= InputEventList.PlaceWater4;
             }
             if (_keyboardState.IsKeyDown(Keys.D5))
             {
@@ -76,6 +86,7 @@ namespace ReiseZumGrundDesSees
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
             {
+                _eventList |= InputEventList.MouseLeft;
                 if (!leftMouseDown)
                 {
                     _eventList |= InputEventList.MouseLeftClick;
@@ -85,6 +96,7 @@ namespace ReiseZumGrundDesSees
             else leftMouseDown = false;
             if (_mouseState.RightButton == ButtonState.Pressed)
             {
+                _eventList |= InputEventList.MouseRight;
                 if (!rightMouseDown)
                 {
                     _eventList |= InputEventList.MouseRightClick;
@@ -174,40 +186,50 @@ namespace ReiseZumGrundDesSees
     [Flags]
     public enum InputEventList
     {
-        None = 0,
+        None                = 0,
 
-        MoveForwards = 0x01,
-        MoveLeft = 0x02,
-        MoveRight = 0x04,
-        MoveBackwards = 0x08,
+        MoveForwards        = 1,
+        MoveLeft            = 1 << 1,
+        MoveRight           = 1 << 2,
+        MoveBackwards       = 1 << 3,
 
-        MouseLeftClick = 0x10,
-        MouseRightClick = 0x20,
-        MouseMiddleClick = 0x40,
+        MouseLeftClick      = 1 << 4,
+        MouseRightClick     = 1 << 5,
+        MouseMiddleClick    = 1 << 6,
 
-        Jump = 0x80,
-        Sprint = 0x100,
+        Jump                = 1 << 7,
+        Sprint              = 1 << 8,
 
-        PlaceWall = 0x200,
-        RemoveBlock = 0x400,
-        Delete = 0x400,
+        PlaceWall           = 1 << 9,
+        RemoveBlock         = 1 << 10,
+        Delete              = 1 << 11,
 
-        MoveUp = 0x800,
-        MoveDown = 0x1000,
+        MoveUp              = 1 << 12,
+        MoveDown            = 1 << 13,
 
-        LeichterBlock = 0x2000,
-        MittelschwererBlock = 0x4000,
-        SchwererBlock = 0x8000,
+        LeichterBlock       = 1 << 14,
+        MittelschwererBlock = 1 << 15,
+        SchwererBlock       = 1 << 16,
 
-        PlaceWater1 = 0x10000,
-        PlaceWater2 = 0x20000,
-        PlaceWater3 = 0x40000,
-        PlaceWater4 = 0x80000,
-        PlaceLever = 0x100000,
-        PlaceSpike = 0x200000,
+        PlaceWater1         = 1 << 17,
+        PlaceWater2         = 1 << 18,
+        PlaceWater3         = 1 << 19,
+        PlaceWater4         = 1 << 20,
+        PlaceLever          = 1 << 21,
+        PlaceSpike          = 1 << 22,
 
-        Interact = 0x400000,
-        Return = 0x800000,
-        PlacePressurePlate = 0x10000000
+        Interact            = 1 << 23,
+        Return              = 1 << 24,
+        PlacePressurePlate  = 1 << 25,
+
+        PlaceWater4Infinite = 1 << 26,
+
+        MouseLeft           = 1 << 27,
+        MouseRight          = 1 << 28,
+
+        Record              = 1 << 29,
+        Replay              = 1 << 30,
+
+        Rotate              = 1 << 31
     }
 }

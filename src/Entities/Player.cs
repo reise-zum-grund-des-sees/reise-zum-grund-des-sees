@@ -197,7 +197,8 @@ namespace ReiseZumGrundDesSees
 
             if (_collisionInformation.ContainsKey(Direction.Bottom) &&
                 _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
-                _collisionInformation[Direction.Bottom].Object is IMovingObject _moving)
+                _collisionInformation[Direction.Bottom].Object is IMovingObject _moving &&
+                _moving.Velocity != Vector3.Zero)
             {
                 _movement += _moving.Velocity;
                 _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
@@ -214,7 +215,6 @@ namespace ReiseZumGrundDesSees
                     Jump1 = false;
                     Jump2 = false;
                     Jumpcd = false;
-                   
                 }
 
                 if (_collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithWorldBlock &&

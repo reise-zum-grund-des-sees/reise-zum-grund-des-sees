@@ -11,7 +11,6 @@ namespace ReiseZumGrundDesSees
 {
     static class DebugHelper
     {
-        //public static DebugInfo Information = new DebugInfo(0, new TimeSpan(0), 0, 0, 0);
         public static class Information
         {
             public static double FPS;

@@ -50,5 +50,12 @@ namespace ReiseZumGrundDesSees
         }
         public static string ToNiceString(this Vector3 v)
         => $"{v.X}; {v.Y}; {v.Z}";
+
+        public static Rectangle Scale(this Rectangle _rect, Vector2 _scaleFactor)
+        {
+            return new Rectangle(
+                (_rect.Location.ToVector2() * _scaleFactor).ToPoint(),
+                (_rect.Size.ToVector2()     * _scaleFactor).ToPoint());
+        }
     }
 }

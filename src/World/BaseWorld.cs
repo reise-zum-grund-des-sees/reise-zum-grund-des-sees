@@ -17,6 +17,7 @@ namespace ReiseZumGrundDesSees
 
     interface IReadonlyBlockWorld
     {
+        Vector3Int Size { get; }
         WorldBlock this[int x, int y, int z] { get; }
     }
 
@@ -68,17 +69,39 @@ namespace ReiseZumGrundDesSees
             SpawnPos.Z = _spawnPos.Z;
 
             Regions = new WorldRegion[RegionsCount.X, RegionsCount.Y];
-
-            //for (int x = 0; x < RegionsCountX; x++)
-            //for (int z = 0; z < RegionsCountZ; z++)
-            //Regions[x, z] = new WorldRegion();
         }
 
+        private Task<IEnumerable<KeyValuePair<Vector3Int, WorldBlock>>> blockWorldUpdateTask;
+        private System.Threading.CancellationTokenSource blockWorldUpdateCancelToken;
+        private IEnumerable<KeyValuePair<Vector3Int, WorldBlock>> blockWorldUpdateChangeList = new List<KeyValuePair<Vector3Int, WorldBlock>>();
         public virtual UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             return (ref GameState _gameState) =>
             {
+                if (blockWorldUpdateTask != null &&
+                    blockWorldUpdateTask.IsCompleted &&
+                    blockWorldUpdateTask.Result != null)
+                {
+                    foreach (var _kvp in blockWorldUpdateTask.Result)
+                        Blocks[_kvp.Key.X, _kvp.Key.Y, _kvp.Key.Z] = _kvp.Value;
 
+                    blockWorldUpdateChangeList = null;
+                    blockWorldUpdateTask = null;
+                }
+                else if (blockWorldUpdateTask == null ||
+                    blockWorldUpdateTask.IsCanceled ||
+                    blockWorldUpdateTask.IsCompleted ||
+                    blockWorldUpdateTask.IsFaulted)
+                {
+                    blockWorldUpdateCancelToken = new System.Threading.CancellationTokenSource();
+                    blockWorldUpdateTask = new Task<IEnumerable<KeyValuePair<Vector3Int, WorldBlock>>>(() =>
+                    {
+                        blockWorldUpdateChangeList = WaterSimmulation.Simmulate(Blocks, blockWorldUpdateCancelToken.Token);
+
+                        return blockWorldUpdateChangeList;
+                    });
+                    blockWorldUpdateTask.Start();
+                }
             };
         }
 
@@ -124,6 +147,8 @@ namespace ReiseZumGrundDesSees
         {
             private readonly BaseWorld world;
 
+            public Vector3Int Size => world.RegionSize * new Vector3Int(world.RegionsCount.X, 1, world.RegionsCount.Y);
+
             public delegate void OnBlockChangedEventHandler(WorldBlock _oldBlock, WorldBlock _newBlock, int x, int y, int z);
             public event OnBlockChangedEventHandler OnBlockChanged;
 
@@ -156,6 +181,8 @@ namespace ReiseZumGrundDesSees
                     int bx = x - rx * world.RegionSize.X;
                     int by = y;
                     int bz = z - rz * world.RegionSize.Z;
+
+                    world.blockWorldUpdateCancelToken?.Cancel();
 
                     WorldBlock _oldBlock = world.Regions[rx, rz].Blocks[bx, by, bz];
                     world.Regions[rx, rz].Blocks[bx, by, bz] = value;

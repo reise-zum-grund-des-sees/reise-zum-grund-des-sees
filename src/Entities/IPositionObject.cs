@@ -9,6 +9,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
+    interface IRotateable
+    {
+        void Rotate(float _angle);
+    }
+
     interface IPositionObject : IReadonlyPositionObject
     {
         new Vector3 Position { get; set; }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    class Lever : ISpecialBlock
+    class Lever : ISpecialBlock, IRotateable
     {
         public Model Model;
 
@@ -102,6 +102,11 @@ namespace ReiseZumGrundDesSees
             _node.Items["position"] = Position.ToString();
 
             return _node;
+        }
+
+        public void Rotate(float _angle)
+        {
+            Rotation += _angle;
         }
     }
 }

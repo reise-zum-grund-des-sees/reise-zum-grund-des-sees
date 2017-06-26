@@ -107,12 +107,14 @@ namespace ReiseZumGrundDesSees
         public override string ToString()
         {
             StringBuilder _builder = new StringBuilder();
-            MemoryStream _stream = new MemoryStream();
-            using (XmlWriter _writer = XmlWriter.Create(_stream))
+            using (MemoryStream _stream = new MemoryStream())
             {
-                Write(_writer);
+                using (XmlWriter _writer = XmlWriter.Create(_stream))
+                {
+                    Write(_writer);
+                }
+                return Encoding.UTF8.GetString(_stream.ToArray());
             }
-            return Encoding.UTF8.GetString(_stream.ToArray());
         }
 
         public void Write(XmlWriter _writer)

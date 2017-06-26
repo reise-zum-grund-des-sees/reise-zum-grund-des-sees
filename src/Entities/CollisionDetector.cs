@@ -326,6 +326,17 @@ namespace ReiseZumGrundDesSees
             collidesWithWorldBlock = _collidesWithWorldBlock;
             collidesWithObject = _collidesWithObject;
         }
+        public Hitbox(Hitbox b, Predicate<WorldBlock> _collidesWithWorldBlock, Predicate<ICollisionObject> _collidesWithObject)
+        {
+            Width = b.Width;
+            Depth = b.Depth;
+            Height = b.Height;
+            X = b.X;
+            Y = b.Y;
+            Z = b.Z;
+            collidesWithObject = _collidesWithObject;
+            collidesWithWorldBlock = _collidesWithWorldBlock;
+        }
 
         public bool CollidesWithWorldBlock(WorldBlock _block) => collidesWithWorldBlock(_block);
         public bool CollidesWithObject(ICollisionObject _object) => collidesWithObject(_object);

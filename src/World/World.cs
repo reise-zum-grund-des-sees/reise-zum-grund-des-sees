@@ -60,7 +60,7 @@ namespace ReiseZumGrundDesSees
             {
                 if (_oldBlock.IsSpecialBlock() && _oldBlock != _newBlock)
                     removeBlock(BlockAt(x, y, z));
-                if (_newBlock.IsSpecialBlock())
+                if (_newBlock.IsSpecialBlock() && _oldBlock != _newBlock)
                     AddSpecialBlock(_newBlock.Instanciate(new Vector3Int(x, y, z)));
             }
             onBaseWorldBlockChangedBlocker = false;

@@ -100,6 +100,7 @@
     <Compile Include="World\Spike.cs" />
     <Compile Include="World\VertexGenerator.cs" />
     <Compile Include="State\WorldEditor.cs" />
+    <Compile Include="World\WaterSimmulation.cs" />
     <Compile Include="World\WorldRegion.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="World\WorldBlock.cs" />

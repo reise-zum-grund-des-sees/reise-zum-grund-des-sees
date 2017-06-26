@@ -23,6 +23,7 @@ namespace ReiseZumGrundDesSees
         public static explicit operator Vector3Int(Vector3 _item) => new Vector3Int((int)_item.X, (int)_item.Y, (int)_item.Z);
 
         public static Vector3Int operator +(Vector3Int x, Vector3Int y) => new Vector3Int(x.X + y.X, x.Y + y.Y, x.Z + y.Z);
+        public static Vector3Int operator *(Vector3Int x, Vector3Int y) => new Vector3Int(x.X * y.X, x.Y * y.Y, x.Z * y.Z);
         public static Vector3Int operator -(Vector3Int x) => new Vector3Int(-x.X, -x.Y, -x.Z);
 
         public static Vector3Int operator -(Vector3Int x, Vector3Int y) => x + -y;

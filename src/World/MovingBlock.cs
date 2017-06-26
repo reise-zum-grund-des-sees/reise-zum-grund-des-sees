@@ -76,6 +76,7 @@ namespace ReiseZumGrundDesSees
 
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
+            Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
             if (moving)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;
@@ -90,11 +91,18 @@ namespace ReiseZumGrundDesSees
                     if (_item.Value.Object is IMoveable _moveable)
                         _moveable.Move(_movement - _testMovement, _view.CollisionDetector);
 
+                _oldCollisionInfo = _collisionInfo;
                 if (_movement.Length() < 10)
                     _collisionInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
 
                 if (!_collisionInfo.Any())
                     percentage = _newPercentage;
+                else
+                {
+                    foreach (var _item in _oldCollisionInfo)
+                        if (_item.Value.Object is IMoveable _moveable)
+                            _moveable.Move(-_movement + _testMovement, _view.CollisionDetector);
+                }
             }
 
 

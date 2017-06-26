@@ -41,7 +41,13 @@ namespace ReiseZumGrundDesSees
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
 
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
-                invalidatedChunks.Add(new Point(x / RegionSize.X, z / RegionSize.Z));
+            {
+                int a = x / RegionSize.X;
+                int b = z / RegionSize.Z;
+                for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
+                    for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                        invalidatedChunks.Add(new Point(a, b));
+            };
         }
 
         private void LoadVertices(int _regionX, int _regionZ)
@@ -82,11 +88,11 @@ namespace ReiseZumGrundDesSees
                     {
                         float _distance = Vector2.Distance(new Vector2(_view.CameraCenter.Position.X, _view.CameraCenter.Position.Z), new Vector2((x + 0.5f) * RegionSize.X, (z + 0.5f) * RegionSize.Z));
 
-                        if (_distance < 20 && Vertices[x, z] == null)
+                        if (_distance < 30 && Vertices[x, z] == null)
                         {
                             LoadVertices(x, z);
                         }
-                        else if (_distance > 30 && Vertices[x, z] != null)
+                        else if (_distance > 40 && Vertices[x, z] != null)
                         {
                             UnloadVertices(x, z);
                         }
