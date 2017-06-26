@@ -32,13 +32,13 @@ namespace ReiseZumGrundDesSees
             switch (_node.Items["type"])
             {
                 case "ReiseZumGrundDesSees.Lever":
-                    Lever l = new Lever(_node);
+                    Lever l = new Lever(_node, _idMapper);
                     return l;
                 case "ReiseZumGrundDesSees.Spike":
-                    Spike s = new Spike(_node);
+                    Spike s = new Spike(_node, _idMapper);
                     return s;
                 case "ReiseZumGrundDesSees.PressurePlate":
-                    PressurePlate pp = new PressurePlate(_node);
+                    PressurePlate pp = new PressurePlate(_node, _idMapper);
                     return pp;
                 default:
                     throw new ArgumentException();

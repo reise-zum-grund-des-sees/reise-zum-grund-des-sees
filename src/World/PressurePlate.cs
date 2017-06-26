@@ -52,7 +52,7 @@ namespace ReiseZumGrundDesSees
             else Type = WorldBlock.PressurePlateDown;
         }
 
-        public PressurePlate(ConfigFile.ConfigNode _config)
+        public PressurePlate(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
             : this(Vector3Int.Parse(_config.Items["position"]), 0)
         { }
 

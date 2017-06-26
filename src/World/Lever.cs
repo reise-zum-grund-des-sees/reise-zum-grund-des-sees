@@ -38,7 +38,7 @@ namespace ReiseZumGrundDesSees
             Rotation = 0;
         }
 
-        public Lever(ConfigFile.ConfigNode _config)
+        public Lever(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
             : this(Vector3Int.Parse(_config.Items["position"]))
         { }
 

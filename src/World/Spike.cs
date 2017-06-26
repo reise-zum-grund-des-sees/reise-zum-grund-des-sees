@@ -29,7 +29,7 @@ namespace ReiseZumGrundDesSees
             Type = WorldBlock.Spikes;
         }
 
-        public Spike(ConfigFile.ConfigNode _config)
+        public Spike(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
             : this(Vector3Int.Parse(_config.Items["position"]))
         { }
 
