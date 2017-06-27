@@ -41,10 +41,44 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Velocity { get; private set; }
 
-        public IReadOnlyDictionary<string, string[]> GetState()
+        public MovingBlock(ConfigFile.ConfigNode _MovingBlockNode)
         {
-            return null;
+            List<Vector3> _positionMarks = new List<Vector3>();
+            for (int i=0; i<int.Parse(_MovingBlockNode.Items["MarksLength"]);i++)
+                _positionMarks.Add(_MovingBlockNode.Items["positionMarks"+i].ToVector3());
+
+            //normaler Konstruktor
+            if (_positionMarks.Count > 1)
+            {
+                positionMarks = new Vector3[_positionMarks.Count];
+                for (int i = 0; i < _positionMarks.Count; i++)
+                    positionMarks[i] = _positionMarks.ElementAt(i);
+                Position = positionMarks[0];
+                MovingBlockList.Add(this);
+            }
         }
+
+        public ConfigFile.ConfigNode GetState()
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["MarksLength"] = positionMarks.Length.ToString();
+            for (int i = 0; i < positionMarks.Length; i++)
+                _node.Items["positionMarks" + i] = positionMarks[i].ToNiceString();
+
+            return _node;
+        }
+
+        public void SetState(IReadOnlyDictionary<string, string[]> _state)
+        {
+
+        }
+
+        IReadOnlyDictionary<string, string[]> IReadonlyWorldObject.GetState()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
@@ -68,11 +102,7 @@ namespace ReiseZumGrundDesSees
             }
         }
 
-        public void SetState(IReadOnlyDictionary<string, string[]> _state)
-        {
-
-        }
-
+    
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) || !_flags.HasFlag(GameFlags.GameLoaded))
@@ -137,5 +167,7 @@ namespace ReiseZumGrundDesSees
                 else Velocity = Vector3.Zero;
             };
         }
+
+      
     }
 }
