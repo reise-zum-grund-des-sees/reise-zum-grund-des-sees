@@ -99,9 +99,10 @@ namespace ReiseZumGrundDesSees
             otherRenderables.Add(editor);
 
             this.IsMouseVisible = true;
+
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
             /*
-            Enemy a = new Enemy(Content, new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
+            Enemy a = new Enemy(new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
             Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
             */
@@ -109,6 +110,8 @@ namespace ReiseZumGrundDesSees
             //initializeList.Add(testBlock);
             for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)
                 initializeList.Add(MovingBlock.MovingBlockList[i]);
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                initializeList.Add(Enemy.EnemyList[i]);
             base.Initialize();
         }
 
@@ -321,7 +324,8 @@ namespace ReiseZumGrundDesSees
 
             for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)
                 initializeList.Add(MovingBlock.MovingBlockList[i]);
-
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                initializeList.Add(Enemy.EnemyList[i]);
             GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameFlags &= ~GameFlags.Menu;
         }

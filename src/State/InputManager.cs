@@ -90,6 +90,11 @@ namespace ReiseZumGrundDesSees
             {
                 _eventList |= InputEventList.PlaceMovingBlockEnd;            
             }
+            if (_keyboardState.IsKeyDown(Keys.LeftAlt))
+            {
+                _eventList |= InputEventList.PlaceEnemy;
+            }
+         
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
@@ -240,6 +245,7 @@ namespace ReiseZumGrundDesSees
 
         Rotate              = 1 << 31,
         PlaceMovingBlock    = 1 << 7,
-        PlaceMovingBlockEnd = 1 << 8
+        PlaceMovingBlockEnd = 1 << 8,
+        PlaceEnemy          = 1 << 23
     }
 }
