@@ -266,9 +266,15 @@ namespace ReiseZumGrundDesSees
             if (_actions.HasFlag(Actions.PutWall))
                 _state.World.Blocks[x, y, z] = WorldBlock.Wall;
 
-            else if (_actions.HasFlag(Actions.RemoveBlock))
+            else if (_actions.HasFlag(Actions.RemoveBlock)) { 
                 _state.World.Blocks[x, y, z] = WorldBlock.None;
-
+                for(int i = 0;i < MovingBlock.MovingBlockList.Count;i++) {
+               if(Vector3.Distance(MovingBlock.MovingBlockList[i].Position,new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1) {
+                        MovingBlock.MovingBlockList.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
             else if (_actions.HasFlag(Actions.PutWater1))
                 _state.World.Blocks[x, y, z] = WorldBlock.Water1;
 
