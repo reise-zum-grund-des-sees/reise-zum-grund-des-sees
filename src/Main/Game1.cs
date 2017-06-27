@@ -63,7 +63,7 @@ namespace ReiseZumGrundDesSees
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             //graphics.IsFullScreen = true;
-            testBlock = new MovingBlock(new Vector3[] {
+            testBlock = new MovingBlock(new List<Vector3>{
                 new Vector3(24, 34, 24),
                 new Vector3(24, 35, 24),
                 new Vector3(27, 34, 25),
@@ -107,7 +107,8 @@ namespace ReiseZumGrundDesSees
             */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
             initializeList.Add(testBlock);
-
+            for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)
+                initializeList.Add(MovingBlock.MovingBlockList[i]);
             base.Initialize();
         }
 
@@ -185,14 +186,19 @@ namespace ReiseZumGrundDesSees
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Enemies
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Geschosse
                 {
                     _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
-
+            if (GameFlags.HasFlag(GameFlags.GameRunning))
+                for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)//Update MovingBlocks
+                {
+                    _updateList.Add(MovingBlock.MovingBlockList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+                }
             //foreach (UpdateDelegate u in _updateList)
-                //u?.Invoke(ref GameState);
+            //u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
@@ -254,6 +260,8 @@ namespace ReiseZumGrundDesSees
                     Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Draw Geschosse
                     Geschoss.GeschossList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+                for (int i = 0; i < MovingBlock.MovingBlockList.Count; i++)//Draw Enemies
+                    MovingBlock.MovingBlockList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 foreach (var _renderable in otherRenderables)

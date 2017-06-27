@@ -20,11 +20,18 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Position { get; set; }
 
-
-        public MovingBlock(Vector3[] _positionMarks)
+        public static List<MovingBlock> MovingBlockList = new List<MovingBlock>() //statische Liste für alle erstellten Mocing Blocks, müsste gespeichert werden in der xml Datei
+            ;
+        public MovingBlock(List<Vector3> _positionMarks)
         {
-            positionMarks = _positionMarks;
+           
+            if (_positionMarks.Count > 1) {
+                positionMarks = new Vector3[_positionMarks.Count];
+            for(int i=0; i<_positionMarks.Count;i++)
+            positionMarks[i] = _positionMarks.ElementAt(i);
             Position = positionMarks[0];
+                MovingBlockList.Add(this);
+            }
         }
 
         public bool HasMultipleHitboxes => false;
@@ -70,10 +77,11 @@ namespace ReiseZumGrundDesSees
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) || !_flags.HasFlag(GameFlags.GameLoaded))
                 return null;
-            
-            Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
-            Vector3 _nextPosition = positionMarks[status];
 
+           Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
+           Vector3 _nextPosition = positionMarks[status];
+
+          
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
             Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;

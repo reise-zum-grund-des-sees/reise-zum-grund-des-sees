@@ -82,6 +82,14 @@ namespace ReiseZumGrundDesSees
             {
                 _eventList |= InputEventList.PlacePressurePlate;
             }
+            if (_keyboardState.IsKeyDown(Keys.D8))
+            {
+                _eventList |= InputEventList.PlaceMovingBlock;
+            }
+            if (_keyboardState.IsKeyDown(Keys.D9))
+            {
+                _eventList |= InputEventList.PlaceMovingBlockEnd;            
+            }
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
@@ -184,7 +192,7 @@ namespace ReiseZumGrundDesSees
     }
 
     [Flags]
-    public enum InputEventList
+    public enum InputEventList : Int64
     {
         None                = 0,
 
@@ -230,6 +238,8 @@ namespace ReiseZumGrundDesSees
         Record              = 1 << 29,
         Replay              = 1 << 30,
 
-        Rotate              = 1 << 31
+        Rotate              = 1 << 31,
+        PlaceMovingBlock    = 1 << 7,
+        PlaceMovingBlockEnd = 1 << 8
     }
 }

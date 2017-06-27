@@ -21,6 +21,7 @@ namespace ReiseZumGrundDesSees
         private List<Actions> recordingBuffer = new List<Actions>();
         private int replayingIndex = 0;
 
+        private List<Vector3> MovingBlockPosition = new List<Vector3>();
         public WorldEditor(Vector3 _position, ContentManager _content)
         {
             Position = _position;
@@ -50,7 +51,9 @@ namespace ReiseZumGrundDesSees
             PutPressurePlate = 1 << 14,
             RemoveBlock = 1 << 15,
 
-            Rotate = 1 << 16
+            Rotate = 1 << 16,
+            PutMovingBlock = 1 << 17,
+            PutMovingBlockEnd = 1 << 18
         }
 
         bool recordingReleased = true, replayingReleased = true;
@@ -219,6 +222,12 @@ namespace ReiseZumGrundDesSees
             else if (_inputEvents.HasFlag(InputEventList.PlacePressurePlate))
                 _actions |= Actions.PutPressurePlate;
 
+            else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlock))
+               _actions |= Actions.PutMovingBlock;
+
+            else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlockEnd))
+                _actions |= Actions.PutMovingBlockEnd;
+          
             return _actions;
         }
 
@@ -253,7 +262,7 @@ namespace ReiseZumGrundDesSees
             int x = (int)Position.X;
             int y = (int)Position.Y;
             int z = (int)Position.Z;
-
+          
             if (_actions.HasFlag(Actions.PutWall))
                 _state.World.Blocks[x, y, z] = WorldBlock.Wall;
 
@@ -289,6 +298,22 @@ namespace ReiseZumGrundDesSees
             else if (_actions.HasFlag(Actions.PutPressurePlate))
                 _state.World.Blocks[x, y, z] = WorldBlock.PressurePlateUp;
 
+         
+            else if (_actions.HasFlag(Actions.PutMovingBlock))
+            {
+                if(MovingBlockPosition.Count==0)
+                    MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
+                else if(MovingBlockPosition.ElementAt(MovingBlockPosition.Count-1)!= new Vector3(x + 0.5f, y + 0.5f, z + 0.5f))
+                MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
+              
+            }
+            else if (_actions.HasFlag(Actions.PutMovingBlockEnd))
+            {
+                new MovingBlock(MovingBlockPosition);
+                MovingBlock.MovingBlockList[MovingBlock.MovingBlockList.Count - 1].Initialize(graphicsDevice,content);
+                MovingBlockPosition.Clear();
+     
+            }
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
