@@ -43,8 +43,15 @@ namespace ReiseZumGrundDesSees
             foreach (var _obj in _config.Nodes["special_blocks"].Nodes)
             {
                 ISpecialBlock _spBlck = SpecialBlock.Instanciate(_obj.Value, _idMapper);
-                _idMapper.AddObject(_spBlck, int.Parse(_obj.Key.Select(c => ((char)(c + '0' - 'a')).ToString()).Aggregate((s1, s2) => s1 + s2)));
+                _idMapper.AddObject(_spBlck, _obj.Key.ToId());
                 AddSpecialBlock(_spBlck);
+            }
+
+            foreach (var _obj in _config.Nodes["objects"].Nodes)
+            {
+                IWorldObject _object = WorldObject.Instanciate(_obj.Value, _idMapper);
+                _idMapper.AddObject(_object, _obj.Key.ToId());
+                AddObject(_object);
             }
         }
 
@@ -121,6 +128,7 @@ namespace ReiseZumGrundDesSees
 
         public override ConfigFile.ConfigNode GetState(ObjectIDMapper _idMapper)
         {
+            ConfigFile.ConfigNode _specialBlocks = new ConfigFile.ConfigNode();
             ConfigFile.ConfigNode _objects = new ConfigFile.ConfigNode();
 
             foreach (var _specialBlock in specialBlocks)
@@ -128,12 +136,22 @@ namespace ReiseZumGrundDesSees
                 int _id = _idMapper.AddObject(_specialBlock.Value);
                 var _state = _specialBlock.Value.GetState(_idMapper);
                 _state.Items["type"] = _specialBlock.Value.GetType().ToString();
-                _objects.Nodes[new string(_id.ToString().Select(c => (char)(c + 'a' - '0')).ToArray())] =
+                _specialBlocks.Nodes[_id.IdAsString()] =
+                    _state;
+            }
+
+            foreach (var _object in objects)
+            {
+                int _id = _idMapper.AddObject(_object);
+                var _state = _object.GetState(_idMapper);
+                _state.Items["type"] = _object.GetType().ToString();
+                _objects.Nodes[_id.IdAsString()] =
                     _state;
             }
 
             ConfigFile.ConfigNode _base = base.GetState(_idMapper);
-            _base.Nodes["special_blocks"] = _objects;
+            _base.Nodes["special_blocks"] = _specialBlocks;
+            _base.Nodes["objects"] = _objects;
             return _base;
         }
     }

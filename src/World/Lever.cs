@@ -18,6 +18,8 @@ namespace ReiseZumGrundDesSees
         public double Rotation;
         public bool alive;
 
+        private Action OnPressed, OnReleased;
+
         public Vector3Int Position
         {
             get;
@@ -40,7 +42,12 @@ namespace ReiseZumGrundDesSees
 
         public Lever(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
             : this(Vector3Int.Parse(_config.Items["position"]))
-        { }
+        {
+            if (_config.Items.ContainsKey("on_pressed"))
+                OnPressed = ActionSyntaxParser.Parse(_config.Items["on_pressed"], this, _idMapper);
+            if (_config.Items.ContainsKey("on_released"))
+                OnReleased = ActionSyntaxParser.Parse(_config.Items["on_released"], this, _idMapper);
+        }
 
 
         public void press()
@@ -51,11 +58,13 @@ namespace ReiseZumGrundDesSees
                 {
                     Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_UNTEN);
                     is_pressed = true;
+                    OnPressed?.Invoke();
                 }
                 else
                 {
                     Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
                     is_pressed = false;
+                    OnReleased?.Invoke();
                 }
             }
         }

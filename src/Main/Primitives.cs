@@ -32,10 +32,10 @@ namespace ReiseZumGrundDesSees
         public static bool operator !=(Vector3Int x, Vector3Int y) => !(x.X == y.X & x.Y == y.Y & x.Z == y.Z);
 
         public override string ToString()
-            => $"{X}; {Y}; {Z}";
+            => $"{X}-{Y}-{Z}";
         public static Vector3Int Parse(string s)
         {
-            var _items = s.Split(';').Select(s2 => int.Parse(s2.Trim())).GetEnumerator();
+            var _items = s.Split(';', '-').Select(s2 => int.Parse(s2.Trim())).GetEnumerator();
             _items.MoveNext();
             int x = _items.Current;
             _items.MoveNext();
@@ -67,11 +67,11 @@ namespace ReiseZumGrundDesSees
         public static bool operator !=(Vector2Int x, Vector2Int y) => !(x.X == y.X & x.Y == y.Y);
 
         public override string ToString()
-            => $"{X}; {Y}";
+            => $"{X}-{Y}";
 
         public static Vector2Int Parse(string s)
         {
-            var _items = s.Split(';').Select(s2 => int.Parse(s2.Trim())).GetEnumerator();
+            var _items = s.Split(';', '-').Select(s2 => int.Parse(s2.Trim())).GetEnumerator();
             _items.MoveNext();
             int x = _items.Current;
             _items.MoveNext();

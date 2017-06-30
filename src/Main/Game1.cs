@@ -175,8 +175,8 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-            _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-            _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+            //_updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            //_updateList[_updateList.Count - 1]?.Invoke(ref GameState);
   
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
@@ -259,8 +259,6 @@ namespace ReiseZumGrundDesSees
                 foreach (var _renderable in otherRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-                testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-
                 IGamer.Render(spriteBatch);
             }
 
@@ -283,6 +281,8 @@ namespace ReiseZumGrundDesSees
             worldRenderables.Add(_world);
             foreach (var _renderable in worldRenderables)
                 initializeList.Add(_renderable);
+
+            _world.AddObject(testBlock);
 
             GameState = new GameState(_world, new Player(new Vector3(_world.SpawnPos.X, _world.SpawnPos.Y, _world.SpawnPos.Z)), new Camera());
             initializeList.Add(GameState.Player);

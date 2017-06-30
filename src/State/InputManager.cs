@@ -184,7 +184,7 @@ namespace ReiseZumGrundDesSees
     }
 
     [Flags]
-    public enum InputEventList
+    public enum InputEventList : ulong
     {
         None                = 0,
 
@@ -230,6 +230,6 @@ namespace ReiseZumGrundDesSees
         Record              = 1 << 29,
         Replay              = 1 << 30,
 
-        Rotate              = 1 << 31
+        Rotate              = 1UL << 31
     }
 }

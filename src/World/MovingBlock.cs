@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    class MovingBlock : IWorldObject, IMovingObject
+    class MovingBlock : IWorldObject, IMovingObject, IStartStopable
     {
         private Vector3[] positionMarks;
         private int status;
@@ -27,6 +27,17 @@ namespace ReiseZumGrundDesSees
             Position = positionMarks[0];
         }
 
+        public MovingBlock(ConfigFile.ConfigNode _node, ObjectIDMapper _idMapper)
+        {
+            List<Vector3> _positionMarks = new List<Vector3>();
+            int _count = _node.Nodes.Count;
+            for (int i = 0; i < _count; i++)
+                _positionMarks.Add(_node.Nodes[i.IdAsString()].Items["position"].ToVector3());
+
+            positionMarks = _positionMarks.ToArray();
+            Position = positionMarks[0];
+        }
+
         public bool HasMultipleHitboxes => false;
         public Hitbox Hitbox => new Hitbox(Position.X - 0.5f, Position.Y - 0.5f, Position.Z - 0.5f, 1f, 1f, 1f);
         public Hitbox[] Hitboxes => throw new NotImplementedException();
@@ -34,9 +45,14 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Velocity { get; private set; }
 
-        public IReadOnlyDictionary<string, string[]> GetState()
+        public void Start()
         {
-            return null;
+            moving = true;
+        }
+
+        public void Stop()
+        {
+            moving = false;
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
@@ -59,11 +75,6 @@ namespace ReiseZumGrundDesSees
 
                 mesh.Draw();
             }
-        }
-
-        public void SetState(IReadOnlyDictionary<string, string[]> _state)
-        {
-
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -128,6 +139,28 @@ namespace ReiseZumGrundDesSees
                 }
                 else Velocity = Vector3.Zero;
             };
+        }
+
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["moving"] = moving.ToString().ToLower();
+
+            int _pointCount = 0;
+            foreach (Vector3 _point in positionMarks)
+            {
+                ConfigFile.ConfigNode _curNode = new ConfigFile.ConfigNode();
+
+                _curNode.Items["position"] = _point.ToNiceString();
+
+                _node.Nodes[_pointCount.IdAsString()]
+                    = _curNode;
+
+                _pointCount++;
+            }
+
+            return _node;
         }
     }
 }
