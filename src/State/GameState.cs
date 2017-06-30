@@ -33,12 +33,10 @@ namespace ReiseZumGrundDesSees
 
          
             //Enemy
-            ConfigFile.ConfigNode _node2 = new ConfigFile.ConfigNode();
-            _node2.Items["count"] = Enemy.EnemyList.Count.ToString();
+            ConfigFile.ConfigNode _enemyNode = new ConfigFile.ConfigNode();
 
-            f.Nodes["EnemyCount"] = _node2;
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
-                f.Nodes["Enemy" + i] = Enemy.EnemyList[i].GetState();
+                f.Nodes[i.IdAsString()] = Enemy.EnemyList[i].GetState();
 
             f.Write(System.IO.Path.Combine(_baseDir, "state.conf"));
             World.SaveRegions(_baseDir);
@@ -55,10 +53,12 @@ namespace ReiseZumGrundDesSees
             c.CenterOn(p);
             
             Enemy.EnemyList.Clear();
-            for (int i = 0; i < Int32.Parse(_config.Nodes["EnemyCount"].Items["count"]); i++)
-            {
-                new Enemy(_config.Nodes["Enemy" + i]);
-            }
+
+            if (_config.Nodes.ContainsKey("enemies"))
+                foreach (var _node in _config.Nodes["enemies"].Nodes)
+                {
+                    new Enemy(_node.Value);
+                }
 
 
             return new GameState(w, p, c);
