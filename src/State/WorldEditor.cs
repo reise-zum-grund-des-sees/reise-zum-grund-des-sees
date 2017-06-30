@@ -285,18 +285,20 @@ namespace ReiseZumGrundDesSees
             else if (_actions.HasFlag(Actions.RemoveBlock)) { 
                 _state.World.Blocks[x, y, z] = WorldBlock.None;
 
-                for(int i = 0;i < MovingBlock.MovingBlockList.Count;i++) {
-               if(Vector3.Distance(MovingBlock.MovingBlockList[i].Position,new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1) {
-                        MovingBlock.MovingBlockList.RemoveAt(i);
+                
+                for(int i = 0;i < _state.World.Objects.Count;i++) {
+               if(Vector3.Distance(_state.World.Objects[i].Position,new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1) {
+                        _state.World.RemoveObject(_state.World.Objects[i]);
                         break;
                     }
+                  
                 }
-
+                
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 {
                     if (Vector3.Distance(Enemy.EnemyList[i].Position, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1)
                     {
-                        MovingBlock.MovingBlockList.RemoveAt(i);
+                        Enemy.EnemyList.RemoveAt(i);
                         break;
                     }
                 }
@@ -334,6 +336,7 @@ namespace ReiseZumGrundDesSees
          
             else if (_actions.HasFlag(Actions.PutMovingBlock))
             {
+                Console.WriteLine(MovingBlockPosition.Count);
                 if(MovingBlockPosition.Count==0)
                     MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
                 else if(MovingBlockPosition.ElementAt(MovingBlockPosition.Count-1)!= new Vector3(x + 0.5f, y + 0.5f, z + 0.5f))
@@ -367,8 +370,8 @@ namespace ReiseZumGrundDesSees
             }
             else if (_actions.HasFlag(Actions.PutMovingBlockEnd))
             {
-                new MovingBlock(MovingBlockPosition);
-                MovingBlock.MovingBlockList[MovingBlock.MovingBlockList.Count - 1].Initialize(graphicsDevice,content);
+                if(MovingBlockPosition.Count!=0)
+                _state.World.AddObject(new MovingBlock(MovingBlockPosition));
                 MovingBlockPosition.Clear();
      
             }

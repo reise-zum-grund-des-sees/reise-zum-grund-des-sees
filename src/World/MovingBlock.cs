@@ -22,12 +22,12 @@ namespace ReiseZumGrundDesSees
 
         public MovingBlock(List<Vector3> _positionMarks)
         {
-            positionMarks = _positionMarks;
-            if (_positionMarks.Count > 1) {
+         
                 positionMarks = new Vector3[_positionMarks.Count];
-            for(int i=0; i<_positionMarks.Count;i++)
-            positionMarks[i] = _positionMarks.ElementAt(i);
-            Position = positionMarks[0];
+                for (int i = 0; i < _positionMarks.Count; i++)
+                    positionMarks[i] = _positionMarks.ElementAt(i);
+                Position = positionMarks[0];
+        
         }
 
         public MovingBlock(ConfigFile.ConfigNode _node, ObjectIDMapper _idMapper)

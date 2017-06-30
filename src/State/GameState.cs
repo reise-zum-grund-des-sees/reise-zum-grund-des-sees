@@ -31,14 +31,7 @@ namespace ReiseZumGrundDesSees
             f.Nodes["world"] = World.GetState(_idMapper);
             f.Nodes["player"] = Player.GetState(_idMapper);
 
-            //Moving Block
-            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
-            _node.Items["count"] = MovingBlock.MovingBlockList.Count.ToString();
-
-            f.Nodes["movingBlockCount"] = _node;
-            for (int i=0;i<MovingBlock.MovingBlockList.Count;i++)
-            f.Nodes["movingBlock"+i] = MovingBlock.MovingBlockList[i].GetState();
-
+         
             //Enemy
             ConfigFile.ConfigNode _node2 = new ConfigFile.ConfigNode();
             _node2.Items["count"] = Enemy.EnemyList.Count.ToString();
@@ -60,11 +53,7 @@ namespace ReiseZumGrundDesSees
             Player p = new Player(_config.Nodes["player"]);
             Camera c = new Camera();
             c.CenterOn(p);
-            MovingBlock.MovingBlockList.Clear();
-            for (int i = 0; i < Int32.Parse(_config.Nodes["movingBlockCount"].Items["count"]); i++)
-            {
-                new MovingBlock(_config.Nodes["movingBlock" + i]);
-            }
+            
             Enemy.EnemyList.Clear();
             for (int i = 0; i < Int32.Parse(_config.Nodes["EnemyCount"].Items["count"]); i++)
             {
