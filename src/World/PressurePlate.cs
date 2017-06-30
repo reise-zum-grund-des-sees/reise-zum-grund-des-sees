@@ -47,9 +47,12 @@ namespace ReiseZumGrundDesSees
             Position = _position;
             if (_type == 0)
             {
-                Type = WorldBlock.PressurePlateUp;
+                Type = WorldBlock.PressurePlateUp;         
             }
-            else Type = WorldBlock.PressurePlateDown;
+            else
+            {
+                Type = WorldBlock.PressurePlateDown;
+            }
         }
 
         public PressurePlate(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
@@ -59,7 +62,10 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+            if (Type == WorldBlock.PressurePlateUp)
+                Model = _contentManager.Load<Model>(Content.MODEL_PP_OBEN);
+            if (Type == WorldBlock.PressurePlateDown)
+                Model = _contentManager.Load<Model>(Content.MODEL_PP_UNTEN);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
@@ -69,10 +75,11 @@ namespace ReiseZumGrundDesSees
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    if (Type == WorldBlock.PressurePlateUp)
-                        effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateScale(1, 0.5f, 1) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
-                    else
-                        effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateScale(1, 0.1f, 1) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.05f, 0.5f)));
+                 //   if (Type == WorldBlock.PressurePlateUp)
+                        effect.World = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
+                  //  else
+                    //    effect.World = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
+                    //  effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateScale(1, 0.1f, 1) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.05f, 0.5f)));
 
                     effect.View = _viewMatrix;
 
@@ -93,13 +100,13 @@ namespace ReiseZumGrundDesSees
                 {
                     _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateDown;
                     Type = WorldBlock.PressurePlateDown;
-                    Model = ContentManager.Load<Model>(Content.MODEL_BLOCK_SCHWER);
+                    Model = ContentManager.Load<Model>(Content.MODEL_PP_UNTEN);
                 }
                 if (ChangeRequest == 2 && Type == WorldBlock.PressurePlateDown)
                 {
                     _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateUp;
                     Type = WorldBlock.PressurePlateUp;
-                    Model = ContentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+                    Model = ContentManager.Load<Model>(Content.MODEL_PP_OBEN);
                 }
 
             };

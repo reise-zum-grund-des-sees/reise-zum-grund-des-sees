@@ -20,10 +20,13 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Position { get; set; }
 
-
-        public MovingBlock(Vector3[] _positionMarks)
+        public MovingBlock(List<Vector3> _positionMarks)
         {
             positionMarks = _positionMarks;
+            if (_positionMarks.Count > 1) {
+                positionMarks = new Vector3[_positionMarks.Count];
+            for(int i=0; i<_positionMarks.Count;i++)
+            positionMarks[i] = _positionMarks.ElementAt(i);
             Position = positionMarks[0];
         }
 

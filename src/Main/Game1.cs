@@ -63,7 +63,7 @@ namespace ReiseZumGrundDesSees
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             //graphics.IsFullScreen = true;
-            testBlock = new MovingBlock(new Vector3[] {
+            testBlock = new MovingBlock(new List<Vector3>{
                 new Vector3(24, 34, 24),
                 new Vector3(24, 35, 24),
                 new Vector3(27, 34, 25),
@@ -99,15 +99,18 @@ namespace ReiseZumGrundDesSees
             otherRenderables.Add(editor);
 
             this.IsMouseVisible = true;
+
             //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
             /*
-            Enemy a = new Enemy(Content, new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
+            Enemy a = new Enemy(new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
             Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
             */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
-            initializeList.Add(testBlock);
+            //initializeList.Add(testBlock);
 
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                initializeList.Add(Enemy.EnemyList[i]);
             base.Initialize();
         }
 
@@ -175,8 +178,8 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-            //_updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-            //_updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+           // _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+           // _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
   
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
@@ -185,7 +188,7 @@ namespace ReiseZumGrundDesSees
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Enemies
+                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Geschosse
                 {
                     _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
@@ -259,6 +262,8 @@ namespace ReiseZumGrundDesSees
                 foreach (var _renderable in otherRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
+              //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+
                 IGamer.Render(spriteBatch);
             }
 
@@ -282,8 +287,6 @@ namespace ReiseZumGrundDesSees
             foreach (var _renderable in worldRenderables)
                 initializeList.Add(_renderable);
 
-            _world.AddObject(testBlock);
-
             GameState = new GameState(_world, new Player(new Vector3(_world.SpawnPos.X, _world.SpawnPos.Y, _world.SpawnPos.Z)), new Camera());
             initializeList.Add(GameState.Player);
 
@@ -305,11 +308,14 @@ namespace ReiseZumGrundDesSees
             worldRenderables.Clear();
             worldRenderables.Add(GameState.World as IRenderable);
 
+            initializeList.Clear();
             foreach (var _renderable in worldRenderables)
                 initializeList.Add(_renderable);
 
             initializeList.Add(GameState.Player);
 
+            for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                initializeList.Add(Enemy.EnemyList[i]);
             GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
             GameFlags &= ~GameFlags.Menu;
         }

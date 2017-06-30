@@ -21,6 +21,7 @@ namespace ReiseZumGrundDesSees
         private List<Actions> recordingBuffer = new List<Actions>();
         private int replayingIndex = 0;
 
+        private List<Vector3> MovingBlockPosition = new List<Vector3>();
         public WorldEditor(Vector3 _position, ContentManager _content)
         {
             Position = _position;
@@ -50,7 +51,14 @@ namespace ReiseZumGrundDesSees
             PutPressurePlate = 1 << 14,
             RemoveBlock = 1 << 15,
 
-            Rotate = 1 << 16
+            Rotate = 1 << 16,
+            PutMovingBlock = 1 << 17,
+            PutMovingBlockEnd = 1 << 18,
+            PutEnemy1 = 1 << 20,
+            PutEnemy2 = 1 << 21,
+            PutEnemy3 = 1 << 22,
+            PutEnemy4 = 1 << 23,
+            PutEnemy5 = 1 << 24
         }
 
         bool recordingReleased = true, replayingReleased = true;
@@ -67,7 +75,7 @@ namespace ReiseZumGrundDesSees
             r += _passedTime;
             u += _passedTime;
             d += _passedTime;
-
+            e += _passedTime;
             return (ref GameState _state) =>
             {
                 if (replaying)
@@ -130,7 +138,7 @@ namespace ReiseZumGrundDesSees
             };
         }
 
-        double f, b, l, r, u, d;
+        double f, b, l, r, u, d,e;
         bool rotateReleased = false;
         const double movementSpeed = 200;
         private Actions GetActions(InputEventList _inputEvents, GameState.View _stateView, double _passedTime)
@@ -195,6 +203,16 @@ namespace ReiseZumGrundDesSees
             else if (_inputEvents.HasFlag(InputEventList.MouseRight))
                 _actions |= Actions.RemoveBlock;
 
+            else if (_inputEvents.HasFlag(InputEventList.PlaceEnemy)) {
+                if ( e > 1000) { 
+                if (_inputEvents.HasFlag(InputEventList.PlaceWater1)) { _actions |= Actions.PutEnemy1; e = 0; }
+                if (_inputEvents.HasFlag(InputEventList.PlaceWater2)) { _actions |= Actions.PutEnemy2; e = 0; }
+                if (_inputEvents.HasFlag(InputEventList.PlaceWater3)) { _actions |= Actions.PutEnemy3; e = 0; }
+                if (_inputEvents.HasFlag(InputEventList.PlaceWater4)) { _actions |= Actions.PutEnemy4; e = 0; }
+                if (_inputEvents.HasFlag(InputEventList.PlaceLever))  { _actions |= Actions.PutEnemy5; e = 0; }
+                }
+            }
+           
             else if (_inputEvents.HasFlag(InputEventList.PlaceWater1))
                 _actions |= Actions.PutWater1;
 
@@ -218,6 +236,13 @@ namespace ReiseZumGrundDesSees
 
             else if (_inputEvents.HasFlag(InputEventList.PlacePressurePlate))
                 _actions |= Actions.PutPressurePlate;
+
+            else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlock))
+               _actions |= Actions.PutMovingBlock;
+
+            else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlockEnd))
+                _actions |= Actions.PutMovingBlockEnd;
+        
 
             return _actions;
         }
@@ -253,13 +278,30 @@ namespace ReiseZumGrundDesSees
             int x = (int)Position.X;
             int y = (int)Position.Y;
             int z = (int)Position.Z;
-
+          
             if (_actions.HasFlag(Actions.PutWall))
                 _state.World.Blocks[x, y, z] = WorldBlock.Wall;
 
-            else if (_actions.HasFlag(Actions.RemoveBlock))
+            else if (_actions.HasFlag(Actions.RemoveBlock)) { 
                 _state.World.Blocks[x, y, z] = WorldBlock.None;
 
+                for(int i = 0;i < MovingBlock.MovingBlockList.Count;i++) {
+               if(Vector3.Distance(MovingBlock.MovingBlockList[i].Position,new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1) {
+                        MovingBlock.MovingBlockList.RemoveAt(i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                {
+                    if (Vector3.Distance(Enemy.EnemyList[i].Position, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1)
+                    {
+                        MovingBlock.MovingBlockList.RemoveAt(i);
+                        break;
+                    }
+                }
+
+            }
             else if (_actions.HasFlag(Actions.PutWater1))
                 _state.World.Blocks[x, y, z] = WorldBlock.Water1;
 
@@ -289,6 +331,47 @@ namespace ReiseZumGrundDesSees
             else if (_actions.HasFlag(Actions.PutPressurePlate))
                 _state.World.Blocks[x, y, z] = WorldBlock.PressurePlateUp;
 
+         
+            else if (_actions.HasFlag(Actions.PutMovingBlock))
+            {
+                if(MovingBlockPosition.Count==0)
+                    MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
+                else if(MovingBlockPosition.ElementAt(MovingBlockPosition.Count-1)!= new Vector3(x + 0.5f, y + 0.5f, z + 0.5f))
+                MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
+              
+            }
+            else if (_actions.HasFlag(Actions.PutEnemy1))
+            {
+                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Moving);
+                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+            }
+            else if (_actions.HasFlag(Actions.PutEnemy2))
+            {
+                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Climbing);
+                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+            }
+            else if (_actions.HasFlag(Actions.PutEnemy3))
+            {
+                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Jumping);
+                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+            }
+            else if (_actions.HasFlag(Actions.PutEnemy4))
+            {
+                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Shooting);
+                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+            }
+            else if (_actions.HasFlag(Actions.PutEnemy5))
+            {
+                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.MandS);
+                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+            }
+            else if (_actions.HasFlag(Actions.PutMovingBlockEnd))
+            {
+                new MovingBlock(MovingBlockPosition);
+                MovingBlock.MovingBlockList[MovingBlock.MovingBlockList.Count - 1].Initialize(graphicsDevice,content);
+                MovingBlockPosition.Clear();
+     
+            }
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)

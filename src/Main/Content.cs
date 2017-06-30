@@ -19,6 +19,8 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_SCHALTER_OBEN = "models/schalter_oben";
         public const string MODEL_SCHALTER_UNTEN = "models/schalter_unten";
         public const string MODEL_STACHELN = "models/stacheln";
+        public const string MODEL_PP_OBEN = "models/Knopf_ungedrückt";
+        public const string MODEL_PP_UNTEN = "models/Knopf_gedrückt";
 
         public const string EFFECT_PLAYER = "effects/player";
 
