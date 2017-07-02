@@ -138,7 +138,7 @@ namespace ReiseZumGrundDesSees
             };
         }
 
-        double f, b, l, r, u, d,e;
+        double f, b, l, r, u, d, e;
         bool rotateReleased = false;
         const double movementSpeed = 200;
         private Actions GetActions(InputEventList _inputEvents, GameState.View _stateView, double _passedTime)
@@ -203,16 +203,18 @@ namespace ReiseZumGrundDesSees
             else if (_inputEvents.HasFlag(InputEventList.MouseRight))
                 _actions |= Actions.RemoveBlock;
 
-            else if (_inputEvents.HasFlag(InputEventList.PlaceEnemy)) {
-                if ( e > 1000) { 
-                if (_inputEvents.HasFlag(InputEventList.PlaceWater1)) { _actions |= Actions.PutEnemy1; e = 0; }
-                if (_inputEvents.HasFlag(InputEventList.PlaceWater2)) { _actions |= Actions.PutEnemy2; e = 0; }
-                if (_inputEvents.HasFlag(InputEventList.PlaceWater3)) { _actions |= Actions.PutEnemy3; e = 0; }
-                if (_inputEvents.HasFlag(InputEventList.PlaceWater4)) { _actions |= Actions.PutEnemy4; e = 0; }
-                if (_inputEvents.HasFlag(InputEventList.PlaceLever))  { _actions |= Actions.PutEnemy5; e = 0; }
+            else if (_inputEvents.HasFlag(InputEventList.PlaceEnemy))
+            {
+                if (e > 1000)
+                {
+                    if (_inputEvents.HasFlag(InputEventList.PlaceWater1)) { _actions |= Actions.PutEnemy1; e = 0; }
+                    if (_inputEvents.HasFlag(InputEventList.PlaceWater2)) { _actions |= Actions.PutEnemy2; e = 0; }
+                    if (_inputEvents.HasFlag(InputEventList.PlaceWater3)) { _actions |= Actions.PutEnemy3; e = 0; }
+                    if (_inputEvents.HasFlag(InputEventList.PlaceWater4)) { _actions |= Actions.PutEnemy4; e = 0; }
+                    if (_inputEvents.HasFlag(InputEventList.PlaceLever)) { _actions |= Actions.PutEnemy5; e = 0; }
                 }
             }
-           
+
             else if (_inputEvents.HasFlag(InputEventList.PlaceWater1))
                 _actions |= Actions.PutWater1;
 
@@ -238,11 +240,11 @@ namespace ReiseZumGrundDesSees
                 _actions |= Actions.PutPressurePlate;
 
             else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlock))
-               _actions |= Actions.PutMovingBlock;
+                _actions |= Actions.PutMovingBlock;
 
             else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlockEnd))
                 _actions |= Actions.PutMovingBlockEnd;
-        
+
 
             return _actions;
         }
@@ -263,37 +265,44 @@ namespace ReiseZumGrundDesSees
             if (_actions.HasFlag(Actions.MoveDown))
                 _difference += new Vector3(0, -1, 0);
 
+            float _scaling = 1f;
+            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+                _scaling = 10f;
+
             float _direction = (float)Math.Round(-_state.Camera.Angle * 4 / MathHelper.TwoPi) * MathHelper.TwoPi / 4f;
             _difference = Vector3.Transform(_difference, Quaternion.CreateFromAxisAngle(Vector3.Up, _direction));
 
-            if (_difference.X >= 1 / Math.Sqrt(2)) Position += Vector3.Right;
-            else if (_difference.X <= -1 / Math.Sqrt(2)) Position += Vector3.Left;
+            if (_difference.X >= 1 / Math.Sqrt(2)) Position += Vector3.Right * _scaling;
+            else if (_difference.X <= -1 / Math.Sqrt(2)) Position += Vector3.Left * _scaling;
 
-            if (_difference.Y == 1) Position += Vector3.Up;
-            else if (_difference.Y == -1) Position += Vector3.Down;
+            if (_difference.Y == 1) Position += Vector3.Up * _scaling;
+            else if (_difference.Y == -1) Position += Vector3.Down * _scaling;
 
-            if (_difference.Z >= 1 / Math.Sqrt(2)) Position += Vector3.Backward;
-            else if (_difference.Z <= -1 / Math.Sqrt(2)) Position += Vector3.Forward;
+            if (_difference.Z >= 1 / Math.Sqrt(2)) Position += Vector3.Backward * _scaling;
+            else if (_difference.Z <= -1 / Math.Sqrt(2)) Position += Vector3.Forward * _scaling;
 
             int x = (int)Position.X;
             int y = (int)Position.Y;
             int z = (int)Position.Z;
-          
+
             if (_actions.HasFlag(Actions.PutWall))
                 _state.World.Blocks[x, y, z] = WorldBlock.Wall;
 
-            else if (_actions.HasFlag(Actions.RemoveBlock)) { 
+            else if (_actions.HasFlag(Actions.RemoveBlock))
+            {
                 _state.World.Blocks[x, y, z] = WorldBlock.None;
 
-                
-                for(int i = 0;i < _state.World.Objects.Count;i++) {
-               if(Vector3.Distance(_state.World.Objects[i].Position,new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1) {
+
+                for (int i = 0; i < _state.World.Objects.Count; i++)
+                {
+                    if (Vector3.Distance(_state.World.Objects[i].Position, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1)
+                    {
                         _state.World.RemoveObject(_state.World.Objects[i]);
                         break;
                     }
-                  
+
                 }
-                
+
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 {
                     if (Vector3.Distance(Enemy.EnemyList[i].Position, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1)
@@ -333,15 +342,15 @@ namespace ReiseZumGrundDesSees
             else if (_actions.HasFlag(Actions.PutPressurePlate))
                 _state.World.Blocks[x, y, z] = WorldBlock.PressurePlateUp;
 
-         
+
             else if (_actions.HasFlag(Actions.PutMovingBlock))
             {
                 Console.WriteLine(MovingBlockPosition.Count);
-                if(MovingBlockPosition.Count==0)
+                if (MovingBlockPosition.Count == 0)
                     MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
-                else if(MovingBlockPosition.ElementAt(MovingBlockPosition.Count-1)!= new Vector3(x + 0.5f, y + 0.5f, z + 0.5f))
-                MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
-              
+                else if (MovingBlockPosition.ElementAt(MovingBlockPosition.Count - 1) != new Vector3(x + 0.5f, y + 0.5f, z + 0.5f))
+                    MovingBlockPosition.Add(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
+
             }
             else if (_actions.HasFlag(Actions.PutEnemy1))
             {
@@ -370,10 +379,10 @@ namespace ReiseZumGrundDesSees
             }
             else if (_actions.HasFlag(Actions.PutMovingBlockEnd))
             {
-                if(MovingBlockPosition.Count!=0)
-                _state.World.AddObject(new MovingBlock(MovingBlockPosition));
+                if (MovingBlockPosition.Count != 0)
+                    _state.World.AddObject(new MovingBlock(MovingBlockPosition));
                 MovingBlockPosition.Clear();
-     
+
             }
         }
 

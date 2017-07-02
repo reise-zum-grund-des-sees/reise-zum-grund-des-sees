@@ -154,5 +154,27 @@ namespace ReiseZumGrundDesSees
             _base.Nodes["objects"] = _objects;
             return _base;
         }
+
+        public World ResizeRegions(Rectangle _rect)
+        {
+            World _resizedWorld = new World(
+                RegionSize.X,
+                RegionSize.Y,
+                RegionSize.Z,
+                _rect.Width,
+                _rect.Height,
+                SpawnPos);
+
+            for (int x = 0; x < _resizedWorld.RegionSize.X * _resizedWorld.RegionsCount.X; x++)
+                for (int y = 0; y < _resizedWorld.RegionSize.Y; y++)
+                    for (int z = 0; z < _resizedWorld.RegionSize.Z * _resizedWorld.RegionsCount.Y; z++)
+                    {
+                        int _oldX = x + _rect.X * RegionSize.X;
+                        int _oldZ = z + _rect.Y * RegionSize.Z;
+                        _resizedWorld.Blocks[x, y, z] = this.Blocks[_oldX, y, _oldZ];
+                    }
+
+            return _resizedWorld;
+        }
     }
 }

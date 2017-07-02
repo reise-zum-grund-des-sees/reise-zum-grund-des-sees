@@ -296,7 +296,7 @@ namespace ReiseZumGrundDesSees
 
         private RenderableWorld CreateWorld()
         {
-            RenderableWorld w = new RenderableWorld(16, 64, 16, 16, 16, new Vector3(24, 32, 24), Content);
+            RenderableWorld w = new RenderableWorld(16, 128, 16, 128, 128, new Vector3(24, 32, 24), Content);
             w.GenerateTestWorld();
             return w;
         }

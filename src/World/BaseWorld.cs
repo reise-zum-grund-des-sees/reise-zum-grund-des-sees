@@ -69,6 +69,13 @@ namespace ReiseZumGrundDesSees
             SpawnPos.Z = _spawnPos.Z;
 
             Regions = new WorldRegion[RegionsCount.X, RegionsCount.Y];
+
+            for (int x = 0; x < RegionsCount.X; x++)
+                for (int z = 0; z < RegionsCount.Y; z++)
+                {
+                    Regions[x, z] = new WorldRegion();
+                    Regions[x, z].Blocks = new WorldBlock[RegionSize.X, RegionSize.Y, RegionSize.Z];
+                }
         }
 
         private Task<IEnumerable<KeyValuePair<Vector3Int, WorldBlock>>> blockWorldUpdateTask;
@@ -109,20 +116,11 @@ namespace ReiseZumGrundDesSees
         {
             Random rnd = new Random();
 
-            for (int x = 0; x < RegionsCount.X; x++)
-                for (int z = 0; z < RegionsCount.Y; z++)
-                {
-                    Regions[x, z] = new WorldRegion();
-                    Regions[x, z].Blocks = new WorldBlock[RegionSize.X, RegionSize.Y, RegionSize.Z];
-                }
-
             for (int x = 0; x < RegionSize.X * RegionsCount.X; x++)
                 for (int y = 0; y < RegionSize.Y; y++)
                     for (int z = 0; z < RegionSize.Z * RegionsCount.Y; z++)
-                        if (y == 31)
+                        if (y == 31 && x % RegionSize.X != 0 && z % RegionSize.Z != 0)
                             Blocks[x, y, z] = WorldBlock.Wall;
-                        else if (y == 32)
-                            Blocks[x, y, z] = (rnd.Next(0, 20) == 1) ? WorldBlock.Wall : WorldBlock.None;
         }
 
         public virtual ConfigFile.ConfigNode GetState(ObjectIDMapper _idMapper)

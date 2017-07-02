@@ -19,6 +19,10 @@ namespace ReiseZumGrundDesSees
         [STAThread]
         static void Main(string[] _args)
         {
+             //var gs = GameState.Load(@"E:\real_map2\");
+             //World _anotherWorld = gs.World.ResizeRegions(new Rectangle(16, 16, 32, 32));
+             //_anotherWorld.SaveRegions(@"E:\real_map3\");
+
             using (var game = new Game1())
                 game.Run();
         }
