@@ -194,7 +194,7 @@ namespace ReiseZumGrundDesSees
                     _verbleibenerCD -= _passedTime;
                     if (_verbleibenerCD <= 0)
                     {
-                        Zustand = (int)State.Bereit;
+                        Zustand = (int)State.Delete;
                         _verbleibenerCD = 5;
                     }
 
