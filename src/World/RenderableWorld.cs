@@ -48,6 +48,7 @@ namespace ReiseZumGrundDesSees
                 int b = z / RegionSize.Z;
                 for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
                     for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                        if(VertexBuffers[a,b]!=null | Vertices[a,b] !=null)
                         invalidatedChunks.Add(new Point(a, b));
             };
         }

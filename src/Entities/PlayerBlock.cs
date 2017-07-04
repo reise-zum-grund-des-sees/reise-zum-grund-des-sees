@@ -72,12 +72,12 @@ namespace ReiseZumGrundDesSees
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             //Livetime
-
+            /*
             if (AktuelleDauer < MaximialDauer)
                 LifetimePercentage = (float)(AktuelleDauer) / (float)(MaximialDauer);
             else
                 LifetimePercentage = 1;
-
+                */
             //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
             if (Zustand == (int)State.Delete)
             {
@@ -186,19 +186,10 @@ namespace ReiseZumGrundDesSees
 
             }
 
-            else if (MaximialDauer < AktuelleDauer && Zustand == (int)State.Gesetzt)
-            {
-
-                Zustand = (int)State.CD;
-
-
-
-            }
-            else
-            {
+          
                 //Objekt ist Tot
 
-                if (Zustand == (int)State.CD && Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
+                if (Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
                 {
                     _verbleibenerCD -= _passedTime;
                     if (_verbleibenerCD <= 0)
@@ -208,7 +199,7 @@ namespace ReiseZumGrundDesSees
                     }
 
                 }
-            }
+           
             return (ref GameState _state) =>
             {
                 if (!wasAddedToCollisionManager)
