@@ -192,7 +192,7 @@ namespace ReiseZumGrundDesSees
                 if (Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
                 {
                     _verbleibenerCD -= _passedTime;
-                Console.WriteLine(_verbleibenerCD);
+           
                     if (_verbleibenerCD <= 0)
                     {
                         Zustand = (int)State.Bereit;

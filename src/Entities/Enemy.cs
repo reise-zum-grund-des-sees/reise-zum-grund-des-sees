@@ -51,7 +51,7 @@ namespace ReiseZumGrundDesSees
          
             Position = _position;        
             Gegnerart = _typ;      
-            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
+            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 0.9f, 1f - 0.5f,
                 (_block) => true,
                 (_obj) => !(_obj is Geschoss));
             HitPlayer = false;
@@ -76,7 +76,7 @@ namespace ReiseZumGrundDesSees
 
             _node.Items["EnemyPosition"] = Position.ToNiceString();
             _node.Items["EnemyTyp"] = Gegnerart.ToString();
-            Console.WriteLine(Gegnerart.ToString());
+          
             return _node;
         }
 
@@ -182,7 +182,7 @@ namespace ReiseZumGrundDesSees
                 if (Geschosstimer == 0 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange
                 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
                 {
-                    new Geschoss(ContentManager, Position, EnemytoPlayer);
+                    new Geschoss(ContentManager, new Vector3(Position.X,Position.Y +0.25f,Position.Z), EnemytoPlayer);
                     soundEffects[0].Play();
                 }
                 Geschosstimer += _passedTime;
