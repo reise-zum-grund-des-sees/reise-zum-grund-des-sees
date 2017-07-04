@@ -36,7 +36,9 @@ namespace ReiseZumGrundDesSees
             ConfigFile.ConfigNode _enemyNode = new ConfigFile.ConfigNode();
 
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
-                f.Nodes[i.IdAsString()] = Enemy.EnemyList[i].GetState();
+                _enemyNode.Nodes[i.IdAsString()] = Enemy.EnemyList[i].GetState();
+            if(Enemy.EnemyList.Count!=0)
+            f.Nodes["enemies"] = _enemyNode;
 
             f.Write(System.IO.Path.Combine(_baseDir, "state.conf"));
             World.SaveRegions(_baseDir);
