@@ -59,7 +59,7 @@ namespace ReiseZumGrundDesSees
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
-            /*
+           
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
@@ -69,7 +69,7 @@ namespace ReiseZumGrundDesSees
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
-            */
+          
         }
 
         public Player(ConfigFile.ConfigNode _playerNode) :
