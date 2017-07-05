@@ -39,6 +39,7 @@ namespace ReiseZumGrundDesSees
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public IList<IPlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
+        GraphicsDevice GraphicDevice;
         float _speedY = 0;
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
@@ -58,6 +59,7 @@ namespace ReiseZumGrundDesSees
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
+            /*
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
@@ -67,6 +69,7 @@ namespace ReiseZumGrundDesSees
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
+            */
         }
 
         public Player(ConfigFile.ConfigNode _playerNode) :
@@ -269,6 +272,26 @@ namespace ReiseZumGrundDesSees
                 }
             }
 
+            //Aufsammeln von PlayerBlöcken
+            for (int i = 0; i < Entities.GetPlayerBlock.GetPlayerBlockList.Count; i++)
+            {
+               
+                if (Vector3.Distance(Position, new Vector3(Entities.GetPlayerBlock.GetPlayerBlockList[i].Position.X + 0.5f,
+                    Entities.GetPlayerBlock.GetPlayerBlockList[i].Position.Y + 0.25f, Entities.GetPlayerBlock.GetPlayerBlockList[i].Position.Z + 0.5f)) < 1f)
+                {
+                    
+                    if (Entities.GetPlayerBlock.GetPlayerBlockList[i].Art==0)
+                        Blöcke.Add(new PlayerBlock(this, 0));
+                    if (Entities.GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
+                        Blöcke.Add(new PlayerBlock(this, 1));
+                    if (Entities.GetPlayerBlock.GetPlayerBlockList[i].Art == 2)
+                        Blöcke.Add(new PlayerBlock(this, 2));
+                    Blöcke[Blöcke.Count-1].Initialize(GraphicDevice, ContentManager);
+                    Entities.GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
+                }
+            }
+
+
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
@@ -418,6 +441,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
+            GraphicDevice = _graphicsDevice;
             model = ContentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
             effect = ContentManager.Load<Effect>(Content.EFFECT_PLAYER);
             soundEffects = new List<SoundEffect>();

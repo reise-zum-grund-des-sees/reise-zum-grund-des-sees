@@ -57,7 +57,7 @@ namespace ReiseZumGrundDesSees
         SpriteFont font;
 
         MovingBlock testBlock;
-
+       
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -107,7 +107,11 @@ namespace ReiseZumGrundDesSees
             Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
             */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
-            //initializeList.Add(testBlock);
+                                             //initializeList.Add(testBlock);
+
+            //add Aufsammelbare Player Blöcke
+            Entities.GetPlayerBlock.GetPlayerBlockList.Add(new Entities.GetPlayerBlock(new Vector3(169.5f,34,216.5f), 0));
+                initializeList.Add(Entities.GetPlayerBlock.GetPlayerBlockList[0]);
 
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 initializeList.Add(Enemy.EnemyList[i]);
@@ -262,7 +266,10 @@ namespace ReiseZumGrundDesSees
                 foreach (var _renderable in otherRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-              //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+                //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+
+                for (int i = 0; i < Entities.GetPlayerBlock.GetPlayerBlockList.Count; i++)//Draw GetPlayerBlock
+                    Entities.GetPlayerBlock.GetPlayerBlockList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
                 IGamer.Render(spriteBatch);
             }

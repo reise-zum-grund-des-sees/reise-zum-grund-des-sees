@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Geschoss.cs" />
+    <Compile Include="Entities\GetPlayerBlock.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
     <Compile Include="Entities\IEnemy.cs" />
     <Compile Include="Entities\IHitable.cs" />

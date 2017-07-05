@@ -59,6 +59,7 @@ namespace ReiseZumGrundDesSees
             PutEnemy3 = 1 << 22,
             PutEnemy4 = 1 << 23,
             PutEnemy5 = 1 << 24
+         
         }
 
         bool recordingReleased = true, replayingReleased = true;
@@ -212,6 +213,7 @@ namespace ReiseZumGrundDesSees
                     if (_inputEvents.HasFlag(InputEventList.PlaceWater3)) { _actions |= Actions.PutEnemy3; e = 0; }
                     if (_inputEvents.HasFlag(InputEventList.PlaceWater4)) { _actions |= Actions.PutEnemy4; e = 0; }
                     if (_inputEvents.HasFlag(InputEventList.PlaceLever)) { _actions |= Actions.PutEnemy5; e = 0; }
+               
                 }
             }
 
@@ -329,8 +331,8 @@ namespace ReiseZumGrundDesSees
                 _state.World.Blocks[x, y, z] = WorldBlock.Water4Infinite;
 
             else if (_actions.HasFlag(Actions.PutLever))
-                _state.World.Blocks[x, y, z] = WorldBlock.Lever;
-
+                _state.World.Blocks[x, y, z] = WorldBlock.Lever;             
+                     
             else if (_actions.HasFlag(Actions.Rotate) &&
                      _state.World.Blocks[x, y, z].IsSpecialBlock() &&
                      _state.World.BlockAt(x, y, z) is IRotateable _rot)
@@ -384,6 +386,7 @@ namespace ReiseZumGrundDesSees
                 MovingBlockPosition.Clear();
 
             }
+       
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
@@ -412,6 +415,13 @@ namespace ReiseZumGrundDesSees
 
                 mesh.Draw();
             }
+        }
+        public void Wasser_Notfall(GameState _state)
+        {
+            for (int x1 = 0; x1 < 300; x1++)
+                for (int y1 = 0; y1 < 28; y1++)
+                    for (int z1 = 0; z1 < 400; z1++)
+                        _state.World.Blocks[x1, y1, z1] = WorldBlock.None;
         }
     }
 }
