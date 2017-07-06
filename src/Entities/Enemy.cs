@@ -92,7 +92,7 @@ namespace ReiseZumGrundDesSees
 
             Vector3 _movement = new Vector3(0, 0, 0);
 
-            Vector3 EnemytoPlayer = Vector3.Subtract(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position);
+            Vector3 EnemytoPlayer = Vector3.Subtract(new Vector3(_view.PlayerX, _view.PlayerY+0.5f, _view.PlayerZ), Position);
             EnemytoPlayer.Normalize();
             Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), EnemytoPlayer)); //Rotation in Rad
             if (EnemytoPlayer.X > 0) Rotate *= -1;
@@ -180,10 +180,22 @@ namespace ReiseZumGrundDesSees
             {
                 if (Geschosstimer > 1000) Geschosstimer = 0;//1 Schuss pro Sekunde
                 if (Geschosstimer == 0 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange
-                && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
+                && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY +0.25f, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
                 {
-                    new Geschoss(ContentManager, new Vector3(Position.X,Position.Y +0.25f,Position.Z), EnemytoPlayer);
-                    soundEffects[0].Play();
+                    //nicht schießen, wenn Block dazwischen in 2 Reichweite
+                    bool dazwischen = false;
+                    int dis =(int) Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY + 0.25f, _view.PlayerZ), Position);
+                    for (int i = 0; i < dis; i++) { 
+                    if (_view.BlockWorld[(int)(Position.X+i*EnemytoPlayer.X), (int)(Position.Y + 0.25f+i*EnemytoPlayer.Y), (int)(Position.Z+i*EnemytoPlayer.Z)] == WorldBlock.Wall)                       
+                    {
+                        dazwischen = true;
+                    }
+                    }
+                    if (dazwischen == false)
+                    {
+                        new Geschoss(ContentManager, new Vector3(Position.X, Position.Y + 0.25f, Position.Z), EnemytoPlayer);
+                        soundEffects[0].Play();
+                    }
                 }
                 Geschosstimer += _passedTime;
             }
