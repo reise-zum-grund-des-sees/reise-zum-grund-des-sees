@@ -65,19 +65,19 @@ namespace ReiseZumGrundDesSees
             MaximialDauer = 15000;
             Position = _player.Position;
             LifetimePercentage = 1f;
-            _verbleibenerCD = 5;
+            _verbleibenerCD = 5000;
             Zustand = (int)State.Bereit;
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             //Livetime
-
+            /*
             if (AktuelleDauer < MaximialDauer)
                 LifetimePercentage = (float)(AktuelleDauer) / (float)(MaximialDauer);
             else
                 LifetimePercentage = 1;
-
+                */
             //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
             if (Zustand == (int)State.Delete)
             {
@@ -174,11 +174,12 @@ namespace ReiseZumGrundDesSees
                                 {
                                     (_obj as PressurePlate).press();
                                 }
-                                if (MaximialDauer < AktuelleDauer + _passedTime && _obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                            /*
+                                if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
                                 {
                                     (_obj as PressurePlate).depress();
                                 }
-
+                               */
                             }
                         }
                     }
@@ -186,29 +187,44 @@ namespace ReiseZumGrundDesSees
 
             }
 
-            else if (MaximialDauer < AktuelleDauer && Zustand == (int)State.Gesetzt)
-            {
-
-                Zustand = (int)State.CD;
-
-
-
-            }
-            else
-            {
+          
                 //Objekt ist Tot
 
-                if (Zustand == (int)State.CD && Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
+                if (Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
                 {
                     _verbleibenerCD -= _passedTime;
+           
                     if (_verbleibenerCD <= 0)
                     {
                         Zustand = (int)State.Bereit;
-                        _verbleibenerCD = 5;
+                        _verbleibenerCD = 5000;
+                    //Kollision mit Pressure Plate
+                    Vector3 KolHelp = new Vector3(0, -0.01f, 0);
+                    var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                    for (int x = -1; x < 2; x++)
+                    {
+                        for (int y = -1; y < 2; y++)
+                        {
+                            for (int z = -1; z < 2; z++)
+                            {
+                                ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
+                                if (_collInfo.ContainsKey(Direction.Bottom) &&
+                                _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
+                                {
+
+                                    if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                    {
+                                        (_obj as PressurePlate).depress();
+                                    }
+
+                                }
+                            }
+                        }
                     }
+                }
 
                 }
-            }
+           
             return (ref GameState _state) =>
             {
                 if (!wasAddedToCollisionManager)

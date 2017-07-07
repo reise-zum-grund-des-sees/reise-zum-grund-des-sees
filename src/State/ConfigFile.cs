@@ -131,7 +131,7 @@ namespace ReiseZumGrundDesSees
 
         public void Write(string _filepath)
         {
-            using (var w = XmlWriter.Create(File.OpenWrite(_filepath)))
+            using (var w = XmlWriter.Create(new FileStream(_filepath, FileMode.Create)))
             {
                 Write(w);
                 w.Flush();

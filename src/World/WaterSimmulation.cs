@@ -48,7 +48,8 @@ namespace ReiseZumGrundDesSees
                                 {
                                     if (v == 0 && w == 0)
                                         continue;
-                                    if (_blockWorld[x + v, y - 1, z + w] == WorldBlock.None)
+                                    if (_blockWorld[x + v, y - 1, z + w] == WorldBlock.None &&
+                                        _blockWorld[x, y - 1, z].IsWater())
                                         continue;
 
                                     Vector3Int _nxPos = new Vector3Int(x + v, y, z + w);

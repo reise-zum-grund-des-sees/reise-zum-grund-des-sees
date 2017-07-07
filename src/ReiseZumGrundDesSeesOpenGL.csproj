@@ -43,13 +43,16 @@
   <ItemGroup>
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Geschoss.cs" />
+    <Compile Include="Entities\GetPlayerBlock.cs" />
     <Compile Include="Entities\ICollisionObject.cs" />
     <Compile Include="Entities\IEnemy.cs" />
     <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
     <Compile Include="Main\IOverlay.cs" />
+    <Compile Include="State\ActionSyntaxParser.cs" />
     <Compile Include="State\IGamer.cs" />
+    <Compile Include="State\IStartStopable.cs" />
     <Compile Include="State\IStateObject.cs" />
     <Compile Include="State\IUpdateable.cs" />
     <Compile Include="State\ObjectIDMapper.cs" />

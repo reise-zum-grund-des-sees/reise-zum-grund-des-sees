@@ -18,6 +18,9 @@ namespace ReiseZumGrundDesSees
         public double Rotation;
         public bool alive;
 
+        private Action OnPressed, OnReleased;
+        private string OnPressedString, OnReleasedString;
+
         public Vector3Int Position
         {
             get;
@@ -40,7 +43,18 @@ namespace ReiseZumGrundDesSees
 
         public Lever(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
             : this(Vector3Int.Parse(_config.Items["position"]))
-        { }
+        {
+            if (_config.Items.ContainsKey("on_pressed"))
+            {
+                OnPressed = ActionSyntaxParser.Parse(_config.Items["on_pressed"], this, _idMapper);
+                OnPressedString = _config.Items["on_pressed"];
+            }
+            if (_config.Items.ContainsKey("on_released"))
+            {
+                OnReleased = ActionSyntaxParser.Parse(_config.Items["on_released"], this, _idMapper);
+                OnReleasedString = _config.Items["on_released"];
+            }
+        }
 
 
         public void press()
@@ -51,18 +65,19 @@ namespace ReiseZumGrundDesSees
                 {
                     Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_UNTEN);
                     is_pressed = true;
+                    OnPressed?.Invoke();
                 }
                 else
                 {
                     Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
                     is_pressed = false;
+                    OnReleased?.Invoke();
                 }
             }
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-            //throw new NotImplementedException();
             return (ref GameState _state) =>
             {
 
@@ -100,6 +115,8 @@ namespace ReiseZumGrundDesSees
 
             _node.Items["pressed"] = is_pressed.ToString();
             _node.Items["position"] = Position.ToString();
+            _node.Items["on_released"] = OnReleasedString;
+            _node.Items["on_pressed"] = OnPressedString;
 
             return _node;
         }

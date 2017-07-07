@@ -20,6 +20,8 @@ namespace ReiseZumGrundDesSees
         private GraphicsDevice graphicsDevice;
         private ContentManager contentManager;
 
+        private double viewDistance = 30.0;
+
         private Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
 
@@ -46,6 +48,7 @@ namespace ReiseZumGrundDesSees
                 int b = z / RegionSize.Z;
                 for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
                     for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                        if(VertexBuffers[a,b]!=null | Vertices[a,b] !=null)
                         invalidatedChunks.Add(new Point(a, b));
             };
         }
@@ -73,6 +76,18 @@ namespace ReiseZumGrundDesSees
 
         public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            if (_inputArgs.Events.HasFlag(InputEventList.IncreaseViewDistance))
+            {
+                viewDistance += 0.1f;
+                DebugHelper.Log(viewDistance + "");
+            }
+            else if (_inputArgs.Events.HasFlag(InputEventList.DecreaseViewDistance))
+            {
+                viewDistance -= 0.1f;
+                DebugHelper.Log(viewDistance + "");
+            }
+
+
             if (graphicsDevice != null)
             {
                 foreach (Point v in invalidatedChunks)
@@ -88,11 +103,11 @@ namespace ReiseZumGrundDesSees
                     {
                         float _distance = Vector2.Distance(new Vector2(_view.CameraCenter.Position.X, _view.CameraCenter.Position.Z), new Vector2((x + 0.5f) * RegionSize.X, (z + 0.5f) * RegionSize.Z));
 
-                        if (_distance < 30 && Vertices[x, z] == null)
+                        if (_distance < viewDistance && Vertices[x, z] == null)
                         {
                             LoadVertices(x, z);
                         }
-                        else if (_distance > 40 && Vertices[x, z] != null)
+                        else if (_distance > viewDistance * 1.2 && Vertices[x, z] != null)
                         {
                             UnloadVertices(x, z);
                         }
@@ -140,6 +155,10 @@ namespace ReiseZumGrundDesSees
         {
             foreach (var _obj in specialBlocks)
                 _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+
+            foreach (var _obj in objects)
+                _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;
 

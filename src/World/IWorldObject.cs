@@ -9,14 +9,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    interface IWorldObject : IUpdateable, IReadonlyWorldObject, IRenderable
+    interface IWorldObject : IUpdateable, IReadonlyWorldObject, IRenderable, IStateObject
     {
-        void SetState(IReadOnlyDictionary<string, string[]> _state);
     }
 
     interface IReadonlyWorldObject : ICollisionObject, IReadonlyPositionObject
     {
-        IReadOnlyDictionary<string, string[]> GetState();
     }
 
     interface ISpecialBlock : IUpdateable, IRenderable, IStateObject
@@ -40,6 +38,21 @@ namespace ReiseZumGrundDesSees
                 case "ReiseZumGrundDesSees.PressurePlate":
                     PressurePlate pp = new PressurePlate(_node, _idMapper);
                     return pp;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+    }
+
+    static class WorldObject
+    {
+        public static IWorldObject Instanciate(ConfigFile.ConfigNode _node, ObjectIDMapper _idMapper)
+        {
+            switch (_node.Items["type"])
+            {
+                case "ReiseZumGrundDesSees.MovingBlock":
+                    MovingBlock b = new MovingBlock(_node, _idMapper);
+                    return b;
                 default:
                     throw new ArgumentException();
             }

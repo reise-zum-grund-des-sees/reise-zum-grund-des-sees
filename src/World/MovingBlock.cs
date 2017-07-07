@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ReiseZumGrundDesSees
 {
-    class MovingBlock : IWorldObject, IMovingObject
+    class MovingBlock : IWorldObject, IMovingObject, IStartStopable
     {
         private Vector3[] positionMarks;
         private int status;
@@ -20,18 +20,25 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Position { get; set; }
 
-        public static List<MovingBlock> MovingBlockList = new List<MovingBlock>() //statische Liste für alle erstellten Mocing Blocks, müsste gespeichert werden in der xml Datei
-            ;
         public MovingBlock(List<Vector3> _positionMarks)
         {
-           
-            if (_positionMarks.Count > 1) {
+         
                 positionMarks = new Vector3[_positionMarks.Count];
-            for(int i=0; i<_positionMarks.Count;i++)
-            positionMarks[i] = _positionMarks.ElementAt(i);
+                for (int i = 0; i < _positionMarks.Count; i++)
+                    positionMarks[i] = _positionMarks.ElementAt(i);
+                Position = positionMarks[0];
+        
+        }
+
+        public MovingBlock(ConfigFile.ConfigNode _node, ObjectIDMapper _idMapper)
+        {
+            List<Vector3> _positionMarks = new List<Vector3>();
+            int _count = _node.Nodes.Count;
+            for (int i = 0; i < _count; i++)
+                _positionMarks.Add(_node.Nodes[i.IdAsString()].Items["position"].ToVector3());
+
+            positionMarks = _positionMarks.ToArray();
             Position = positionMarks[0];
-                MovingBlockList.Add(this);
-            }
         }
 
         public bool HasMultipleHitboxes => false;
@@ -41,44 +48,15 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Velocity { get; private set; }
 
-        public MovingBlock(ConfigFile.ConfigNode _MovingBlockNode)
+        public void Start()
         {
-            List<Vector3> _positionMarks = new List<Vector3>();
-            for (int i=0; i<int.Parse(_MovingBlockNode.Items["MarksLength"]);i++)
-                _positionMarks.Add(_MovingBlockNode.Items["positionMarks"+i].ToVector3());
-
-            //normaler Konstruktor
-            if (_positionMarks.Count > 1)
-            {
-                positionMarks = new Vector3[_positionMarks.Count];
-                for (int i = 0; i < _positionMarks.Count; i++)
-                    positionMarks[i] = _positionMarks.ElementAt(i);
-                Position = positionMarks[0];
-                MovingBlockList.Add(this);
-            }
+            moving = true;
         }
 
-        public ConfigFile.ConfigNode GetState()
+        public void Stop()
         {
-            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
-
-            _node.Items["MarksLength"] = positionMarks.Length.ToString();
-            for (int i = 0; i < positionMarks.Length; i++)
-                _node.Items["positionMarks" + i] = positionMarks[i].ToNiceString();
-
-            return _node;
+            moving = false;
         }
-
-        public void SetState(IReadOnlyDictionary<string, string[]> _state)
-        {
-
-        }
-
-        IReadOnlyDictionary<string, string[]> IReadonlyWorldObject.GetState()
-        {
-            throw new NotImplementedException();
-        }
-
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
@@ -102,16 +80,14 @@ namespace ReiseZumGrundDesSees
             }
         }
 
-    
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) || !_flags.HasFlag(GameFlags.GameLoaded))
                 return null;
+            
+            Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
+            Vector3 _nextPosition = positionMarks[status];
 
-           Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
-           Vector3 _nextPosition = positionMarks[status];
-
-          
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
             Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
@@ -168,6 +144,26 @@ namespace ReiseZumGrundDesSees
             };
         }
 
-      
+        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+        {
+            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+            _node.Items["moving"] = moving.ToString().ToLower();
+
+            int _pointCount = 0;
+            foreach (Vector3 _point in positionMarks)
+            {
+                ConfigFile.ConfigNode _curNode = new ConfigFile.ConfigNode();
+
+                _curNode.Items["position"] = _point.ToNiceString();
+
+                _node.Nodes[_pointCount.IdAsString()]
+                    = _curNode;
+
+                _pointCount++;
+            }
+
+            return _node;
+        }
     }
 }

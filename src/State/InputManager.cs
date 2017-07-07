@@ -88,13 +88,23 @@ namespace ReiseZumGrundDesSees
             }
             if (_keyboardState.IsKeyDown(Keys.D9))
             {
-                _eventList |= InputEventList.PlaceMovingBlockEnd;            
+                _eventList |= InputEventList.PlaceMovingBlockEnd;
             }
             if (_keyboardState.IsKeyDown(Keys.LeftAlt))
             {
                 _eventList |= InputEventList.PlaceEnemy;
             }
-         
+
+            if (_keyboardState.IsKeyDown(Keys.OemPlus))
+                _eventList |= InputEventList.IncreaseViewDistance;
+            else if (_keyboardState.IsKeyDown(Keys.OemMinus))
+            {
+                if (_keyboardState.IsKeyDown(Keys.LeftControl))
+                    _eventList |= InputEventList.IncreaseViewDistance;
+                else
+                    _eventList |= InputEventList.DecreaseViewDistance;
+            }
+
             MouseState _mouseState = Mouse.GetState();
 
             if (_mouseState.LeftButton == ButtonState.Pressed)
@@ -197,55 +207,58 @@ namespace ReiseZumGrundDesSees
     }
 
     [Flags]
-    public enum InputEventList : Int64
+    public enum InputEventList : ulong
     {
-        None                = 0,
+        None = 0,
 
-        MoveForwards        = 1,
-        MoveLeft            = 1 << 1,
-        MoveRight           = 1 << 2,
-        MoveBackwards       = 1 << 3,
+        MoveForwards = 1,
+        MoveLeft = 1 << 1,
+        MoveRight = 1 << 2,
+        MoveBackwards = 1 << 3,
 
-        MouseLeftClick      = 1 << 4,
-        MouseRightClick     = 1 << 5,
-        MouseMiddleClick    = 1 << 6,
+        MouseLeftClick = 1 << 4,
+        MouseRightClick = 1 << 5,
+        MouseMiddleClick = 1 << 6,
 
-        Jump                = 1 << 7,
-        Sprint              = 1 << 8,
+        Jump = 1 << 7,
+        Sprint = 1 << 8,
 
-        PlaceWall           = 1 << 9,
-        RemoveBlock         = 1 << 10,
-        Delete              = 1 << 11,
+        PlaceWall = 1 << 9,
+        RemoveBlock = 1 << 10,
+        Delete = 1 << 11,
 
-        MoveUp              = 1 << 12,
-        MoveDown            = 1 << 13,
+        MoveUp = 1 << 12,
+        MoveDown = 1 << 13,
 
-        LeichterBlock       = 1 << 14,
+        LeichterBlock = 1 << 14,
         MittelschwererBlock = 1 << 15,
-        SchwererBlock       = 1 << 16,
+        SchwererBlock = 1 << 16,
 
-        PlaceWater1         = 1 << 17,
-        PlaceWater2         = 1 << 18,
-        PlaceWater3         = 1 << 19,
-        PlaceWater4         = 1 << 20,
-        PlaceLever          = 1 << 21,
-        PlaceSpike          = 1 << 22,
+        PlaceWater1 = 1 << 17,
+        PlaceWater2 = 1 << 18,
+        PlaceWater3 = 1 << 19,
+        PlaceWater4 = 1 << 20,
+        PlaceLever = 1 << 21,
+        PlaceSpike = 1 << 22,
 
-        Interact            = 1 << 23,
-        Return              = 1 << 24,
-        PlacePressurePlate  = 1 << 25,
+        Interact = 1 << 23,
+        Return = 1 << 24,
+        PlacePressurePlate = 1 << 25,
 
         PlaceWater4Infinite = 1 << 26,
 
-        MouseLeft           = 1 << 27,
-        MouseRight          = 1 << 28,
+        MouseLeft = 1 << 27,
+        MouseRight = 1 << 28,
 
-        Record              = 1 << 29,
-        Replay              = 1 << 30,
+        Record = 1 << 29,
+        Replay = 1 << 30,
 
-        Rotate              = 1 << 31,
-        PlaceMovingBlock    = 1 << 7,
-        PlaceMovingBlockEnd = 1 << 8,
-        PlaceEnemy          = 1 << 23
+        Rotate = 1UL << 31,
+        PlaceMovingBlock = 1UL << 32,
+        PlaceMovingBlockEnd = 1UL << 33,
+        PlaceEnemy = 1UL << 34,
+
+        IncreaseViewDistance = 1UL << 35,
+        DecreaseViewDistance = 1UL << 36
     }
 }

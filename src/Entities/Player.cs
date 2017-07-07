@@ -39,10 +39,17 @@ namespace ReiseZumGrundDesSees
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
         public IList<IPlayerBlock> Blöcke; //Liste aller dem Spieler verfügbaren Blöcke
         ContentManager ContentManager;
+        GraphicsDevice GraphicDevice;
         float _speedY = 0;
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
         List<SoundEffect> soundEffects;
+
+        //wie viel Blöcke hat der Spieler bereit
+        public static int AnzahlBlockReadyL  = 0;
+        public static int AnzahlBlockReadyM  = 0;
+        public static int AnzahlBlockReadyS  = 0;
+    
         public Player(Vector3 _position)
         {
             Position = _position;
@@ -58,6 +65,7 @@ namespace ReiseZumGrundDesSees
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
+           
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
@@ -67,6 +75,7 @@ namespace ReiseZumGrundDesSees
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
+          
         }
 
         public Player(ConfigFile.ConfigNode _playerNode) :
@@ -269,6 +278,26 @@ namespace ReiseZumGrundDesSees
                 }
             }
 
+            //Aufsammeln von PlayerBlöcken
+            for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
+            {
+               
+                if (Vector3.Distance(Position, new Vector3(GetPlayerBlock.GetPlayerBlockList[i].Position.X + 0.5f,
+                    GetPlayerBlock.GetPlayerBlockList[i].Position.Y + 0.25f, GetPlayerBlock.GetPlayerBlockList[i].Position.Z + 0.5f)) < 1f)
+                {
+                    
+                    if (GetPlayerBlock.GetPlayerBlockList[i].Art==0)
+                        Blöcke.Add(new PlayerBlock(this, 0));
+                    if (GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
+                        Blöcke.Add(new PlayerBlock(this, 1));
+                    if (GetPlayerBlock.GetPlayerBlockList[i].Art == 2)
+                        Blöcke.Add(new PlayerBlock(this, 2));
+                    Blöcke[Blöcke.Count-1].Initialize(GraphicDevice, ContentManager);
+                    GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
+                }
+            }
+
+
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
@@ -315,15 +344,23 @@ namespace ReiseZumGrundDesSees
             bool BlockReadyL = true;
             bool BlockReadyM = true;
             bool BlockReadyS = true;
-
+            AnzahlBlockReadyL = 0;
+            AnzahlBlockReadyM = 0;
+            AnzahlBlockReadyS = 0;
             for (int i = 0; i < Blöcke.Count; i++)
             {
                 if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
                     BlockReadyL = false;
+                if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
+                    AnzahlBlockReadyL++;
                 if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
                     BlockReadyM = false;
+                if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
+                    AnzahlBlockReadyM++;
                 if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
                     BlockReadyS = false;
+                if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
+                    AnzahlBlockReadyS++;
             }
             if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && BlockReadyL == false)
                 soundEffects[5].Play();
@@ -402,7 +439,7 @@ namespace ReiseZumGrundDesSees
             Health = MaxHealth; //Leben wieder voll
             for (int i = 0; i < Blöcke.Count; i++)
                 (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
-            Position = new Vector3(24, 32, 24); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
+            Position = new Vector3(146.5f, 34, 194.5f); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
         }
 
         public void Hit()
@@ -418,6 +455,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
+            GraphicDevice = _graphicsDevice;
             model = ContentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
             effect = ContentManager.Load<Effect>(Content.EFFECT_PLAYER);
             soundEffects = new List<SoundEffect>();

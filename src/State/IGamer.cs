@@ -22,21 +22,25 @@ namespace ReiseZumGrundDesSees
         private Texture2D skill2;
         private Texture2D skill3;
 
-        private Rectangle RHerz1 = new Rectangle(250, 70, 100, 70);
-        private Rectangle RHerz2 = new Rectangle(350, 70, 100, 70);
-        private Rectangle RHerz3 = new Rectangle(450, 70, 100, 70);
+        private Rectangle RHerz1 = new Rectangle(100, 70, 100, 70);
+        private Rectangle RHerz2 = new Rectangle(200, 70, 100, 70);
+        private Rectangle RHerz3 = new Rectangle(300, 70, 100, 70);
 
-        private Rectangle RSkill1 = new Rectangle(300, 640, 80, 80);
-        private Rectangle RSkill2 = new Rectangle(390, 640, 80, 80);
-        private Rectangle RSkill3 = new Rectangle(480, 640, 80, 80);
+        private Rectangle RSkill1 = new Rectangle(100, 740, 80, 80);
+        private Rectangle RSkill2 = new Rectangle(190, 740, 80, 80);
+        private Rectangle RSkill3 = new Rectangle(280, 740, 80, 80);
 
         private SpriteFont S1;
         private SpriteFont S2;
         private SpriteFont S3;
 
-        private Vector2 VS1 = new Vector2(310, 640);
-        private Vector2 VS2 = new Vector2(400, 640);
-        private Vector2 VS3 = new Vector2(490, 640);
+        private Vector2 VS1 = new Vector2(110, 740);
+        private Vector2 VS2 = new Vector2(200, 740);
+        private Vector2 VS3 = new Vector2(290, 740);
+
+        private Vector2 CD1 = new Vector2(140, 740);
+        private Vector2 CD2 = new Vector2(230, 740);
+        private Vector2 CD3 = new Vector2(320, 740);
 
         private Vector2 scalingFactor = new Vector2(1f, 1f);
 
@@ -84,6 +88,11 @@ namespace ReiseZumGrundDesSees
             _spriteBatch.DrawString(S1, "1", VS1 * scalingFactor, Color.White);
             _spriteBatch.DrawString(S2, "2", VS2 * scalingFactor, Color.White);
             _spriteBatch.DrawString(S3, "3", VS3 * scalingFactor, Color.White);
+
+            //Anzahl Blöcke, die bereit sind
+            _spriteBatch.DrawString(S1, Player.AnzahlBlockReadyL.ToString(), CD1 * scalingFactor, Color.White);
+            _spriteBatch.DrawString(S2, Player.AnzahlBlockReadyM.ToString(), CD2 * scalingFactor, Color.White);
+            _spriteBatch.DrawString(S3, Player.AnzahlBlockReadyS.ToString(), CD3 * scalingFactor, Color.White);
 
             _spriteBatch.End();
         }
