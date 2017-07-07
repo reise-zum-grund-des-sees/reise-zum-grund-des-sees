@@ -110,8 +110,8 @@ namespace ReiseZumGrundDesSees
                                              //initializeList.Add(testBlock);
 
             //add Aufsammelbare Player Blöcke
-            Entities.GetPlayerBlock.GetPlayerBlockList.Add(new Entities.GetPlayerBlock(new Vector3(169.5f,34,216.5f), 0));
-                initializeList.Add(Entities.GetPlayerBlock.GetPlayerBlockList[0]);
+            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(169.5f,34,216.5f), 0));
+                initializeList.Add(GetPlayerBlock.GetPlayerBlockList[0]);
 
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 initializeList.Add(Enemy.EnemyList[i]);
@@ -268,8 +268,8 @@ namespace ReiseZumGrundDesSees
 
                 //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-                for (int i = 0; i < Entities.GetPlayerBlock.GetPlayerBlockList.Count; i++)//Draw GetPlayerBlock
-                    Entities.GetPlayerBlock.GetPlayerBlockList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+                for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)//Draw GetPlayerBlock
+                    GetPlayerBlock.GetPlayerBlockList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
                 IGamer.Render(spriteBatch);
             }
