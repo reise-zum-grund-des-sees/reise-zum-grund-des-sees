@@ -174,11 +174,12 @@ namespace ReiseZumGrundDesSees
                                 {
                                     (_obj as PressurePlate).press();
                                 }
-                                if (MaximialDauer < AktuelleDauer + _passedTime && _obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                            /*
+                                if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
                                 {
                                     (_obj as PressurePlate).depress();
                                 }
-
+                               */
                             }
                         }
                     }
@@ -197,7 +198,30 @@ namespace ReiseZumGrundDesSees
                     {
                         Zustand = (int)State.Bereit;
                         _verbleibenerCD = 5000;
+                    //Kollision mit Pressure Plate
+                    Vector3 KolHelp = new Vector3(0, -0.01f, 0);
+                    var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                    for (int x = -1; x < 2; x++)
+                    {
+                        for (int y = -1; y < 2; y++)
+                        {
+                            for (int z = -1; z < 2; z++)
+                            {
+                                ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
+                                if (_collInfo.ContainsKey(Direction.Bottom) &&
+                                _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
+                                {
+
+                                    if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                    {
+                                        (_obj as PressurePlate).depress();
+                                    }
+
+                                }
+                            }
+                        }
                     }
+                }
 
                 }
            

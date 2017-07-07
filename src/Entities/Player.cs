@@ -44,6 +44,12 @@ namespace ReiseZumGrundDesSees
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
         List<SoundEffect> soundEffects;
+
+        //wie viel Blöcke hat der Spieler bereit
+        public static int AnzahlBlockReadyL  = 0;
+        public static int AnzahlBlockReadyM  = 0;
+        public static int AnzahlBlockReadyS  = 0;
+    
         public Player(Vector3 _position)
         {
             Position = _position;
@@ -338,15 +344,23 @@ namespace ReiseZumGrundDesSees
             bool BlockReadyL = true;
             bool BlockReadyM = true;
             bool BlockReadyS = true;
-
+            AnzahlBlockReadyL = 0;
+            AnzahlBlockReadyM = 0;
+            AnzahlBlockReadyS = 0;
             for (int i = 0; i < Blöcke.Count; i++)
             {
                 if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
                     BlockReadyL = false;
+                if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
+                    AnzahlBlockReadyL++;
                 if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
                     BlockReadyM = false;
+                if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
+                    AnzahlBlockReadyM++;
                 if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
                     BlockReadyS = false;
+                if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
+                    AnzahlBlockReadyS++;
             }
             if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && BlockReadyL == false)
                 soundEffects[5].Play();
