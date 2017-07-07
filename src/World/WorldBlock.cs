@@ -104,10 +104,11 @@ namespace ReiseZumGrundDesSees
             {
                 case WorldBlock.Wall:
                 case WorldBlock.InvisibleWall:
-                case WorldBlock.Water4:
-                case WorldBlock.Water4Infinite:
                 case WorldBlock.Unknown:
                     return new Vector3(1.00f, 1.00f, 1.00f);
+                case WorldBlock.Water4:
+                case WorldBlock.Water4Infinite:
+                    return new Vector3(1.00f, 0.99f, 1.00f);
                 case WorldBlock.Water3:
                     return new Vector3(1.00f, 0.75f, 1.00f);
                 case WorldBlock.Water2:

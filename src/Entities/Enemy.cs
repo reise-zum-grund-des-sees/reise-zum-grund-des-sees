@@ -83,7 +83,8 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-
+            if (!_flags.HasFlag(GameFlags.GameRunning))
+                return null;
 
             int Aggrorange = 15;
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
