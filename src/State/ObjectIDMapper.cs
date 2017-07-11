@@ -20,6 +20,13 @@ namespace ReiseZumGrundDesSees
 
         public int AddObject(object _object)
         {
+            if (mappings.ContainsValue(_object))
+            {
+                var _item = mappings.First(i => i.Value == _object);
+                return _item.Key;
+            }
+
+
             while (mappings.ContainsKey(nextID++)) ;
 
             int _id = nextID - 1;

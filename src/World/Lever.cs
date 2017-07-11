@@ -18,8 +18,7 @@ namespace ReiseZumGrundDesSees
         public double Rotation;
         public bool alive;
 
-        private Action OnPressed, OnReleased;
-        private string OnPressedString, OnReleasedString;
+        private ActionSyntaxParser.GameAction OnPressed, OnReleased;
 
         public Vector3Int Position
         {
@@ -47,17 +46,15 @@ namespace ReiseZumGrundDesSees
             if (_config.Items.ContainsKey("on_pressed"))
             {
                 OnPressed = ActionSyntaxParser.Parse(_config.Items["on_pressed"], this, _idMapper);
-                OnPressedString = _config.Items["on_pressed"];
             }
             if (_config.Items.ContainsKey("on_released"))
             {
                 OnReleased = ActionSyntaxParser.Parse(_config.Items["on_released"], this, _idMapper);
-                OnReleasedString = _config.Items["on_released"];
             }
         }
 
 
-        public void press()
+        public void Press(GameState _gs)
         {
             if (alive == true)
             {
@@ -65,13 +62,13 @@ namespace ReiseZumGrundDesSees
                 {
                     Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_UNTEN);
                     is_pressed = true;
-                    OnPressed?.Invoke();
+                    OnPressed?.BaseAction(_gs);
                 }
                 else
                 {
                     Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
                     is_pressed = false;
-                    OnReleased?.Invoke();
+                    OnReleased?.BaseAction(_gs);
                 }
             }
         }
@@ -115,8 +112,10 @@ namespace ReiseZumGrundDesSees
 
             _node.Items["pressed"] = is_pressed.ToString();
             _node.Items["position"] = Position.ToString();
-            _node.Items["on_released"] = OnReleasedString;
-            _node.Items["on_pressed"] = OnPressedString;
+            if (OnReleased != null)
+                _node.Items["on_released"] = OnReleased.ActionEncoding(_mapper);
+            if (OnPressed != null)
+                _node.Items["on_pressed"] = OnPressed.ActionEncoding(_mapper);
 
             return _node;
         }

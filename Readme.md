@@ -1,3 +1,19 @@
+# GameActions
+
+Um Aktionen zu Levern hinzuzufügen muss der entsprechende Eintrag in der Xml-Datei rausgesucht werden und um die Attribute on_pressed bzw. on_released erweitert werden.
+Zur Zeit implementiert sind:
+- world.set-block(›position‹:›name‹)
+- ›id‹.start
+- ›id‹.stop
+
+z.B.
+
+```xml
+<a pressed="False" position="151-32-202" type="ReiseZumGrundDesSees.Lever" on_pressed="world.set-block(151-32-204:Wall)" on_released="world.set-block(151-32-204:None)" />
+<b pressed="False" position="153-32-202" type="ReiseZumGrundDesSees.Lever" on_pressed="c.start" on_released="c.stop" />
+<c type="ReiseZumGrundDesSees.MovingBlock" ... />
+```
+
 # Neues Dateiformat
 
 Um States besser zu speichern wurde ein neues, auf XML-basierendes Dateiformat eingeführt.

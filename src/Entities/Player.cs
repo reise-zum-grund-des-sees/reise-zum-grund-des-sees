@@ -46,10 +46,10 @@ namespace ReiseZumGrundDesSees
         List<SoundEffect> soundEffects;
 
         //wie viel Blöcke hat der Spieler bereit
-        public static int AnzahlBlockReadyL  = 0;
-        public static int AnzahlBlockReadyM  = 0;
-        public static int AnzahlBlockReadyS  = 0;
-    
+        public static int AnzahlBlockReadyL = 0;
+        public static int AnzahlBlockReadyM = 0;
+        public static int AnzahlBlockReadyS = 0;
+
         public Player(Vector3 _position)
         {
             Position = _position;
@@ -65,7 +65,7 @@ namespace ReiseZumGrundDesSees
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
             //Startblöcke, müsssen später auf Pickup hinzugefügt werden
-           
+
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
             Blöcke.Add(new PlayerBlock(this, 0));
@@ -75,7 +75,7 @@ namespace ReiseZumGrundDesSees
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
             Blöcke.Add(new PlayerBlock(this, 2));
-          
+
         }
 
         public Player(ConfigFile.ConfigNode _playerNode) :
@@ -129,13 +129,15 @@ namespace ReiseZumGrundDesSees
             {
                 //_movement.Z -= (float)(_passedTime * 0.005);
                 //_movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                if (Jump1) {
+                if (Jump1)
+                {
                     _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
                     _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
                 }
-                else { 
-                _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                else
+                {
+                    _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
+                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
                 }
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
@@ -163,7 +165,7 @@ namespace ReiseZumGrundDesSees
                 else
                 {
                     _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f); 
+                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
                 }
             }
             else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
@@ -234,26 +236,6 @@ namespace ReiseZumGrundDesSees
                 if (_speedY > 0)
                     _speedY = 0;
 
-            //Lever press
-            if (_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
-            {
-                for (int x = -2; x < 3; x++)
-                    for (int y = -2; y < 3; y++)
-                        for (int z = -2; z < 3; z++)
-                        {
-                            ISpecialBlock _obj = _stateView.WorldObjects.BlockAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
-                            if (_obj != null && _obj.Type == WorldBlock.Lever)
-                            {
-                                float _dist = ChebyshevDistance(Position, _obj.Position + new Vector3(0.5f, 0.5f, 0.5f));
-                                if (_dist < 1f)
-                                {
-                                    Levercd = 0;
-                                    (_obj as Lever).press();
-                                }
-                            }
-                        }
-            }
-
             //Take Damage from Spikes
 
             for (int x = -2; x < 3; x++)
@@ -281,18 +263,18 @@ namespace ReiseZumGrundDesSees
             //Aufsammeln von PlayerBlöcken
             for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
             {
-               
+
                 if (Vector3.Distance(Position, new Vector3(GetPlayerBlock.GetPlayerBlockList[i].Position.X + 0.5f,
                     GetPlayerBlock.GetPlayerBlockList[i].Position.Y + 0.25f, GetPlayerBlock.GetPlayerBlockList[i].Position.Z + 0.5f)) < 1f)
                 {
-                    
-                    if (GetPlayerBlock.GetPlayerBlockList[i].Art==0)
+
+                    if (GetPlayerBlock.GetPlayerBlockList[i].Art == 0)
                         Blöcke.Add(new PlayerBlock(this, 0));
                     if (GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
                         Blöcke.Add(new PlayerBlock(this, 1));
                     if (GetPlayerBlock.GetPlayerBlockList[i].Art == 2)
                         Blöcke.Add(new PlayerBlock(this, 2));
-                    Blöcke[Blöcke.Count-1].Initialize(GraphicDevice, ContentManager);
+                    Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
                     GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
                 }
             }
@@ -383,11 +365,12 @@ namespace ReiseZumGrundDesSees
             Vector3 BlickPosition = new Vector3(-Blick.X, 0, -Blick.Z); //Blickrichtung des Spielers
             Blick = Vector3.Add(Position, BlickPosition);
 
-            if(_inputArgs.Events.HasFlag(InputEventList.Return))
-            for (int i = 0; i < Blöcke.Count; i++)
-               if(Vector3.Distance(Blöcke[i].Position,Blick)<1 && (Blöcke[i] as PlayerBlock).Zustand == (int)PlayerBlock.State.Gesetzt) {
-                    (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
-                     soundEffects[6].Play();
+            if (_inputArgs.Events.HasFlag(InputEventList.Return))
+                for (int i = 0; i < Blöcke.Count; i++)
+                    if (Vector3.Distance(Blöcke[i].Position, Blick) < 1 && (Blöcke[i] as PlayerBlock).Zustand == (int)PlayerBlock.State.Gesetzt)
+                    {
+                        (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
+                        soundEffects[6].Play();
                     }
             List<UpdateDelegate> blockUpdateList = new List<UpdateDelegate>();
             foreach (PlayerBlock b in Blöcke)
@@ -399,6 +382,27 @@ namespace ReiseZumGrundDesSees
             {
                 this.Position += _movement;
                 //Console.WriteLine(Position);
+
+                //Lever press
+                if (_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
+                {
+                    for (int x = -2; x < 3; x++)
+                        for (int y = -2; y < 3; y++)
+                            for (int z = -2; z < 3; z++)
+                            {
+                                ISpecialBlock _obj = _stateView.WorldObjects.BlockAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                                if (_obj != null && _obj.Type == WorldBlock.Lever)
+                                {
+                                    float _dist = ChebyshevDistance(Position, _obj.Position + new Vector3(0.5f, 0.5f, 0.5f));
+                                    if (_dist < 1f)
+                                    {
+                                        Levercd = 0;
+                                        (_obj as Lever).Press(_state);
+                                    }
+                                }
+                            }
+                }
+
 
                 foreach (UpdateDelegate u in blockUpdateList)
                     u(ref _state);
@@ -444,10 +448,11 @@ namespace ReiseZumGrundDesSees
 
         public void Hit()
         {
-            if(Healthcd > 1000) {
-            Health--;
-            Healthcd = 0;
-            soundEffects[2].Play();
+            if (Healthcd > 1000)
+            {
+                Health--;
+                Healthcd = 0;
+                soundEffects[2].Play();
             }
         }
 
