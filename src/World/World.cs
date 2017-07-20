@@ -65,16 +65,31 @@ namespace ReiseZumGrundDesSees
         {
             if (!onBaseWorldBlockChangedBlocker)
             {
-                if (_oldBlock.IsSpecialBlock() && _oldBlock != _newBlock)
-                    removeBlock(BlockAt(x, y, z));
-                if (_newBlock.IsSpecialBlock() && _oldBlock != _newBlock)
-                    AddSpecialBlock(_newBlock.Instanciate(new Vector3Int(x, y, z)));
+                if (_oldBlock == WorldBlock.PressurePlateDown && _newBlock == WorldBlock.PressurePlateUp)
+                {
+                    specialBlocks[new Vector3Int(x, y, z)] = BlockAt(new Vector3Int(x, y, z));
+                    //onBaseWorldBlockChangedBlocker = true;
+                   // Blocks[x, y, z] = _newBlock;
+                }
+                else if (_oldBlock == WorldBlock.PressurePlateUp && _newBlock == WorldBlock.PressurePlateDown)
+                {
+                    specialBlocks[new Vector3Int(x, y, z)] = BlockAt(new Vector3Int(x, y, z));
+                   // onBaseWorldBlockChangedBlocker = true;
+                  //  Blocks[x, y, z] = _newBlock;
+                }
+                else
+                {
+                    if (_oldBlock.IsSpecialBlock() && _oldBlock != _newBlock)
+                        removeBlock(BlockAt(x, y, z));
+                    if (_newBlock.IsSpecialBlock() && _oldBlock != _newBlock)
+                        AddSpecialBlock(_newBlock.Instanciate(new Vector3Int(x, y, z)));
+                }
             }
             onBaseWorldBlockChangedBlocker = false;
         }
 
         public ISpecialBlock BlockAt(Vector3Int _pos)
-        {
+        {       
             if (specialBlocks.TryGetValue(_pos, out ISpecialBlock _obj))
                 return _obj;
             else

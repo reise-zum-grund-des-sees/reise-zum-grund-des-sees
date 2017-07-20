@@ -58,7 +58,8 @@ namespace ReiseZumGrundDesSees
             PutEnemy2 = 1 << 21,
             PutEnemy3 = 1 << 22,
             PutEnemy4 = 1 << 23,
-            PutEnemy5 = 1 << 24
+            PutEnemy5 = 1 << 24,
+            CursorToPlayer = 1 << 25
          
         }
 
@@ -213,7 +214,7 @@ namespace ReiseZumGrundDesSees
                     if (_inputEvents.HasFlag(InputEventList.PlaceWater3)) { _actions |= Actions.PutEnemy3; e = 0; }
                     if (_inputEvents.HasFlag(InputEventList.PlaceWater4)) { _actions |= Actions.PutEnemy4; e = 0; }
                     if (_inputEvents.HasFlag(InputEventList.PlaceLever)) { _actions |= Actions.PutEnemy5; e = 0; }
-               
+
                 }
             }
 
@@ -247,6 +248,8 @@ namespace ReiseZumGrundDesSees
             else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlockEnd))
                 _actions |= Actions.PutMovingBlockEnd;
 
+            else if (_inputEvents.HasFlag(InputEventList.Sprint)) //Sprint Taste portet Cursor zum Spieler
+                _actions |= Actions.CursorToPlayer;
 
             return _actions;
         }
@@ -386,7 +389,8 @@ namespace ReiseZumGrundDesSees
                 MovingBlockPosition.Clear();
 
             }
-       
+            else if (_actions.HasFlag(Actions.CursorToPlayer))
+                Position = new Vector3((int)(_state.Player.Position.X), (int)(_state.Player.Position.Y), (int)(_state.Player.Position.Z));
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)

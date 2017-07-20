@@ -71,21 +71,98 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-            //Livetime
-            /*
-            if (AktuelleDauer < MaximialDauer)
-                LifetimePercentage = (float)(AktuelleDauer) / (float)(MaximialDauer);
-            else
-                LifetimePercentage = 1;
-                */
-            //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
-            if (Zustand == (int)State.Delete)
+         
+            return (ref GameState _state) =>
             {
-                if (Deletetime == 0) //depress
+                //Livetime
+                /*
+                if (AktuelleDauer < MaximialDauer)
+                    LifetimePercentage = (float)(AktuelleDauer) / (float)(MaximialDauer);
+                else
+                    LifetimePercentage = 1;
+                    */
+                //Löschen aller Blöcke und Setze CD aller Blöcke auf 5 Sekunden
+                if (Zustand == (int)State.Delete)
                 {
+                    if (Deletetime == 0) //depress
+                    {
+                        //Kollision mit Pressure Plate
+                        Vector3 KolHelp = new Vector3(0, -0.01f, 0);
+                        var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                        for (int x = -1; x < 2; x++)
+                        {
+                            for (int y = -1; y < 2; y++)
+                            {
+                                for (int z = -1; z < 2; z++)
+                                {
+                                    ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
+                                    if (_collInfo.ContainsKey(Direction.Bottom) &&
+                                    _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
+                                    {
+
+                                        if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                        {
+                                            (_obj as PressurePlate).press(_state);
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Deletetime += _passedTime;
+                    // AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
+                    if (Deletetime >= 5000)
+                    {
+                        Deletetime = 0;
+                        Zustand = (int)State.Bereit;
+                    }
+                }
+
+                if (Zustand == (int)State.Übergang)
+                {
+                    //Position des Blockes basierend auf Blickrichtung
+                    Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
+                    Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Player.Blickrichtung));
+                    Blick.Normalize();
+                    Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
+                    //Console.WriteLine(Position);
+                    AktuelleDauer = 0;
+                    Zustand = (int)State.Gesetzt;
+                }
+                if (Zustand == (int)State.Gesetzt || Zustand == (int)State.CD)
+                    AktuelleDauer += _passedTime;//Update Timer
+
+                if (MaximialDauer >= AktuelleDauer && Zustand == (int)State.Gesetzt)
+                {
+                    _movement = new Vector3(0, 0, 0);
+                    //Wenn keine Kolision mit Wand oder Block     
+
+                    if (Art == 1)
+                    {
+                        _speedY -= 0.005f * (float)_passedTime;
+                        _movement.Y += _speedY * (float)_passedTime * 0.01f;
+                    }
+                    if (Art == 2)
+                    {
+                        _speedY -= 0.005f * (float)_passedTime;
+                        _movement.Y += _speedY * (float)_passedTime * 0.015f;
+                    }
+                    //unter Block ist kein Wasser 
+
+
+                    var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
+
+                    if (_collInfo.ContainsKey(Direction.Bottom))
+                        _speedY = 0;
+
+                    if (Art != 0)// && _speedY != 0)
+                        Position += _movement;
+
+
                     //Kollision mit Pressure Plate
                     Vector3 KolHelp = new Vector3(0, -0.01f, 0);
-                    var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                    _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
                     for (int x = -1; x < 2; x++)
                     {
                         for (int y = -1; y < 2; y++)
@@ -96,137 +173,62 @@ namespace ReiseZumGrundDesSees
                                 if (_collInfo.ContainsKey(Direction.Bottom) &&
                                 _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
                                 {
-
-                                    if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                    if (_obj != null && _obj.Type == WorldBlock.PressurePlateUp)
                                     {
-                                        (_obj as PressurePlate).depress();
+                                        (_obj as PressurePlate).press(_state);
                                     }
-
+                                    /*
+                                        if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                        {
+                                            (_obj as PressurePlate).depress();
+                                        }
+                                       */
                                 }
                             }
                         }
                     }
-                }
-                Deletetime += _passedTime;
-                // AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
-                if (Deletetime >= 5000)
-                {
-                    Deletetime = 0;
-                    Zustand = (int)State.Bereit;
-                }
-            }
 
-            if (Zustand == (int)State.Übergang)
-            {
-                //Position des Blockes basierend auf Blickrichtung
-                Position = new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ);
-                Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_view.Player.Blickrichtung));
-                Blick.Normalize();
-                Position -= new Vector3(Blick.X * 1.5f, 0, Blick.Z * 1.5f);
-                //Console.WriteLine(Position);
-                AktuelleDauer = 0;
-                Zustand = (int)State.Gesetzt;
-            }
-            if (Zustand == (int)State.Gesetzt || Zustand == (int)State.CD)
-                AktuelleDauer += _passedTime;//Update Timer
-
-            if (MaximialDauer >= AktuelleDauer && Zustand == (int)State.Gesetzt)
-            {
-                _movement = new Vector3(0, 0, 0);
-                //Wenn keine Kolision mit Wand oder Block     
-
-                if (Art == 1)
-                {
-                    _speedY -= 0.005f * (float)_passedTime;
-                    _movement.Y += _speedY * (float)_passedTime * 0.01f;
-                }
-                if (Art == 2)
-                {
-                    _speedY -= 0.005f * (float)_passedTime;
-                    _movement.Y += _speedY * (float)_passedTime * 0.015f;
-                }
-                //unter Block ist kein Wasser 
-
-
-                var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
-
-                if (_collInfo.ContainsKey(Direction.Bottom))
-                    _speedY = 0;
-
-                if (Art != 0)// && _speedY != 0)
-                    Position += _movement;
-
-
-                //Kollision mit Pressure Plate
-                Vector3 KolHelp = new Vector3(0, -0.01f, 0);
-                _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
-                for (int x = -1; x < 2; x++)
-                {
-                    for (int y = -1; y < 2; y++)
-                    {
-                        for (int z = -1; z < 2; z++)
-                        {
-                            ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
-                            if (_collInfo.ContainsKey(Direction.Bottom) &&
-                            _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
-                            {
-                                if (_obj != null && _obj.Type == WorldBlock.PressurePlateUp)
-                                {
-                                    (_obj as PressurePlate).press();
-                                }
-                            /*
-                                if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
-                                {
-                                    (_obj as PressurePlate).depress();
-                                }
-                               */
-                            }
-                        }
-                    }
                 }
 
-            }
 
-          
                 //Objekt ist Tot
 
                 if (Vector3.Distance(Position, new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ)) > CD_DISTANCE)
                 {
                     _verbleibenerCD -= _passedTime;
-           
+
                     if (_verbleibenerCD <= 0)
                     {
                         Zustand = (int)State.Bereit;
                         _verbleibenerCD = 5000;
-                    //Kollision mit Pressure Plate
-                    Vector3 KolHelp = new Vector3(0, -0.01f, 0);
-                    var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
-                    for (int x = -1; x < 2; x++)
-                    {
-                        for (int y = -1; y < 2; y++)
+                        //Kollision mit Pressure Plate
+                        Vector3 KolHelp = new Vector3(0, -0.01f, 0);
+                        var _collInfo = _view.CollisionDetector.CheckCollision(ref KolHelp, this);
+                        for (int x = -1; x < 2; x++)
                         {
-                            for (int z = -1; z < 2; z++)
+                            for (int y = -1; y < 2; y++)
                             {
-                                ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
-                                if (_collInfo.ContainsKey(Direction.Bottom) &&
-                                _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
+                                for (int z = -1; z < 2; z++)
                                 {
-
-                                    if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                    ISpecialBlock _obj = _view.WorldObjects.BlockAt((int)Position.X + x, (int)(Position.Y) + y, (int)Position.Z + z);
+                                    if (_collInfo.ContainsKey(Direction.Bottom) &&
+                                    _collInfo[Direction.Bottom].WorldBlock.IsPressurePlate())
                                     {
-                                        (_obj as PressurePlate).depress();
-                                    }
 
+                                        if (_obj != null && _obj.Type == WorldBlock.PressurePlateDown)
+                                        {
+                                            (_obj as PressurePlate).press(_state);
+                                        }
+
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
                 }
-           
-            return (ref GameState _state) =>
-            {
+
+
                 if (!wasAddedToCollisionManager)
                 {
                     _state.CollisionDetector.AddObject(this);

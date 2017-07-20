@@ -90,9 +90,9 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Spikes:
                     return new Spike(_position);
                 case WorldBlock.PressurePlateUp:
-                    return new PressurePlate(_position, 0);
+                    return new PressurePlate(_position);
                 case WorldBlock.PressurePlateDown:
-                    return new PressurePlate(_position, 1);
+                    return new PressurePlate(_position);
                 default:
                     throw new NotImplementedException();
             }

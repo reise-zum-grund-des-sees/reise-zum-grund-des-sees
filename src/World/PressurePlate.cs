@@ -13,7 +13,9 @@ namespace ReiseZumGrundDesSees
     {
         public Model Model;
         ContentManager ContentManager;
-        int ChangeRequest;
+        public bool is_pressed;
+
+        private ActionSyntaxParser.GameAction OnPressed, OnReleased;
 
         public Vector3Int Position
         {
@@ -26,46 +28,59 @@ namespace ReiseZumGrundDesSees
             get; private set;
         }
 
-        public void press()
+        public void press(GameState _state)
         {
+           
 
-            if (Type == WorldBlock.PressurePlateUp)
+
+            if (is_pressed == false)
             {
-
-                ChangeRequest = 1;
-            }
-        }
-
-        public void depress()
-        {
-            ChangeRequest = 2;
-        }
-
-        public PressurePlate(Vector3Int _position, int _type)//_type= 0 up on create, 1 down
-        {
-            //für id müsste man alle erstellten Plattenpositionen speichern und wieder zuteilen, wenn Position schon mal vorhanden
-            Position = _position;
-            if (_type == 0)
-            {
-                Type = WorldBlock.PressurePlateUp;         
+                Model = ContentManager.Load<Model>(Content.MODEL_PP_UNTEN);
+                is_pressed = true;
+                OnPressed?.BaseAction(_state);           
+                _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateDown;
+                 Type = WorldBlock.PressurePlateDown;
             }
             else
             {
-                Type = WorldBlock.PressurePlateDown;
+                Model = ContentManager.Load<Model>(Content.MODEL_PP_OBEN);
+                is_pressed = false;
+                OnReleased?.BaseAction(_state);        
+                _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateUp;
+                Type = WorldBlock.PressurePlateUp;
             }
+
+        }
+   
+    
+
+        public PressurePlate(Vector3Int _position)//_type= 0 up on create, 1 down
+        {
+
+            Position = _position;
+            is_pressed = false;
+            Type = WorldBlock.PressurePlateUp;
+
         }
 
         public PressurePlate(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
-            : this(Vector3Int.Parse(_config.Items["position"]), 0)
-        { }
+            : this(Vector3Int.Parse(_config.Items["position"]))
+        {
+            if (_config.Items.ContainsKey("on_pressed"))
+            {
+                OnPressed = ActionSyntaxParser.Parse(_config.Items["on_pressed"], this, _idMapper);
+            }
+            if (_config.Items.ContainsKey("on_released"))
+            {
+                OnReleased = ActionSyntaxParser.Parse(_config.Items["on_released"], this, _idMapper);
+            }
+        }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            if (Type == WorldBlock.PressurePlateUp)
-                Model = _contentManager.Load<Model>(Content.MODEL_PP_OBEN);
-            if (Type == WorldBlock.PressurePlateDown)
-                Model = _contentManager.Load<Model>(Content.MODEL_PP_UNTEN);
+            Model = _contentManager.Load<Model>(Content.MODEL_PP_OBEN);
+       
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
@@ -93,21 +108,10 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-            //if (Type == WorldBlock.PressurePlateDown) doSth();
+  
             return (ref GameState _state) =>
             {
-                if (ChangeRequest == 1 && Type == WorldBlock.PressurePlateUp)
-                {
-                    _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateDown;
-                    Type = WorldBlock.PressurePlateDown;
-                    Model = ContentManager.Load<Model>(Content.MODEL_PP_UNTEN);
-                }
-                if (ChangeRequest == 2 && Type == WorldBlock.PressurePlateDown)
-                {
-                    _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateUp;
-                    Type = WorldBlock.PressurePlateUp;
-                    Model = ContentManager.Load<Model>(Content.MODEL_PP_OBEN);
-                }
+           
 
             };
         }
@@ -117,6 +121,11 @@ namespace ReiseZumGrundDesSees
             ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
 
             _node.Items["position"] = Position.ToString();
+
+            if (OnReleased != null)
+                _node.Items["on_released"] = OnReleased.ActionEncoding(_mapper);
+            if (OnPressed != null)
+                _node.Items["on_pressed"] = OnPressed.ActionEncoding(_mapper);
 
             return _node;
         }
