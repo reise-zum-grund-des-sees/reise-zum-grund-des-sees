@@ -30,7 +30,7 @@ namespace ReiseZumGrundDesSees
         protected readonly Vector3Int RegionSize;
         protected readonly Vector2Int RegionsCount;
 
-        public readonly Vector3 SpawnPos;
+        public Vector3 SpawnPos;
 
         public BaseWorld(ConfigFile.ConfigNode _config, string _regionPath)
         {

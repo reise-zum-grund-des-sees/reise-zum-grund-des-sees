@@ -38,6 +38,9 @@ namespace ReiseZumGrundDesSees
                 case "ReiseZumGrundDesSees.PressurePlate":
                     PressurePlate pp = new PressurePlate(_node, _idMapper);
                     return pp;
+                case "ReiseZumGrundDesSees.SaveBlock":
+                    SaveBlock sb = new SaveBlock(_node, _idMapper);
+                    return sb;
                 default:
                     throw new ArgumentException();
             }

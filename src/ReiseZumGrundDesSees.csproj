@@ -101,6 +101,7 @@
     <Compile Include="World\MovingBlock.cs" />
     <Compile Include="World\PressurePlate.cs" />
     <Compile Include="World\RenderableWorld.cs" />
+    <Compile Include="World\SaveBlock.cs" />
     <Compile Include="World\Spike.cs" />
     <Compile Include="World\VertexGenerator.cs" />
     <Compile Include="State\WorldEditor.cs" />

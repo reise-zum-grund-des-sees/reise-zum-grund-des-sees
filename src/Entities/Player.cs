@@ -34,6 +34,7 @@ namespace ReiseZumGrundDesSees
         bool Jumpcd;//Cooldown zwischen zwei Sprüngen, damit nicht beide gleichzeitig getriggert werden
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
+        double Savecd;
         public double Healthcd { get; private set; }
         public float Blickrichtung { get; private set; } //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
@@ -86,6 +87,7 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+
             if (!_flags.HasFlag(GameFlags.GameRunning) | _flags.HasFlag(GameFlags.EditorMode))
                 return null;
 
@@ -283,6 +285,7 @@ namespace ReiseZumGrundDesSees
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
+            Savecd += _passedTime;
 
             //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 500)
@@ -376,12 +379,37 @@ namespace ReiseZumGrundDesSees
             foreach (PlayerBlock b in Blöcke)
                 blockUpdateList.Add(b.Update(_stateView, _flags, _inputArgs, _passedTime));
 
-            //Health<=0 -> sterbe
-            if (Health <= 0) gestorben();
+        
             return (ref GameState _state) =>
             {
+
+                //Health<=0 -> sterbe
+                if (Health <= 0) gestorben(_state);
+           
                 this.Position += _movement;
                 //Console.WriteLine(Position);
+
+                //Speicher Block berühren
+                if (Savecd > 1000)
+                {
+                    for (int x = -2; x < 3; x++)
+                    for (int y = -2; y < 3; y++)
+                        for (int z = -2; z < 3; z++)
+                        {                     
+                            ISpecialBlock _obj = _stateView.WorldObjects.BlockAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
+                            if (_obj != null && _obj.Type == WorldBlock.SaveBlock)
+                            {
+                                float _dist = ChebyshevDistance(Position, _obj.Position + new Vector3(0.5f, 0.5f, 0.5f));
+                            
+                                if (Position.Y >= _obj.Position.Y -1.5f && Position.Y<_obj.Position.Y+0.1f && Math.Abs(Position.X-(_obj.Position.X+0.5f))<= 0.8f && Math.Abs(Position.Z - (_obj.Position.Z + 0.5f)) <= 0.8f)
+                                {
+                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), (int)(Position.Y - 0.3f),(int)(Position.Z+0.5f) );
+                                    Savecd = 0;
+                                    soundEffects[7].Play();
+                                }
+                            }
+                        }
+                        }
 
                 //Lever press
                 if (_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
@@ -440,13 +468,13 @@ namespace ReiseZumGrundDesSees
             Position += _movement;
         }
 
-        public void gestorben()
+        public void gestorben(GameState _state)
         {
             soundEffects[1].Play();
             Health = MaxHealth; //Leben wieder voll
             for (int i = 0; i < Blöcke.Count; i++)
                 (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete; //Bloeke zuruecksetzen
-            Position = new Vector3(146.5f, 34, 194.5f); //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
+            Position = _state.World.SpawnPos; //Position zuruecksetzen, Hardcoded, da man nicht an new Vector3(_world.SpawnPosX, _world.SpawnPosY, _world.SpawnPosZ) rankommt
         }
 
         public void Hit()
@@ -480,6 +508,7 @@ namespace ReiseZumGrundDesSees
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SAVE)); //wenn save
 
             foreach (var _block in Blöcke)
                 _block.Initialize(_graphicsDevice, _contentManager);

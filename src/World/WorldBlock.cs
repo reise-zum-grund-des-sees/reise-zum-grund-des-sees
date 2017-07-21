@@ -21,6 +21,7 @@ namespace ReiseZumGrundDesSees
         Spikes,
         PressurePlateUp,
         PressurePlateDown,
+        SaveBlock,
         Water4Infinite,
         Unknown
     }
@@ -35,6 +36,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Spikes:
                 case WorldBlock.PressurePlateUp:
                 case WorldBlock.PressurePlateDown:
+                case WorldBlock.SaveBlock:
                     return true;
                 default:
                     return false;
@@ -48,6 +50,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water4:
                 case WorldBlock.Water4Infinite:
                 case WorldBlock.Lever:
+                case WorldBlock.SaveBlock:
                 case WorldBlock.Wall:
                     return true;
                 default:
@@ -93,6 +96,8 @@ namespace ReiseZumGrundDesSees
                     return new PressurePlate(_position);
                 case WorldBlock.PressurePlateDown:
                     return new PressurePlate(_position);
+                case WorldBlock.SaveBlock:
+                    return new SaveBlock(_position);
                 default:
                     throw new NotImplementedException();
             }
@@ -105,6 +110,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Wall:
                 case WorldBlock.InvisibleWall:
                 case WorldBlock.Unknown:
+                case WorldBlock.SaveBlock:
                     return new Vector3(1.00f, 1.00f, 1.00f);
                 case WorldBlock.Water4:
                 case WorldBlock.Water4Infinite:
@@ -170,6 +176,7 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Unknown:
                 case WorldBlock.PressurePlateUp:
                 case WorldBlock.PressurePlateDown:
+                case WorldBlock.SaveBlock:
                     return true;
                 default:
                     return false;

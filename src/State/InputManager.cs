@@ -90,6 +90,10 @@ namespace ReiseZumGrundDesSees
             {
                 _eventList |= InputEventList.PlaceMovingBlockEnd;
             }
+            if (_keyboardState.IsKeyDown(Keys.D0))
+            {
+                _eventList |= InputEventList.PlaceSaveBlock;
+            }
             if (_keyboardState.IsKeyDown(Keys.LeftAlt))
             {
                 _eventList |= InputEventList.PlaceEnemy;
@@ -259,6 +263,8 @@ namespace ReiseZumGrundDesSees
         PlaceEnemy = 1UL << 34,
 
         IncreaseViewDistance = 1UL << 35,
-        DecreaseViewDistance = 1UL << 36
+        DecreaseViewDistance = 1UL << 36,
+
+        PlaceSaveBlock = 1UL << 37
     }
 }

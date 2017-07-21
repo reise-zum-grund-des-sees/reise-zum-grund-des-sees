@@ -497,3 +497,9 @@
 /processorParam:TextureFormat=Compressed
 /build:models/Knopf_gedrückt2.fbx
 
+#begin sound/save.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/save.wav
+

@@ -59,7 +59,8 @@ namespace ReiseZumGrundDesSees
             PutEnemy3 = 1 << 22,
             PutEnemy4 = 1 << 23,
             PutEnemy5 = 1 << 24,
-            CursorToPlayer = 1 << 25
+            CursorToPlayer = 1 << 25,
+            PutSaveBlock = 1 << 26
          
         }
 
@@ -251,6 +252,9 @@ namespace ReiseZumGrundDesSees
             else if (_inputEvents.HasFlag(InputEventList.Sprint)) //Sprint Taste portet Cursor zum Spieler
                 _actions |= Actions.CursorToPlayer;
 
+            else if (_inputEvents.HasFlag(InputEventList.PlaceSaveBlock)) //Sprint Taste portet Cursor zum Spieler
+                _actions |= Actions.PutSaveBlock;
+
             return _actions;
         }
 
@@ -391,6 +395,9 @@ namespace ReiseZumGrundDesSees
             }
             else if (_actions.HasFlag(Actions.CursorToPlayer))
                 Position = new Vector3((int)(_state.Player.Position.X), (int)(_state.Player.Position.Y), (int)(_state.Player.Position.Z));
+
+            else if (_actions.HasFlag(Actions.PutSaveBlock))
+                _state.World.Blocks[x, y, z] = WorldBlock.SaveBlock;
         }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
