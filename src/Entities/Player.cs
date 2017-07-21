@@ -411,8 +411,11 @@ namespace ReiseZumGrundDesSees
                     _collisionInformation[Direction.Bottom].CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
                     _collisionInformation[Direction.Bottom].Object is IHitable h)
                 {
-                    h.Hit();
-                    soundEffects[4].Play();
+                  
+                    if (h.wasHit() == false) { 
+                        h.Hit();
+                        soundEffects[4].Play();
+                    }
                 }
 
                 if (!wasAddedToCollisionManager)
@@ -455,7 +458,13 @@ namespace ReiseZumGrundDesSees
                 soundEffects[2].Play();
             }
         }
-
+        public bool wasHit()
+        {
+            if (Healthcd == 0)
+                return true;
+            else
+                return false;
+        }
 
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {

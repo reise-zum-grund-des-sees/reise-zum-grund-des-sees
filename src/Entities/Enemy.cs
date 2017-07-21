@@ -31,6 +31,8 @@ namespace ReiseZumGrundDesSees
         private bool wasAddedToCollisionManager = false;
         private bool disposed = false;
 
+        public bool _wasHit = false;
+        double disposedTimer = 0;
         public bool HasMultipleHitboxes => false;
         public Hitbox Hitbox { get; private set; }
         public Hitbox[] Hitboxes => throw new NotImplementedException();
@@ -86,150 +88,172 @@ namespace ReiseZumGrundDesSees
             if (!_flags.HasFlag(GameFlags.GameRunning))
                 return null;
 
-            int Aggrorange = 15;
-            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
-                (_block) => true,
-                (_obj) => !(_obj is Geschoss));
+            if (_wasHit == false) {
+                int Aggrorange = 15;
+                Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
+                    (_block) => true,
+                    (_obj) => !(_obj is Geschoss));
 
-            Vector3 _movement = new Vector3(0, 0, 0);
+                Vector3 _movement = new Vector3(0, 0, 0);
 
-            Vector3 EnemytoPlayer = Vector3.Subtract(new Vector3(_view.PlayerX, _view.PlayerY+0.5f, _view.PlayerZ), Position);
-            EnemytoPlayer.Normalize();
-            Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), EnemytoPlayer)); //Rotation in Rad
-            if (EnemytoPlayer.X > 0) Rotate *= -1;
+                Vector3 EnemytoPlayer = Vector3.Subtract(new Vector3(_view.PlayerX, _view.PlayerY + 0.5f, _view.PlayerZ), Position);
+                EnemytoPlayer.Normalize();
+                Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), EnemytoPlayer)); //Rotation in Rad
+                if (EnemytoPlayer.X > 0) Rotate *= -1;
 
-            if (Gegnerart == Art.Moving || Gegnerart == Art.Climbing || Gegnerart == Art.Jumping || Gegnerart == Art.MandS)
-            {
-                _movement.Y -= 0.005f * (float)_passedTime;
-                if (Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange)
+                if (Gegnerart == Art.Moving || Gegnerart == Art.Climbing || Gegnerart == Art.Jumping || Gegnerart == Art.MandS)
                 {
-                    IdleTimer = 0;
-
-                    if (HitPlayer == false)
+                    _movement.Y -= 0.005f * (float)_passedTime;
+                    if (Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange)
                     {
-                        HitTimer = 0;
+                        IdleTimer = 0;
 
-                        _movement.X += EnemytoPlayer.X * (float)(_passedTime * 0.0025f);
-                        _movement.Z += EnemytoPlayer.Z * (float)(_passedTime * 0.0025f);
+                        if (HitPlayer == false)
+                        {
+                            HitTimer = 0;
+
+                            _movement.X += EnemytoPlayer.X * (float)(_passedTime * 0.0025f);
+                            _movement.Z += EnemytoPlayer.Z * (float)(_passedTime * 0.0025f);
+                        }
+                        if (HitPlayer == true)
+                        {
+                            HitTimer += _passedTime;
+                            Rotate *= -1;
+                            _movement.X -= EnemytoPlayer.X * (float)(_passedTime * 0.0025f);
+                            _movement.Z -= EnemytoPlayer.Z * (float)(_passedTime * 0.0025f);
+                        }
                     }
-                    if (HitPlayer == true)
+                    else //idlemovement
                     {
-                        HitTimer += _passedTime;
-                        Rotate *= -1;
-                        _movement.X -= EnemytoPlayer.X * (float)(_passedTime * 0.0025f);
-                        _movement.Z -= EnemytoPlayer.Z * (float)(_passedTime * 0.0025f);
+
+                        HitPlayer = false;
+                        if (IdleTimer == 0) SpawnPosition = Position;
+                        if (IdleTimer >= 2000) IdleTimer = 1;
+                        Random rnd = new Random();
+                        if (IdleTimer == 1)
+                        {
+                            Random = new Vector2((float)rnd.NextDouble() * 2 - 1f, (float)rnd.NextDouble() * 2 - 1f);
+                            Random.Normalize();
+
+                        }
+                        if (Vector3.Distance(new Vector3(Position.X + Random.X * (float)(_passedTime * 0.0025f), Position.Y, Position.Z + Random.Y * (float)(_passedTime * 0.0025f)), SpawnPosition) < 5f)
+                        {
+                            _movement.X += Random.X * (float)(_passedTime * 0.00125f);
+                            _movement.Z += Random.Y * (float)(_passedTime * 0.00125f);
+                        }
+                        //Blickrichtung
+
+                        Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), new Vector3(Random.X, 0, Random.Y))); //Rotation in Rad
+                        if (Random.X > 0) Rotate *= -1;
+                        IdleTimer += _passedTime;
+                    }
+                    if (HitTimer > 1000) HitPlayer = false;
+                }
+
+                var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
+
+                if (Gegnerart == Art.Climbing) //Klettere über Bloecke
+                {
+                    if ((_collInfo.ContainsKey(Direction.Front) ||
+                         _collInfo.ContainsKey(Direction.Back) ||
+                         _collInfo.ContainsKey(Direction.Right) ||
+                         _collInfo.ContainsKey(Direction.Left)))
+                    {
+                        _movement.Y += (float)(_passedTime * 0.01f);
                     }
                 }
-                else //idlemovement
+
+                if (Gegnerart == Art.Jumping)//Springe
                 {
-
-                    HitPlayer = false;
-                    if (IdleTimer == 0) SpawnPosition = Position;
-                    if (IdleTimer >= 2000) IdleTimer = 1;
-                    Random rnd = new Random();
-                    if (IdleTimer == 1)
+                    if (Jumptimer == 0 && (_collInfo.ContainsKey(Direction.Front) ||
+                                           _collInfo.ContainsKey(Direction.Back) ||
+                                           _collInfo.ContainsKey(Direction.Right) ||
+                                           _collInfo.ContainsKey(Direction.Left)))
                     {
-                        Random = new Vector2((float)rnd.NextDouble() * 2 - 1f, (float)rnd.NextDouble() * 2 - 1f);
-                        Random.Normalize();
-
+                        speedY += 0.9f;
                     }
-                    if (Vector3.Distance(new Vector3(Position.X + Random.X * (float)(_passedTime * 0.0025f), Position.Y, Position.Z + Random.Y * (float)(_passedTime * 0.0025f)), SpawnPosition) < 5f)
-                    {
-                        _movement.X += Random.X * (float)(_passedTime * 0.00125f);
-                        _movement.Z += Random.Y * (float)(_passedTime * 0.00125f);
-                    }
-                    //Blickrichtung
+                    Jumptimer += _passedTime;
 
-                    Rotate = Math.Acos(Vector3.Dot(new Vector3(0, 0, -1), new Vector3(Random.X, 0, Random.Y))); //Rotation in Rad
-                    if (Random.X > 0) Rotate *= -1;
-                    IdleTimer += _passedTime;
+                    speedY -= 0.005f * (float)_passedTime;
+                    if (speedY < 0) speedY = 0;
+                    if (_collInfo.ContainsKey(Direction.Bottom)) Jumptimer = 0;
+                    _movement.Y += speedY * (float)_passedTime * 0.01f;
                 }
-                if (HitTimer > 1000) HitPlayer = false;
-            }
 
-            var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
-
-            if (Gegnerart == Art.Climbing) //Klettere über Bloecke
-            {
-                if ((_collInfo.ContainsKey(Direction.Front) ||
-                     _collInfo.ContainsKey(Direction.Back) ||
-                     _collInfo.ContainsKey(Direction.Right) ||
-                     _collInfo.ContainsKey(Direction.Left)))
+                if (Gegnerart == Art.Shooting || Gegnerart == Art.MandS)//Shoot
                 {
-                    _movement.Y += (float)(_passedTime * 0.01f);
-                }
-            }
-
-            if (Gegnerart == Art.Jumping)//Springe
-            {
-                if (Jumptimer == 0 && (_collInfo.ContainsKey(Direction.Front) ||
-                                       _collInfo.ContainsKey(Direction.Back) ||
-                                       _collInfo.ContainsKey(Direction.Right) ||
-                                       _collInfo.ContainsKey(Direction.Left)))
-                {
-                    speedY += 0.9f;
-                }
-                Jumptimer += _passedTime;
-
-                speedY -= 0.005f * (float)_passedTime;
-                if (speedY < 0) speedY = 0;
-                if (_collInfo.ContainsKey(Direction.Bottom)) Jumptimer = 0;
-                _movement.Y += speedY * (float)_passedTime * 0.01f;
-            }
-
-            if (Gegnerart == Art.Shooting || Gegnerart == Art.MandS)//Shoot
-            {
-                if (Geschosstimer > 1000) Geschosstimer = 0;//1 Schuss pro Sekunde
-                if (Geschosstimer == 0 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange
-                && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY +0.25f, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
-                {
-                    //nicht schießen, wenn Block dazwischen in 2 Reichweite
-                    bool dazwischen = false;
-                    int dis =(int) Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY + 0.25f, _view.PlayerZ), Position);
-                    for (int i = 0; i < dis; i++) { 
-                    if (_view.BlockWorld[(int)(Position.X+i*EnemytoPlayer.X), (int)(Position.Y + 0.25f+i*EnemytoPlayer.Y), (int)(Position.Z+i*EnemytoPlayer.Z)] == WorldBlock.Wall)                       
+                    if (Geschosstimer > 1000) Geschosstimer = 0;//1 Schuss pro Sekunde
+                    if (Geschosstimer == 0 && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY, _view.PlayerZ), Position) <= Aggrorange
+                    && Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY + 0.25f, _view.PlayerZ), Position) > 2f)//Schieße nicht in Nahkampfreichweite
                     {
-                        dazwischen = true;
+                        //nicht schießen, wenn Block dazwischen in 2 Reichweite
+                        bool dazwischen = false;
+                        int dis = (int)Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY + 0.25f, _view.PlayerZ), Position);
+                        for (int i = 0; i < dis; i++) {
+                            if (_view.BlockWorld[(int)(Position.X + i * EnemytoPlayer.X), (int)(Position.Y + 0.25f + i * EnemytoPlayer.Y), (int)(Position.Z + i * EnemytoPlayer.Z)] == WorldBlock.Wall)
+                            {
+                                dazwischen = true;
+                            }
+                        }
+                        if (dazwischen == false)
+                        {
+                            new Geschoss(ContentManager, new Vector3(Position.X, Position.Y + 0.25f, Position.Z), EnemytoPlayer);
+                            soundEffects[0].Play();
+                        }
                     }
-                    }
-                    if (dazwischen == false)
-                    {
-                        new Geschoss(ContentManager, new Vector3(Position.X, Position.Y + 0.25f, Position.Z), EnemytoPlayer);
-                        soundEffects[0].Play();
-                    }
+                    Geschosstimer += _passedTime;
                 }
-                Geschosstimer += _passedTime;
-            }
 
 
 
-            return (ref GameState _state) =>
-            {
-                this.Position += _movement;
+                return (ref GameState _state) =>
+                {
+                    this.Position += _movement;
 
-                foreach (var _item in _collInfo)
-                    if (_item.Value.CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
-                        _item.Value.Object is IPlayer p &&
-                        !HitPlayer)
+                    foreach (var _item in _collInfo)
+                        if (_item.Value.CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
+                            _item.Value.Object is IPlayer p &&
+                            !HitPlayer)
                     {
                         p.Hit();
                         HitPlayer = true;
                     }
 
-                if (disposed)
+                    if (disposed)
+                    {
+                        if (wasAddedToCollisionManager)
+                            _state.CollisionDetector.RemoveObject(this);
+                        EnemyList.Remove(this);
+                    }
+                    else if (!wasAddedToCollisionManager)
+                    {
+                        _state.CollisionDetector.AddObject(this);
+                        wasAddedToCollisionManager = true;
+                    }
+                };
+            }
+            else // enemies are dead
+            {
+                return (ref GameState _state) =>
                 {
+                    if (disposedTimer > 1000)
+                        disposed = true;
+
+                    disposedTimer += _passedTime;
+
                     if (wasAddedToCollisionManager)
                         _state.CollisionDetector.RemoveObject(this);
-                    EnemyList.Remove(this);
-                }
-                else if (!wasAddedToCollisionManager)
-                {
-                    _state.CollisionDetector.AddObject(this);
-                    wasAddedToCollisionManager = true;
-                }
-            };
-        }
 
+                    if (disposed)
+                    {                   
+                        EnemyList.Remove(this);
+                    }
+                   
+
+
+                };
+            }
+        }
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
@@ -248,7 +272,10 @@ namespace ReiseZumGrundDesSees
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
+                    if(this._wasHit==false)
                     effect.World = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
+                    else
+                    effect.World = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
 
                     effect.View = _viewMatrix;
 
@@ -264,7 +291,11 @@ namespace ReiseZumGrundDesSees
 
         public void Hit()
         {
-            disposed = true;
+            _wasHit = true;
+        }
+        public bool wasHit()
+        {
+            return _wasHit;
         }
     }
 }

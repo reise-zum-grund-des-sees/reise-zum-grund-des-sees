@@ -9,5 +9,6 @@ namespace ReiseZumGrundDesSees
     interface IHitable
     {
         void Hit();
+        bool wasHit();
     }
 }
