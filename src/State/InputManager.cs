@@ -48,7 +48,12 @@ namespace ReiseZumGrundDesSees
                 else _eventList |= InputEventList.Record;
             }
 
-            if (_keyboardState.IsKeyDown(Keys.D1))
+            if (_keyboardState.IsKeyDown(Keys.F2))
+            {
+                _eventList |= InputEventList.Port;
+            }
+
+                if (_keyboardState.IsKeyDown(Keys.D1))
             {
                 _eventList |= InputEventList.LeichterBlock;
                 _eventList |= InputEventList.PlaceWater1;
@@ -265,6 +270,7 @@ namespace ReiseZumGrundDesSees
         IncreaseViewDistance = 1UL << 35,
         DecreaseViewDistance = 1UL << 36,
 
-        PlaceSaveBlock = 1UL << 37
+        PlaceSaveBlock = 1UL << 37,
+        Port = 1UL <<38
     }
 }

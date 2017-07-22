@@ -249,7 +249,7 @@ namespace ReiseZumGrundDesSees
             else if (_inputEvents.HasFlag(InputEventList.PlaceMovingBlockEnd))
                 _actions |= Actions.PutMovingBlockEnd;
 
-            else if (_inputEvents.HasFlag(InputEventList.Sprint)) //Sprint Taste portet Cursor zum Spieler
+            else if (_inputEvents.HasFlag(InputEventList.Port)) //Sprint Taste portet Cursor zum Spieler
                 _actions |= Actions.CursorToPlayer;
 
             else if (_inputEvents.HasFlag(InputEventList.PlaceSaveBlock)) //Sprint Taste portet Cursor zum Spieler

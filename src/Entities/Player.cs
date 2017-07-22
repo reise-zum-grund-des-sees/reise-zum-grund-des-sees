@@ -313,32 +313,26 @@ namespace ReiseZumGrundDesSees
             Savecd += _passedTime;
 
             //Soundeffekt wenn nicht bereit
-            bool BlockReadyL = true;
-            bool BlockReadyM = true;
-            bool BlockReadyS = true;
             AnzahlBlockReadyL = 0;
             AnzahlBlockReadyM = 0;
             AnzahlBlockReadyS = 0;
             for (int i = 0; i < Blöcke.Count; i++)
             {
-                if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
-                    BlockReadyL = false;
+      
                 if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
                     AnzahlBlockReadyL++;
-                if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
-                    BlockReadyM = false;
+           
                 if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
                     AnzahlBlockReadyM++;
-                if (Blöcke[i].CurrentState != PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
-                    BlockReadyS = false;
+             
                 if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
                     AnzahlBlockReadyS++;
             }
-            if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && BlockReadyL == false)
+            if (Blockcd > 300 && _inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && AnzahlBlockReadyL==0)
                 soundEffects[5].Play();
-            if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && BlockReadyM == false)
+            if (Blockcd > 300 && _inputArgs.Events.HasFlag(InputEventList.MittelschwererBlock) && AnzahlBlockReadyM == 0)
                 soundEffects[5].Play();
-            if (Blockcd > 100 && _inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && BlockReadyS == false)
+            if (Blockcd > 300 && _inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && AnzahlBlockReadyS == 0)
                 soundEffects[5].Play();
 
 
