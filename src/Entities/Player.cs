@@ -335,6 +335,16 @@ namespace ReiseZumGrundDesSees
             if (Blockcd > 300 && _inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && AnzahlBlockReadyS == 0)
                 soundEffects[5].Play();
 
+            //wenn nicht in einer Wand
+            Vector3 BlickBlock = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(_stateView.Player.Blickrichtung));
+            BlickBlock.Normalize();
+            Vector3 PositionBlock = Position - new Vector3(BlickBlock.X * 1.5f, 0, BlickBlock.Z * 1.5f);
+            bool col = false;
+            for (int a = -1; a <= 0; a++)
+                for (int c = -1; c <= 0; c++)
+                    if (!_stateView.BlockWorld[(int)(PositionBlock.X + a + 0.5f), (int)(PositionBlock.Y), (int)(PositionBlock.Z + c + 0.5f)].CanPutBlock() ||
+                    !_stateView.BlockWorld[(int)(PositionBlock.X + a + 0.5f), (int)(PositionBlock.Y + 0.95), (int)(PositionBlock.Z + c + 0.5f)].CanPutBlock())
+                        col = true;
 
             //Setzen von Blöcken
             if (_inputArgs.Events.HasFlag(InputEventList.LeichterBlock) && Blockcd > 500)
@@ -343,10 +353,15 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Light)
                     {
+                   
+                        if(col==false)
+                        {
                         Blockcd = 0;
                         (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
                         soundEffects[3].Play();
                         break;
+                        }
+                        else soundEffects[5].Play();
                     }
 
             }
@@ -356,10 +371,14 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Medium)
                     {
-                        Blockcd = 0;
-                        (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
-                        soundEffects[3].Play();
-                        break;
+                        if (col == false)
+                        {
+                            Blockcd = 0;
+                            (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
+                            soundEffects[3].Play();
+                            break;
+                        }
+                        else soundEffects[5].Play();
                     }
             }
             if (_inputArgs.Events.HasFlag(InputEventList.SchwererBlock) && Blockcd > 500)
@@ -368,10 +387,14 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     if (Blöcke[i].CurrentState == PlayerBlock.State.Bereit && Blöcke[i].BlockType == PlayerBlock.Type.Heavy)
                     {
-                        Blockcd = 0;
-                        (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
-                        soundEffects[3].Play();
-                        break;
+                        if (col == false)
+                        {
+                            Blockcd = 0;
+                            (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Übergang;
+                            soundEffects[3].Play();
+                            break;
+                        }
+                        else soundEffects[5].Play();
                     }
             }
          
