@@ -165,36 +165,48 @@ namespace ReiseZumGrundDesSees
                 _actions |= Actions.MoveForwards;
                 b = 0;
             }
+            else if (!_inputEvents.HasFlag(InputEventList.MoveForwards))
+                b = movementSpeed + 1;
 
             if (_inputEvents.HasFlag(InputEventList.MoveBackwards) & (f > movementSpeed | replaying))
             {
                 _actions |= Actions.MoveBack;
                 f = 0;
             }
+            else if (!_inputEvents.HasFlag(InputEventList.MoveBackwards))
+                f = movementSpeed + 1;
 
             if (_inputEvents.HasFlag(InputEventList.MoveLeft) & (r > movementSpeed | replaying))
             {
                 _actions |= Actions.MoveLeft;
                 r = 0;
             }
+            else if (!_inputEvents.HasFlag(InputEventList.MoveLeft))
+                r = movementSpeed + 1;
 
             if (_inputEvents.HasFlag(InputEventList.MoveRight) & (l > movementSpeed | replaying))
             {
                 _actions |= Actions.MoveRight;
                 l = 0;
             }
+            else if (!_inputEvents.HasFlag(InputEventList.MoveRight))
+                l = movementSpeed + 1;
 
             if (_inputEvents.HasFlag(InputEventList.MoveUp) & (u > movementSpeed | replaying))
             {
                 _actions |= Actions.MoveUp;
                 u = 0;
             }
+            else if (!_inputEvents.HasFlag(InputEventList.MoveUp))
+                u = movementSpeed + 1;
 
             if (_inputEvents.HasFlag(InputEventList.MoveDown) & (d > movementSpeed | replaying))
             {
                 _actions |= Actions.MoveDown;
                 d = 0;
             }
+            else if (!_inputEvents.HasFlag(InputEventList.MoveDown))
+                d = movementSpeed + 1;
 
             int x = (int)Position.X;
             int y = (int)Position.Y;
@@ -278,7 +290,7 @@ namespace ReiseZumGrundDesSees
             if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
                 _scaling = 10f;
 
-            float _direction = (float)Math.Round(-_state.Camera.Angle * 4 / MathHelper.TwoPi) * MathHelper.TwoPi / 4f;
+            float _direction = (float)Math.Round(-_state.Camera.Azimuth * 4 / MathHelper.TwoPi) * MathHelper.TwoPi / 4f;
             _difference = Vector3.Transform(_difference, Quaternion.CreateFromAxisAngle(Vector3.Up, _direction));
 
             if (_difference.X >= 1 / Math.Sqrt(2)) Position += Vector3.Right * _scaling;

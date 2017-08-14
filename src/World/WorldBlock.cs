@@ -21,8 +21,8 @@ namespace ReiseZumGrundDesSees
         Spikes,
         PressurePlateUp,
         PressurePlateDown,
-        SaveBlock,
         Water4Infinite,
+        SaveBlock,
         Unknown
     }
 

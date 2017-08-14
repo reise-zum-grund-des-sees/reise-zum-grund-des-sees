@@ -27,6 +27,8 @@ namespace ReiseZumGrundDesSees
 
         private List<Point> invalidatedChunks = new List<Point>();
 
+        private GameState.View lastGameState;
+
         public RenderableWorld(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper, string _baseDir) : base(_config, _idMapper, _baseDir)
         {
             Vertices = new VertexPositionColorTexture[RegionsCount.X, RegionsCount.Y][];
@@ -76,6 +78,8 @@ namespace ReiseZumGrundDesSees
 
         public override UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
+            lastGameState = _view;
+
             if (_inputArgs.Events.HasFlag(InputEventList.IncreaseViewDistance))
             {
                 viewDistance += 0.1f;
@@ -153,11 +157,22 @@ namespace ReiseZumGrundDesSees
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
         {
-            foreach (var _obj in specialBlocks)
-                _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+            if (lastGameState.Camera != null)
+            {
+                foreach (var _obj in specialBlocks)
+                    if (Vector2.Distance(
+                            new Vector2(_obj.Key.X, _obj.Key.Z),
+                            new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
+                        < viewDistance)
+                        _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
 
-            foreach (var _obj in objects)
-                _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+                foreach (var _obj in objects)
+                    if (Vector2.Distance(
+                            new Vector2(_obj.Position.X, _obj.Position.Z),
+                            new Vector2(lastGameState.Camera.Position.X, lastGameState.Camera.Position.Z))
+                        < viewDistance)
+                        _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+            }
 
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;

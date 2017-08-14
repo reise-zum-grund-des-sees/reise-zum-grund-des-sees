@@ -19,7 +19,7 @@ namespace ReiseZumGrundDesSees
     {
         IReadonlyPositionObject Center { get; }
         Matrix CalculateViewMatrix();
-        float Angle { get; }
+        float Azimuth { get; }
     }
 
 	class Camera : ICamera
@@ -27,7 +27,8 @@ namespace ReiseZumGrundDesSees
         public IReadonlyPositionObject Center { get; set; }
 		public Vector3 Position { get; private set; }
         public Vector3 LookAt;
-        public float Angle { get; private set; }
+        public float Azimuth { get; private set; }
+        public float Altitude { get; private set; }
 
         public Camera()
         {
@@ -39,9 +40,10 @@ namespace ReiseZumGrundDesSees
                 LookAt = Center.Position;
             Vector2 _diffToPlayer = new Vector2(7, 10);
             Vector3 _position =
-                new Vector3(LookAt.X - (float)Math.Sin(Angle) * _diffToPlayer.Y,
-                LookAt.Y + _diffToPlayer.X,
-                LookAt.Z + (float)Math.Cos(Angle) * _diffToPlayer.Y);
+                new Vector3(
+                    LookAt.X - (float)Math.Sin(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.Y,
+                    LookAt.Y + (float)Math.Sin(Altitude) * _diffToPlayer.X,
+                    LookAt.Z + (float)Math.Cos(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.Y);
             return Matrix.CreateLookAt(_position, LookAt + new Vector3(0, 2, 0), Vector3.UnitY);
           
         }
@@ -62,7 +64,18 @@ namespace ReiseZumGrundDesSees
             {
                 if (_flags.HasFlag(GameFlags.GameRunning))
                 {
-                    Angle += _inputArgs.MouseMovementRelative.X * 10f;
+                    Azimuth += _inputArgs.MouseMovementRelative.X * 10f;
+                    if (Azimuth > MathHelper.TwoPi)
+                        Azimuth -= MathHelper.TwoPi;
+                    if (Azimuth < -MathHelper.TwoPi)
+                        Azimuth += MathHelper.TwoPi;
+
+                    Altitude += _inputArgs.MouseMovementRelative.Y * 10f;
+                    if (Altitude > MathHelper.PiOver2 * 0.95f)
+                        Altitude = MathHelper.PiOver2 * 0.95f;
+                    if (Altitude < 0)//-MathHelper.PiOver2)
+                        Altitude = 0;//-MathHelper.PiOver2;
+
                     if (Center != null)
                         LookAt = Center.Position;
                 }

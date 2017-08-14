@@ -243,7 +243,7 @@ namespace ReiseZumGrundDesSees
             DebugHelper.Information.TotalGameTime = gameTime.TotalGameTime;
             DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
             DebugHelper.Information.EditorCursorPosition = editor?.Position ?? Vector3.Zero;
-            DebugHelper.Information.CameraRotation = GameState.Camera?.Angle ?? 0;
+            DebugHelper.Information.CameraRotation = GameState.Camera?.Azimuth ?? 0;
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);

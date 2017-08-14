@@ -79,6 +79,7 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State\WorldEditor.cs" />
+    <Compile Include="World\SaveBlock.cs" />
     <Compile Include="World\Spike.cs" />
     <Compile Include="World\VertexGenerator.cs" />
     <Compile Include="World\WaterSimmulation.cs" />
