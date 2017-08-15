@@ -159,18 +159,20 @@ namespace ReiseZumGrundDesSees
         {
             if (lastGameState.Camera != null)
             {
-                foreach (var _obj in specialBlocks)
+                foreach (var _obj in specialBlocks)                    
                     if (Vector2.Distance(
                             new Vector2(_obj.Key.X, _obj.Key.Z),
                             new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
                         < viewDistance)
+                       
                         _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
 
-                foreach (var _obj in objects)
+                foreach (var _obj in objects)                  
                     if (Vector2.Distance(
                             new Vector2(_obj.Position.X, _obj.Position.Z),
-                            new Vector2(lastGameState.Camera.Position.X, lastGameState.Camera.Position.Z))
+                            new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
                         < viewDistance)
+                       
                         _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
             }
 
