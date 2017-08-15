@@ -113,8 +113,9 @@ namespace ReiseZumGrundDesSees
 
             //add Aufsammelbare Player Blöcke
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(169.5f,34,216.5f), 0));
-                initializeList.Add(GetPlayerBlock.GetPlayerBlockList[0]);
-
+            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(176.5f, 36, 166.5f), 1));
+            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[0]);
+            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[1]);
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 initializeList.Add(Enemy.EnemyList[i]);
             base.Initialize();
