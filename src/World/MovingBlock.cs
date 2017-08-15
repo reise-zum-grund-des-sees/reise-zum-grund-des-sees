@@ -20,6 +20,7 @@ namespace ReiseZumGrundDesSees
 
         public Vector3 Position { get; set; }
 
+        bool movedbefore = true;
         public MovingBlock(List<Vector3> _positionMarks)
         {
          
@@ -32,6 +33,13 @@ namespace ReiseZumGrundDesSees
 
         public MovingBlock(ConfigFile.ConfigNode _node, ObjectIDMapper _idMapper)
         {
+            if (_node.Items["moving"].ToString() == "true")
+                moving = true;
+            else
+            {
+                moving = false;
+                movedbefore = false;
+            }
             List<Vector3> _positionMarks = new List<Vector3>();
             int _count = _node.Nodes.Count;
             for (int i = 0; i < _count; i++)
@@ -51,6 +59,12 @@ namespace ReiseZumGrundDesSees
         public void Start()
         {
             moving = true;
+            if (movedbefore == false)
+            {
+                movedbefore = true;
+                status++;
+                status = status % positionMarks.Length;
+            }
         }
 
         public void Stop()

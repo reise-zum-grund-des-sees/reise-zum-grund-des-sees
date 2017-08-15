@@ -37,7 +37,7 @@ namespace ReiseZumGrundDesSees
             Type = WorldBlock.Lever;
             //Position = _position + new Vector3(0.5f,0.5f,0.5f);
             is_pressed = false;
-            Rotation = 0;
+         
         }
 
         public Lever(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
@@ -50,6 +50,10 @@ namespace ReiseZumGrundDesSees
             if (_config.Items.ContainsKey("on_released"))
             {
                 OnReleased = ActionSyntaxParser.Parse(_config.Items["on_released"], this, _idMapper);
+            }
+            if (_config.Items.ContainsKey("rotation"))
+            {
+                Rotation = Convert.ToDouble(_config.Items["rotation"].ToString());
             }
         }
 
@@ -112,6 +116,7 @@ namespace ReiseZumGrundDesSees
 
             _node.Items["pressed"] = is_pressed.ToString();
             _node.Items["position"] = Position.ToString();
+            _node.Items["rotation"] = Rotation.ToString();
             if (OnReleased != null)
                 _node.Items["on_released"] = OnReleased.ActionEncoding(_mapper);
             if (OnPressed != null)

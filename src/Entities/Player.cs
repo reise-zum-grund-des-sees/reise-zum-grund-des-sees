@@ -136,7 +136,10 @@ namespace ReiseZumGrundDesSees
 
             Blickrichtung += BlickrichtungAdd;
 
-            Vector3 _movement = new Vector3(0, 0, 0);
+            if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) //Port zum 2. Level
+                Position = new Vector3(250, 32, 230);
+
+                Vector3 _movement = new Vector3(0, 0, 0);
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
             {
