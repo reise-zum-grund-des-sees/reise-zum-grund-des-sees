@@ -43,6 +43,10 @@ namespace ReiseZumGrundDesSees
         public Lever(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper)
             : this(Vector3Int.Parse(_config.Items["position"]))
         {
+            if (_config.Items.ContainsKey("pressed"))
+            {
+                is_pressed = Convert.ToBoolean(_config.Items["pressed"].ToString());
+            }
             if (_config.Items.ContainsKey("on_pressed"))
             {
                 OnPressed = ActionSyntaxParser.Parse(_config.Items["on_pressed"], this, _idMapper);
@@ -55,7 +59,8 @@ namespace ReiseZumGrundDesSees
             {
                 Rotation = Convert.ToDouble(_config.Items["rotation"].ToString());
             }
-        }
+          
+            }
 
 
         public void Press(GameState _gs)
