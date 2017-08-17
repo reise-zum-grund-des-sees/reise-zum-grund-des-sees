@@ -308,6 +308,7 @@ namespace ReiseZumGrundDesSees
                     }
                     Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
                     GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
+                    soundEffects[8].Play();
                 }
             }
       
@@ -490,6 +491,7 @@ namespace ReiseZumGrundDesSees
                                     {
                                         Levercd = 0;
                                         (_obj as Lever).Press(_state);
+                                        soundEffects[9].Play();
                                     }
                                 }
                             }
@@ -573,7 +575,8 @@ namespace ReiseZumGrundDesSees
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SAVE)); //wenn save
-
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_WIN)); //wenn GetPlayerBlock
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_LEVER)); //wenn lever
 
             //Give Player Blocks on Load
             while (AnzahlBlockL > 0)
