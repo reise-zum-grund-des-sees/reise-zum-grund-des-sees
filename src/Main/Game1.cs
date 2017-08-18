@@ -262,10 +262,7 @@ namespace ReiseZumGrundDesSees
 
                 GameState.Player.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-                for (int i = 0; i < Enemy.EnemyList.Count; i++)//Draw Enemies
-                    Enemy.EnemyList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Draw Geschosse
-                    Geschoss.GeschossList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+               
                 foreach (var _renderable in worldRenderables)
                     _renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
                 foreach (var _renderable in otherRenderables)
@@ -273,8 +270,7 @@ namespace ReiseZumGrundDesSees
 
                 //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
-                for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)//Draw GetPlayerBlock
-                    GetPlayerBlock.GetPlayerBlockList[i].Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
+              
 
                 IGamer.Render(spriteBatch);
             }

@@ -76,7 +76,10 @@ namespace ReiseZumGrundDesSees
         {
             ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
 
-            _node.Items["EnemyPosition"] = Position.ToNiceString();
+            if (SpawnPosition.ToNiceString()[0].Equals("-"))
+                _node.Items["EnemyPosition"] = SpawnPosition.ToNiceString().Remove(0, 1);
+            else
+                _node.Items["EnemyPosition"] = SpawnPosition.ToNiceString();
             _node.Items["EnemyTyp"] = Gegnerart.ToString();
           
             return _node;
