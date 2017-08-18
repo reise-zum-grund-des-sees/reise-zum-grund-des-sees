@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,11 +31,22 @@ namespace ReiseZumGrundDesSees
         protected readonly Vector3Int RegionSize;
         protected readonly Vector2Int RegionsCount;
 
+        private readonly Octree<int> ContainsWaterTree = new Octree<int>(0);
+
         public Vector3 SpawnPos;
 
         public BaseWorld(ConfigFile.ConfigNode _config, string _regionPath)
         {
             Blocks = new BlockWrapper(this);
+            Blocks.OnBlockChanged += (_oldBlock, _newBlock, x, y, z) =>
+            {
+                if (_oldBlock.IsWater() ^ _newBlock.IsWater())
+                {
+                    ContainsWaterTree.ModifyValueAt(
+                        _old => _newBlock.IsWater() ? _old + 1 : _old - 1,
+                        (float)x / (RegionSize.X * RegionsCount.X), (float)y / RegionSize.Y, (float)z / (RegionSize.Z * RegionsCount.Y));
+                }
+            };
 
             string _region_size = _config["region_size"];
             RegionSize = Vector3Int.Parse(_region_size);
@@ -52,11 +64,27 @@ namespace ReiseZumGrundDesSees
                         new WorldRegion(
                             File.OpenRead(Path.Combine(_regionPath, $"{x}-{z}.region")),
                             RegionSize.X, RegionSize.Y, RegionSize.Z);
+            for (int x = 0; x < Blocks.Size.X; x++)
+                for (int z = 0; z < Blocks.Size.Z; z++)
+                    for (int y = 0; y < Blocks.Size.Y; y++)
+                        if (Blocks[x, y, z].IsWater())
+                            ContainsWaterTree.ModifyValueAt(_old => _old + 1, (float)x / Blocks.Size.X,
+                                (float)y / Blocks.Size.Y, (float)z / Blocks.Size.Z);
+            waterWatch.Start();
         }
 
         public BaseWorld(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos)
         {
             Blocks = new BlockWrapper(this);
+            Blocks.OnBlockChanged += (_oldBlock, _newBlock, x, y, z) =>
+            {
+                if (_oldBlock.IsWater() ^ _newBlock.IsWater())
+                {
+                    ContainsWaterTree.ModifyValueAt(
+                        _old => _newBlock.IsWater() ? _old + 1 : _old - 1,
+                        (float)x / (RegionSize.X * RegionsCount.X), (float)y / RegionSize.Y, (float)z / (RegionSize.Z * RegionsCount.Y));
+                }
+            };
 
             RegionsCount.X = _regionsCountX;
             RegionsCount.Y = _regionsCountZ;
@@ -76,11 +104,13 @@ namespace ReiseZumGrundDesSees
                     Regions[x, z] = new WorldRegion();
                     Regions[x, z].Blocks = new WorldBlock[RegionSize.X, RegionSize.Y, RegionSize.Z];
                 }
+            waterWatch.Start();
         }
 
         private Task<IEnumerable<KeyValuePair<Vector3Int, WorldBlock>>> blockWorldUpdateTask;
         private System.Threading.CancellationTokenSource blockWorldUpdateCancelToken;
-        private IEnumerable<KeyValuePair<Vector3Int, WorldBlock>> blockWorldUpdateChangeList = new List<KeyValuePair<Vector3Int, WorldBlock>>();
+        //private List<KeyValuePair<Vector3Int, WorldBlock>> blockWorldUpdateChangeList = new List<KeyValuePair<Vector3Int, WorldBlock>>();
+        private Stopwatch waterWatch = new Stopwatch();
         public virtual UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             return (ref GameState _gameState) =>
@@ -92,22 +122,45 @@ namespace ReiseZumGrundDesSees
                     foreach (var _kvp in blockWorldUpdateTask.Result)
                         Blocks[_kvp.Key.X, _kvp.Key.Y, _kvp.Key.Z] = _kvp.Value;
 
-                    blockWorldUpdateChangeList = null;
+                    //blockWorldUpdateChangeList = null;
                     blockWorldUpdateTask = null;
                 }
-                else if (blockWorldUpdateTask == null ||
-                    blockWorldUpdateTask.IsCanceled ||
-                    blockWorldUpdateTask.IsCompleted ||
-                    blockWorldUpdateTask.IsFaulted)
+                else
                 {
-                    blockWorldUpdateCancelToken = new System.Threading.CancellationTokenSource();
-                    blockWorldUpdateTask = new Task<IEnumerable<KeyValuePair<Vector3Int, WorldBlock>>>(() =>
+                    bool _continue = false;
+                    if (blockWorldUpdateTask == null && waterWatch.ElapsedMilliseconds > 500)
                     {
-                        blockWorldUpdateChangeList = WaterSimmulation.Simmulate(Blocks, blockWorldUpdateCancelToken.Token);
+                        waterWatch.Restart();
+                        _continue = true;
+                    }
+                    else if (blockWorldUpdateTask != null && 
+                             (blockWorldUpdateTask.IsCanceled ||
+                             blockWorldUpdateTask.IsCompleted ||
+                             blockWorldUpdateTask.IsFaulted))
+                        _continue = true;
 
-                        return blockWorldUpdateChangeList;
-                    });
-                    blockWorldUpdateTask.Start();
+                    if (_continue)
+                    {
+                        blockWorldUpdateCancelToken = new System.Threading.CancellationTokenSource();
+                        var _waterChunks = ContainsWaterTree.AllNodesWhere(x => x > 0);
+                        blockWorldUpdateTask = new Task<IEnumerable<KeyValuePair<Vector3Int, WorldBlock>>>(() =>
+                        {
+                            WaterSimmulation _waterSimmulation = new WaterSimmulation();
+                            foreach (KeyValuePair<Vector3, float> _item in _waterChunks)
+                            {
+                                _waterSimmulation.Simmulate(Blocks, blockWorldUpdateCancelToken.Token,
+                                    new Vector3Int((int)(_item.Key.X * RegionSize.X * RegionsCount.X),
+                                                   (int)(_item.Key.Y * RegionSize.Y),
+                                                   (int)(_item.Key.Z * RegionSize.Z * RegionsCount.Y)),
+                                    new Vector3Int((int)Math.Ceiling(_item.Value * RegionSize.X * RegionsCount.X),
+                                                   (int)Math.Ceiling(_item.Value * RegionSize.Y),
+                                                   (int)Math.Ceiling(_item.Value * RegionSize.Z * RegionsCount.Y)));
+                            }
+
+                            return _waterSimmulation.Result;
+                        });
+                        blockWorldUpdateTask.Start();
+                    }
                 }
             };
         }

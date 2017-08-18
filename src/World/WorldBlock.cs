@@ -67,13 +67,14 @@ namespace ReiseZumGrundDesSees
                 case WorldBlock.Water2: return 2;
                 case WorldBlock.Water3: return 3;
                 case WorldBlock.Water4: return 4;
-                case WorldBlock.Water4Infinite: return 100;
+                case WorldBlock.Water4Infinite: return 1000;
                 default: throw new ArgumentException();
             }
         }
 
         public static WorldBlock GetWaterFromLevel(int _level)
         {
+            if (_level < 0) return WorldBlock.None;
             switch (_level)
             {
                 case 0: return WorldBlock.None;

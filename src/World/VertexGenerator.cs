@@ -11,7 +11,7 @@ namespace ReiseZumGrundDesSees
 {
     class VertexGenerator
     {
-        public static VertexPositionColorTexture[] GenerateVertices(IReadonlyBlockWorld _world, int _startX, int _startY, int _startZ, int _sizeX, int _sizeY, int _sizeZ, bool _bottomOptimizations = true)
+        public static VertexPositionColorTexture[] GenerateVertices(IReadonlyBlockWorld _world, int _startX, int _startY, int _startZ, int _sizeX, int _sizeY, int _sizeZ)
         {
             /*int _sizeX = _region.Blocks.GetLength(0);
             int _sizeY = _region.Blocks.GetLength(1);
@@ -24,7 +24,6 @@ namespace ReiseZumGrundDesSees
                 for (int z = _startZ; z < _startZ + _sizeZ; z++)
                     for (int y = _startY; y < _startY + _sizeY; y++)
                     {
-                        bool _optimizationFlag = _bottomOptimizations;
                         WorldBlock b = _world[x, y, z];
                         if (b.IsVisible())
                         {
@@ -122,7 +121,7 @@ namespace ReiseZumGrundDesSees
                             else rnd.Next();
 
                             // BOTTOM
-                            if (!_optimizationFlag && _world[x, y - 1, z].IsFullBlock())
+                            if (!_world[x, y - 1, z].IsFullBlock())
                             {
                                 _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
                                 _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
@@ -135,9 +134,6 @@ namespace ReiseZumGrundDesSees
                                 for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
                             }
                             else rnd.Next();
-
-                            if (_optimizationFlag)
-                                _optimizationFlag = false;
                         }
                     }
 

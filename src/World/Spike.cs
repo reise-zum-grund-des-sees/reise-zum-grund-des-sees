@@ -56,7 +56,7 @@ namespace ReiseZumGrundDesSees
                     foreach (BasicEffect effect in mesh.Effects)
                     {
                         effect.EnableDefaultLighting();
-                        effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
+                        effect.World = Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
 
                         effect.View = _viewMatrix;
 

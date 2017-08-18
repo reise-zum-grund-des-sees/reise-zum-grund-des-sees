@@ -35,7 +35,17 @@ namespace ReiseZumGrundDesSees
             VertexBuffers = new VertexBuffer[RegionsCount.X, RegionsCount.Y];
 
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
-                invalidatedChunks.Add(new Point(x / RegionSize.X, z / RegionSize.Z));
+            {
+                if (_ != __)
+                {
+                    int a = x / RegionSize.X;
+                    int b = z / RegionSize.Z;
+                    for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
+                        for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                            if ((a == i || b == j) && (VertexBuffers[i, j] != null | Vertices[i, j] != null))
+                                invalidatedChunks.Add(new Point(i, j));
+                }
+            };
         }
 
         public RenderableWorld(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos, ContentManager _content)
@@ -46,12 +56,15 @@ namespace ReiseZumGrundDesSees
 
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
             {
-                int a = x / RegionSize.X;
-                int b = z / RegionSize.Z;
-                for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
-                    for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
-                        if(VertexBuffers[a,b]!=null | Vertices[a,b] !=null)
-                        invalidatedChunks.Add(new Point(a, b));
+                if (_ != __)
+                {
+                    int a = x / RegionSize.X;
+                    int b = z / RegionSize.Z;
+                    for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
+                        for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                            if ((a == i || b == j) && (VertexBuffers[i, j] != null | Vertices[i, j] != null))
+                                invalidatedChunks.Add(new Point(i, j));
+                }
             };
         }
 
@@ -159,20 +172,20 @@ namespace ReiseZumGrundDesSees
         {
             if (lastGameState.Camera != null)
             {
-                foreach (var _obj in specialBlocks)                    
+                foreach (var _obj in specialBlocks)
                     if (Vector2.Distance(
                             new Vector2(_obj.Key.X, _obj.Key.Z),
                             new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
                         < viewDistance)
-                       
+
                         _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
 
-                foreach (var _obj in objects)                  
+                foreach (var _obj in objects)
                     if (Vector2.Distance(
                             new Vector2(_obj.Position.X, _obj.Position.Z),
                             new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
                         < viewDistance)
-                       
+
                         _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
             }
 

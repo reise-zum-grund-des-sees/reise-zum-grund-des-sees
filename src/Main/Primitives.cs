@@ -31,6 +31,18 @@ namespace ReiseZumGrundDesSees
         public static bool operator ==(Vector3Int x, Vector3Int y) => x.X == y.X & x.Y == y.Y & x.Z == y.Z;
         public static bool operator !=(Vector3Int x, Vector3Int y) => !(x.X == y.X & x.Y == y.Y & x.Z == y.Z);
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Vector3Int)
+                return (Vector3Int)obj == this;
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return unchecked(X + Y * 233 + Z * 107);
+        }
         public override string ToString()
             => $"{X}-{Y}-{Z}";
         public static Vector3Int Parse(string s)
