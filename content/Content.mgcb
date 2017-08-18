@@ -515,3 +515,10 @@
 /processorParam:Quality=Best
 /build:sound/win.wav
 
+#begin fonts/arial_32.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/arial_32.spritefont
+

@@ -33,6 +33,7 @@ namespace ReiseZumGrundDesSees
         private SpriteFont S1;
         private SpriteFont S2;
         private SpriteFont S3;
+        private SpriteFont S4;
 
         private Vector2 VS1 = new Vector2(110, 740);
         private Vector2 VS2 = new Vector2(200, 740);
@@ -42,7 +43,14 @@ namespace ReiseZumGrundDesSees
         private Vector2 CD2 = new Vector2(230, 740);
         private Vector2 CD3 = new Vector2(320, 740);
 
+        private Vector2 Textboxtext1 = new Vector2(650, 740);
+        private Vector2 Textboxtext2 = new Vector2(650, 780);
+        private Vector2 Textboxtext3 = new Vector2(650, 820);
+        private int Dialog;
+
         private Vector2 scalingFactor = new Vector2(1f, 1f);
+
+       
 
         public IGamer(ContentManager _content)
         {
@@ -56,6 +64,7 @@ namespace ReiseZumGrundDesSees
             S1 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
             S2 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
             S3 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
+            S4 = _content.Load<SpriteFont>(Content.FONT_ARIAL_32);
         }
 
         public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize)
@@ -72,12 +81,15 @@ namespace ReiseZumGrundDesSees
             if (_gameState.Player.Health < 3)
                 Herz3 = leeresHerz;
             // _gameState.Player.Blocks;
+
+            Dialog = 2;// _gameState.Player.Dialog;
+          
         }
 
         public void Render(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Begin();
-           
+
             _spriteBatch.Draw(Herz1, RHerz1.Scale(scalingFactor), Color.White);
             _spriteBatch.Draw(Herz2, RHerz2.Scale(scalingFactor), Color.White);
             _spriteBatch.Draw(Herz3, RHerz3.Scale(scalingFactor), Color.White);
@@ -94,6 +106,22 @@ namespace ReiseZumGrundDesSees
             _spriteBatch.DrawString(S2, Player.AnzahlBlockReadyM.ToString(), CD2 * scalingFactor, Color.White);
             _spriteBatch.DrawString(S3, Player.AnzahlBlockReadyS.ToString(), CD3 * scalingFactor, Color.White);
 
+            //Tipps
+            switch (Dialog) {
+                case 0:
+                    _spriteBatch.DrawString(S4, "Bewegen -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
+                    break;
+                case 1:
+                    _spriteBatch.DrawString(S4, "Spacebar -> Doppelsprung", Textboxtext1 * scalingFactor, Color.Black);
+                    break;
+                case 2:
+                    _spriteBatch.DrawString(S4, "Dieser Block speichert Spawn-", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "position und setzt", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);                   
+                    break;
+                default:
+                    break;
+        }
             _spriteBatch.End();
         }
     }

@@ -53,5 +53,6 @@ namespace ReiseZumGrundDesSees
 
         public const string FONT_ARIAL_12 = "fonts/arial_12";
         public const string FONT_ARIAL_20 = "fonts/arial_20";
+        public const string FONT_ARIAL_32 = "fonts/arial_32";
     }
 }

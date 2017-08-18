@@ -44,7 +44,11 @@ namespace ReiseZumGrundDesSees
         float _speedY = 0;
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
+
+     
+
         List<SoundEffect> soundEffects;
+        public int Dialog { get; private set; }
 
         bool ersteWassersenkung = false;
         //wie viel Blöcke hat der Spieler bereit
@@ -91,7 +95,8 @@ namespace ReiseZumGrundDesSees
             AnzahlBlockL = AnzahlBlockMaxL;
             AnzahlBlockM = AnzahlBlockMaxM;
             AnzahlBlockS = AnzahlBlockMaxS;
-       
+            if(_playerNode.Items.Count > 5)
+            Dialog = int.Parse(_playerNode.Items["Dialog"]);
 
         }
 
@@ -634,6 +639,7 @@ namespace ReiseZumGrundDesSees
             n.Items["AnzahlBlockMaxL"] = AnzahlBlockMaxL.ToString();
             n.Items["AnzahlBlockMaxM"] = AnzahlBlockMaxM.ToString();
             n.Items["AnzahlBlockMaxS"] = AnzahlBlockMaxS.ToString();
+            n.Items["Dialog"] = Dialog.ToString();
             return n;
         }
     }

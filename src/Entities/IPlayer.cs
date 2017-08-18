@@ -19,6 +19,7 @@ namespace ReiseZumGrundDesSees
         int Health { get; }
         double Healthcd { get; }
         float Blickrichtung { get; }
+        int Dialog { get; }
     }
 
     interface IPlayerBlock : IUpdateable, IReadonlyPlayerBlock, ICollisionObject, IRenderable

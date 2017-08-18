@@ -87,6 +87,7 @@ namespace ReiseZumGrundDesSees
             public float PlayerX => baseState.Player.Position.X;
             public float PlayerY => baseState.Player.Position.Y;
             public float PlayerZ => baseState.Player.Position.Z;
+            public int Dialog => baseState.Player.Dialog;
 
             public IReadonlyBlockWorld BlockWorld => baseState.World.Blocks;
             public IReadonlyWorldObjectContainer WorldObjects => baseState.World;
