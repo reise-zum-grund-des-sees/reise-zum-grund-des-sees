@@ -46,6 +46,7 @@ namespace ReiseZumGrundDesSees
         public int MaxHealth { get; private set; }
         List<SoundEffect> soundEffects;
 
+        bool ersteWassersenkung = false;
         //wie viel Blöcke hat der Spieler bereit
         public static int AnzahlBlockReadyL = 0;
         public static int AnzahlBlockReadyM = 0;
@@ -307,6 +308,7 @@ namespace ReiseZumGrundDesSees
                     }
                     Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
                     GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
+                    soundEffects[8].Play();
                 }
             }
       
@@ -429,9 +431,22 @@ namespace ReiseZumGrundDesSees
         
             return (ref GameState _state) =>
             {
-
-                //Health<=0 -> sterbe
-                if (Health <= 0) gestorben(_state);
+                //erste Wasserstandssenkung
+                 if (_stateView.BlockWorld[158,28,185].IsFullBlock() && ersteWassersenkung==false)               
+                 {
+                    ersteWassersenkung = true;
+                        for (int x = 237; x <= 275; x++)
+                        {
+                            for (int z = 237; z <= 275; z++)
+                            {
+                           if(_state.World.Blocks[x, 31, z].IsWater())
+                                _state.World.Blocks[x, 31, z] = WorldBlock.None;
+                            }
+                        }
+                    }
+                
+                    //Health<=0 -> sterbe
+                    if (Health <= 0) gestorben(_state);
            
                 this.Position += _movement;
                 //Console.WriteLine(Position);
@@ -476,6 +491,7 @@ namespace ReiseZumGrundDesSees
                                     {
                                         Levercd = 0;
                                         (_obj as Lever).Press(_state);
+                                        soundEffects[9].Play();
                                     }
                                 }
                             }
@@ -559,7 +575,8 @@ namespace ReiseZumGrundDesSees
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
             soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SAVE)); //wenn save
-
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_WIN)); //wenn GetPlayerBlock
+            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_LEVER)); //wenn lever
 
             //Give Player Blocks on Load
             while (AnzahlBlockL > 0)

@@ -503,3 +503,15 @@
 /processorParam:Quality=Best
 /build:sound/save.wav
 
+#begin sound/lever.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/lever.wav
+
+#begin sound/win.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/win.wav
+

@@ -33,6 +33,8 @@ namespace ReiseZumGrundDesSees
         public const string SOUND_RESET = "sound/reset";
         public const string SOUND_SHOOT = "sound/shootlaser";
         public const string SOUND_SAVE = "sound/save";
+        public const string SOUND_LEVER = "sound/lever";
+        public const string SOUND_WIN = "sound/win";
 
         public const string TEXTURE_BLOCK = "blocktexture";
         public const string TEXTURE_BACKGROUND = "interface/background";
