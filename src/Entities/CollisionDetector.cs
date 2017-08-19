@@ -210,7 +210,7 @@ namespace ReiseZumGrundDesSees
             return _splits;
         }
 
-        const float FLOATING_POINT_INCORRECTION = 0.00001f;
+        const float FLOATING_POINT_INCORRECTION = 0.001f;
         /// <summary>
         /// Erkenne Kollisionen zwischen einer bewegten und einer statischen Hitbox
         /// </summary>

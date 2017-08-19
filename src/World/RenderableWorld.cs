@@ -41,7 +41,7 @@ namespace ReiseZumGrundDesSees
                     int a = x / RegionSize.X;
                     int b = z / RegionSize.Z;
                     for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
-                        for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                        for (int j = Math.Max(b - 1, 0); j < Math.Min(b + 2, RegionsCount.Y); j++)
                             if ((a == i || b == j) && (VertexBuffers[i, j] != null | Vertices[i, j] != null))
                                 invalidatedChunks.Add(new Point(i, j));
                 }
@@ -61,7 +61,7 @@ namespace ReiseZumGrundDesSees
                     int a = x / RegionSize.X;
                     int b = z / RegionSize.Z;
                     for (int i = Math.Max(a - 1, 0); i < Math.Min(a + 2, RegionsCount.X); i++)
-                        for (int j = Math.Max(b - 1, 0); j <= Math.Min(b + 2, RegionsCount.Y); j++)
+                        for (int j = Math.Max(b - 1, 0); j < Math.Min(b + 2, RegionsCount.Y); j++)
                             if ((a == i || b == j) && (VertexBuffers[i, j] != null | Vertices[i, j] != null))
                                 invalidatedChunks.Add(new Point(i, j));
                 }
