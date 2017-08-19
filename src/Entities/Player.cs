@@ -35,6 +35,7 @@ namespace ReiseZumGrundDesSees
         double Blockcd; // Cooldown zwischen dem Setzen von Blöcken, damit sie nicht ineinander gesetzt werden
         double Levercd;
         double Savecd;
+        double Dialogcd;
         public double Healthcd { get; private set; }
         public float Blickrichtung { get; private set; } //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
@@ -49,7 +50,7 @@ namespace ReiseZumGrundDesSees
 
         List<SoundEffect> soundEffects;
         public int Dialog { get; private set; }
-
+        public int DialogSave{ get; private set; }
         bool ersteWassersenkung = false;
         //wie viel Blöcke hat der Spieler bereit
         public static int AnzahlBlockReadyL = 0;
@@ -96,7 +97,7 @@ namespace ReiseZumGrundDesSees
             AnzahlBlockM = AnzahlBlockMaxM;
             AnzahlBlockS = AnzahlBlockMaxS;
             if(_playerNode.Items.Count > 5)
-            Dialog = int.Parse(_playerNode.Items["Dialog"]);
+            DialogSave = int.Parse(_playerNode.Items["Dialog"]);
 
         }
 
@@ -321,6 +322,7 @@ namespace ReiseZumGrundDesSees
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
             Savecd += _passedTime;
+            Dialogcd += _passedTime;
 
             //Soundeffekt wenn nicht bereit
             AnzahlBlockReadyL = 0;
@@ -433,7 +435,56 @@ namespace ReiseZumGrundDesSees
             foreach (PlayerBlock b in Blöcke)
                 blockUpdateList.Add(b.Update(_stateView, _flags, _inputArgs, _passedTime));
 
-        
+
+
+            //Dialog
+            if (Dialogcd > 9999)
+                Dialog = -1; //no Dialog after 10s
+            //Auslösen durch Entfernung zu Positionen
+            if(ChebyshevDistance(Position, new Vector3(143,32,200)) < 3 && DialogSave==0) 
+            {
+                Dialogcd = 0;
+                DialogSave = 1;
+                Dialog = 1;
+            }
+            if (ChebyshevDistance(Position, new Vector3(152, 37, 221)) < 3 && DialogSave == 1)
+            {
+                Dialogcd = 0;
+                DialogSave = 2;
+                Dialog = 2;
+            }
+            if (ChebyshevDistance(Position, new Vector3(169, 34, 216)) < 3 && DialogSave == 2)
+            {
+                Dialogcd = 0;
+                DialogSave = 3;
+                Dialog = 3;
+            }
+            if (ChebyshevDistance(Position, new Vector3(169, 33, 193)) < 3 && DialogSave == 3)
+            {
+                Dialogcd = 0;
+                DialogSave = 4;
+                Dialog = 4;
+            }
+            if (ChebyshevDistance(Position, new Vector3(258, 38, 228)) < 3 && DialogSave == 4)
+            {
+                Dialogcd = 0;
+                DialogSave = 5;
+                Dialog = 5;
+            }
+            if (ChebyshevDistance(Position, new Vector3(157, 40, 185)) < 3 && DialogSave == 5)
+            {
+                Dialogcd = 0;
+                DialogSave = 6;
+                Dialog = 6;
+            }
+            if (ChebyshevDistance(Position, new Vector3(231, 32, 257)) < 5 && DialogSave == 6)
+            {
+                Dialogcd = 0;
+                DialogSave = 7;
+                Dialog = 7;
+            }
+
+
             return (ref GameState _state) =>
             {
                 //erste Wasserstandssenkung
@@ -639,7 +690,7 @@ namespace ReiseZumGrundDesSees
             n.Items["AnzahlBlockMaxL"] = AnzahlBlockMaxL.ToString();
             n.Items["AnzahlBlockMaxM"] = AnzahlBlockMaxM.ToString();
             n.Items["AnzahlBlockMaxS"] = AnzahlBlockMaxS.ToString();
-            n.Items["Dialog"] = Dialog.ToString();
+            n.Items["Dialog"] = DialogSave.ToString();
             return n;
         }
     }

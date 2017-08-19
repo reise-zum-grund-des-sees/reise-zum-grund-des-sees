@@ -82,7 +82,7 @@ namespace ReiseZumGrundDesSees
                 Herz3 = leeresHerz;
             // _gameState.Player.Blocks;
 
-            Dialog = 2;// _gameState.Player.Dialog;
+            Dialog = _gameState.Player.Dialog;
           
         }
 
@@ -107,17 +107,43 @@ namespace ReiseZumGrundDesSees
             _spriteBatch.DrawString(S3, Player.AnzahlBlockReadyS.ToString(), CD3 * scalingFactor, Color.White);
 
             //Tipps
+            
             switch (Dialog) {
                 case 0:
-                    _spriteBatch.DrawString(S4, "Bewegen -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "2x Spacebar -> Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 1:
-                    _spriteBatch.DrawString(S4, "Spacebar -> Doppelsprung", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Dieser Block speichert", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Spawnposition und setzt", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);                   
                     break;
                 case 2:
-                    _spriteBatch.DrawString(S4, "Dieser Block speichert Spawn-", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "position und setzt", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);                   
+                    _spriteBatch.DrawString(S4, "Springe auf Gegner um", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "sie zu vernichten.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 3:
+                    _spriteBatch.DrawString(S4, "Mit 1,2 und 3 koennen gefundene", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Bloecke gesetzt werden.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Druecke Q um sie aufzusammeln.", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 4:
+                    _spriteBatch.DrawString(S4, "Bloecke verschwinden auch", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "wenn du Speicherst oder", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "wenn du dich weit entfernst.", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 5:
+                    _spriteBatch.DrawString(S4, "Schalter lassen Bloecke ", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "erscheinen,verschwinden", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "oder bewegen Bloecke.", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 6:
+                    _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 7:
+                    _spriteBatch.DrawString(S4, "Lasse ein Bloeck auf die Platte", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "fallen um sie zu aktivieren.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 default:
                     break;
