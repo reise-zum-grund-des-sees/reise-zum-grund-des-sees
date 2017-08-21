@@ -46,7 +46,6 @@ namespace ReiseZumGrundDesSees
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
 
-     
 
         List<SoundEffect> soundEffects;
         public int Dialog { get; private set; }
@@ -211,7 +210,7 @@ namespace ReiseZumGrundDesSees
                 Jump1 = true;
                 _speedY = 0.9f;//1.1f;
                 Jumpcd = true;
-                soundEffects[0].Play();
+                soundEffects[0].Play(0.05f,0,0);
             }
 
             if (Jump1 == true && !_inputArgs.Events.HasFlag(InputEventList.Jump))
@@ -221,7 +220,7 @@ namespace ReiseZumGrundDesSees
             {
                 Jump2 = true;
                 _speedY = 0.9f;
-                soundEffects[0].Play();
+                soundEffects[0].Play(0.075f,0,0);
             }
 
             _speedY -= 0.005f * (float)_passedTime;

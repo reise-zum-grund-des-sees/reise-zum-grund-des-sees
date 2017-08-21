@@ -45,7 +45,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+            Model = _contentManager.Load<Model>(Content.MODEL_SAVEPOINT);
         }
 
         public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
@@ -55,7 +55,7 @@ namespace ReiseZumGrundDesSees
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.5f, 0.5f)));
+                    effect.World = Matrix.CreateScale(0.45f) *Matrix.CreateRotationX(-MathHelper.PiOver2)* Matrix.CreateScale(1, 0.15f, 1) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.0f, 0.5f)));
 
                     effect.View = _viewMatrix;
 
