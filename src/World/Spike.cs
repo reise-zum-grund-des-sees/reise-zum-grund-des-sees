@@ -47,37 +47,32 @@ namespace ReiseZumGrundDesSees
             Model = _contentManager.Load<Model>(Content.MODEL_STACHELN);
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
         {
+            foreach (ModelMesh mesh in Model.Meshes)
             {
-
-                foreach (ModelMesh mesh in Model.Meshes)
+                foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    foreach (BasicEffect effect in mesh.Effects)
-                    {
-                        effect.EnableDefaultLighting();
-                        effect.World = Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
+                    Matrix _worldMatrix = Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0, 0.5f)));
+                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
+                    if (_shadowEffect)
+                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
 
-                        effect.View = _viewMatrix;
+                    part.Effect = _effect;
 
-                        effect.Projection = _perspectiveMatrix;
-
-                    }
-
-                    mesh.Draw();
                 }
 
-
+                mesh.Draw();
             }
-        }
-
-        public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
-        {
-            ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
-
-            _node.Items["position"] = Position.ToString();
-
-            return _node;
-        }
     }
+
+    public ConfigFile.ConfigNode GetState(ObjectIDMapper _mapper)
+    {
+        ConfigFile.ConfigNode _node = new ConfigFile.ConfigNode();
+
+        _node.Items["position"] = Position.ToString();
+
+        return _node;
+    }
+}
 }

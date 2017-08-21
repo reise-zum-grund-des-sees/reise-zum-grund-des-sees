@@ -11,11 +11,11 @@ namespace ReiseZumGrundDesSees
     struct GameState
     {
         public readonly ICamera Camera;
-        public readonly IPlayer Player;
-        public readonly World World;
+        public readonly Player Player;
+        public readonly RenderableWorld World;
         public readonly CollisionDetector CollisionDetector;
 
-        public GameState(World _world, IPlayer _player, Camera _camera)
+        public GameState(RenderableWorld _world, Player _player, Camera _camera)
         {
             World = _world;
             Player = _player;
@@ -49,7 +49,7 @@ namespace ReiseZumGrundDesSees
             ConfigFile _config = ConfigFile.Load(System.IO.Path.Combine(_baseDir, "state.conf"));
 
             ObjectIDMapper _idMapper = new ObjectIDMapper();
-            World w = new RenderableWorld(_config.Nodes["world"], _idMapper, _baseDir);
+            RenderableWorld w = new RenderableWorld(_config.Nodes["world"], _idMapper, _baseDir);
             Player p = new Player(_config.Nodes["player"]);
             Camera c = new Camera();
             c.CenterOn(p);

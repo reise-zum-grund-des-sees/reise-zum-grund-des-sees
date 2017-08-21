@@ -417,7 +417,7 @@ namespace ReiseZumGrundDesSees
             graphicsDevice = _graphicsDevice;
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _projectionMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _projectionMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
         {
             if (!_flags.HasFlag(GameFlags.EditorMode))
                 return;
@@ -425,15 +425,16 @@ namespace ReiseZumGrundDesSees
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
             foreach (ModelMesh mesh in cursorModel.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (BasicEffect e in mesh.Effects)
                 {
-                    effect.EnableDefaultLighting();
+                    //effect.EnableDefaultLighting();
                     Vector3 _blockPosition = new Vector3((int)Position.X + 0.5f, (int)Position.Y + 0.5f, (int)Position.Z + 0.5f);
-                    effect.World = Matrix.CreateTranslation(_blockPosition);
+                    Matrix _worldMatrix = Matrix.CreateTranslation(_blockPosition);
 
-                    effect.View = _viewMatrix;
-                    effect.Projection = _projectionMatrix;
-
+                    e.EnableDefaultLighting();
+                    e.World = _worldMatrix;
+                    e.View = _viewMatrix;
+                    e.Projection = _projectionMatrix;
                 }
 
                 mesh.Draw();

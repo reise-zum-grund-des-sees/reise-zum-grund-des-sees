@@ -38,13 +38,13 @@ namespace ReiseZumGrundDesSees
         {
             if (Center != null)
                 LookAt = Center.Position;
-            Vector2 _diffToPlayer = new Vector2(7, 10);
+            Vector2 _diffToPlayer = new Vector2(5, 0);
             Vector3 _position =
                 new Vector3(
-                    LookAt.X - (float)Math.Sin(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.Y,
+                    LookAt.X - (float)Math.Sin(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.X,
                     LookAt.Y + (float)Math.Sin(Altitude) * _diffToPlayer.X,
-                    LookAt.Z + (float)Math.Cos(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.Y);
-            return Matrix.CreateLookAt(_position, LookAt + new Vector3(0, 2, 0), Vector3.UnitY);
+                    LookAt.Z + (float)Math.Cos(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.X);
+            return Matrix.CreateLookAt(_position, LookAt + new Vector3(0, 1, 0), Vector3.UnitY);
           
         }
 

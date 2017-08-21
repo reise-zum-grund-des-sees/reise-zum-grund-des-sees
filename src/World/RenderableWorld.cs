@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class RenderableWorld : World, IUpdateable, IRenderable
+    class RenderableWorld : World, IUpdateable
     {
         private readonly VertexPositionColorTexture[,][] Vertices;
         private readonly VertexBuffer[,] VertexBuffers;
@@ -20,7 +20,7 @@ namespace ReiseZumGrundDesSees
         private GraphicsDevice graphicsDevice;
         private ContentManager contentManager;
 
-        private double viewDistance = 30.0;
+        public double viewDistance = 30.0;
 
         private Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
@@ -168,49 +168,10 @@ namespace ReiseZumGrundDesSees
                 _object.Initialize(graphicsDevice, contentManager);
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _lightMatrix = default(Matrix))
         {
             if (lastGameState.Camera != null)
             {
-                foreach (var _obj in specialBlocks)
-                    if (Vector2.Distance(
-                            new Vector2(_obj.Key.X, _obj.Key.Z),
-                            new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
-                        < viewDistance)
-
-                        _obj.Value.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
-
-                foreach (var _obj in objects)
-                    if (Vector2.Distance(
-                            new Vector2(_obj.Position.X, _obj.Position.Z),
-                            new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
-                        < viewDistance)
-
-                        _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
-
-                foreach (var _obj in Enemy.EnemyList) //Draw Enemy
-                    if (Vector2.Distance(
-                           new Vector2(_obj.Position.X, _obj.Position.Z),
-                           new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
-                       < viewDistance)
-
-                        _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
-
-                foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
-                    if (Vector2.Distance(
-                         new Vector2(_obj.Position.X, _obj.Position.Z),
-                         new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
-                     < viewDistance)
-
-                        _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
-
-                foreach (var _obj in GetPlayerBlock.GetPlayerBlockList)//Draw GetPlayerBlock
-                    if (Vector2.Distance(
-                     new Vector2(_obj.Position.X, _obj.Position.Z),
-                     new Vector2(lastGameState.Camera.Center.Position.X, lastGameState.Camera.Center.Position.Z))
-                 < viewDistance)
-
-                        _obj.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
             }
 
             DebugHelper.Information.RenderedWorldChunks = 0;
@@ -227,16 +188,31 @@ namespace ReiseZumGrundDesSees
                         DebugHelper.Information.RenderedWorldChunks++;
                         DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
 
-                        effect.View = _viewMatrix;
+                        /*effect.View = _viewMatrix;
                         effect.World = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
                         effect.Projection = _perspectiveMatrix;
+                        foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+                            pass.Apply();*/
+                        
+                        _effect.Parameters["Matrix"].SetValue(Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z) * _viewMatrix * _perspectiveMatrix);
+                        if (_effect.Parameters.Where(_parameter => _parameter.Name.Equals("textureSampler+otherTexture")).Any())
+                            _effect.Parameters["textureSampler+otherTexture"].SetValue(blockTexture);
+                        else if (_effect.Parameters.Where(_parameter => _parameter.Name.Equals("otherTexture")).Any())
+                            _effect.Parameters["otherTexture"].SetValue(blockTexture);
+
+
+                        if (_shadowEffect)
+                        {
+                            _effect.Parameters["LightMatrix"].SetValue(Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z) * _lightMatrix);
+                        }
 
                         graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
-                        foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+                        graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
+
+                        foreach (EffectPass pass in _effect.CurrentTechnique.Passes)
                             pass.Apply();
 
-                        graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
                         graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, Vertices[x, z].Length / 3);
                     }
                 }

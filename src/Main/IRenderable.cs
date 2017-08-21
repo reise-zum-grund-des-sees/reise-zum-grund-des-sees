@@ -13,6 +13,6 @@ namespace ReiseZumGrundDesSees
     interface IRenderable
     {
         void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager);
-        void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice);
+        void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool shadowEffect = false, Matrix shadowMatrix = default(Matrix));
     }
 }

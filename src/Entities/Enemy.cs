@@ -50,9 +50,9 @@ namespace ReiseZumGrundDesSees
         public Enemy(Vector3 _position, Art _typ)
         {
 
-         
-            Position = _position;        
-            Gegnerart = _typ;      
+
+            Position = _position;
+            Gegnerart = _typ;
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 0.9f, 1f - 0.5f,
                 (_block) => true,
                 (_obj) => !(_obj is Geschoss));
@@ -64,7 +64,7 @@ namespace ReiseZumGrundDesSees
             SpawnPosition = _position;
             Random = new Vector2();
             Jumptimer = 1;
-            speedY = 0;        
+            speedY = 0;
             EnemyList.Add(this);
         }
 
@@ -81,7 +81,7 @@ namespace ReiseZumGrundDesSees
             else
                 _node.Items["EnemyPosition"] = SpawnPosition.ToNiceString();
             _node.Items["EnemyTyp"] = Gegnerart.ToString();
-          
+
             return _node;
         }
 
@@ -91,7 +91,8 @@ namespace ReiseZumGrundDesSees
             if (!_flags.HasFlag(GameFlags.GameRunning))
                 return null;
 
-            if (_wasHit == false) {
+            if (_wasHit == false)
+            {
                 int Aggrorange = 15;
                 Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
                     (_block) => true,
@@ -192,7 +193,8 @@ namespace ReiseZumGrundDesSees
                         //nicht schießen, wenn Block dazwischen in 2 Reichweite
                         bool dazwischen = false;
                         int dis = (int)Vector3.Distance(new Vector3(_view.PlayerX, _view.PlayerY + 0.25f, _view.PlayerZ), Position);
-                        for (int i = 0; i < dis; i++) {
+                        for (int i = 0; i < dis; i++)
+                        {
                             if (_view.BlockWorld[(int)(Position.X + i * EnemytoPlayer.X), (int)(Position.Y + 0.25f + i * EnemytoPlayer.Y), (int)(Position.Z + i * EnemytoPlayer.Z)] == WorldBlock.Wall)
                             {
                                 dazwischen = true;
@@ -217,10 +219,10 @@ namespace ReiseZumGrundDesSees
                         if (_item.Value.CollisionType == CollisionDetector.CollisionSource.Type.WithObject &&
                             _item.Value.Object is IPlayer p &&
                             !HitPlayer)
-                    {
-                        p.Hit();
-                        HitPlayer = true;
-                    }
+                        {
+                            p.Hit();
+                            HitPlayer = true;
+                        }
 
                     if (disposed)
                     {
@@ -248,10 +250,10 @@ namespace ReiseZumGrundDesSees
                         _state.CollisionDetector.RemoveObject(this);
 
                     if (disposed)
-                    {                   
+                    {
                         EnemyList.Remove(this);
                     }
-                   
+
 
 
                 };
@@ -268,21 +270,23 @@ namespace ReiseZumGrundDesSees
                 Model = ContentManager.Load<Model>(Content.MODEL_GEGNER_1);
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
         {
             foreach (ModelMesh mesh in this.Model.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    effect.EnableDefaultLighting();
-                    if(this._wasHit==false)
-                    effect.World = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
+                    Matrix _worldMatrix;
+                    if (this._wasHit == false)
+                        _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
                     else
-                    effect.World = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
+                        _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
 
-                    effect.View = _viewMatrix;
+                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
+                    if (_shadowEffect)
+                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
 
-                    effect.Projection = _perspectiveMatrix;
+                    part.Effect = _effect;
 
                 }
 

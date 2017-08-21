@@ -655,10 +655,10 @@ namespace ReiseZumGrundDesSees
                 _block.Initialize(_graphicsDevice, _contentManager);
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _lightMatrix = default(Matrix))
         {
             foreach (var _block in Blöcke)
-                _block.Render(_flags, _viewMatrix, _perspectiveMatrix, _grDevice);
+                _block.Render(_flags, _effect, _viewMatrix, _perspectiveMatrix, _grDevice, _shadowEffect, _lightMatrix);
 
             if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
             {
@@ -667,13 +667,16 @@ namespace ReiseZumGrundDesSees
                 {
                     foreach (ModelMeshPart _part in _mesh.MeshParts)
                     {
-                        _part.Effect = effect;
+                        _part.Effect = _effect;
 
-                        effect.Parameters["WorldViewProjection"].SetValue(
+                        _part.Effect.Parameters["Matrix"].SetValue(
                             Matrix.CreateRotationY(Blickrichtung) *
                             Matrix.CreateTranslation(Position) *
                             _viewMatrix *
                             _perspectiveMatrix);
+
+                        if (_shadowEffect)
+                            _effect.Parameters["LightMatrix"].SetValue(Matrix.CreateRotationY(Blickrichtung) * Matrix.CreateTranslation(Position) * _lightMatrix);
                     }
 
                     _mesh.Draw();

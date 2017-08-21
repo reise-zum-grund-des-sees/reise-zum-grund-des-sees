@@ -83,23 +83,19 @@ namespace ReiseZumGrundDesSees
        
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
         {
             foreach (ModelMesh mesh in Model.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    effect.EnableDefaultLighting();
-                 //   if (Type == WorldBlock.PressurePlateUp)
-                        effect.World = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
-                  //  else
-                    //    effect.World = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
-                    //  effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateScale(1, 0.1f, 1) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.05f, 0.5f)));
+                    Matrix _worldMatrix = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
 
-                    effect.View = _viewMatrix;
+                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
+                    if (_shadowEffect)
+                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
 
-                    effect.Projection = _perspectiveMatrix;
-
+                    part.Effect = _effect;
                 }
 
                 mesh.Draw();

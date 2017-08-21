@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace ReiseZumGrundDesSees
 {
-    interface IPlayer : IMoveable, IUpdateable, IHitable, IPositionObject, ICollisionObject, IReadonlyPlayer, IRenderable
+    interface IPlayer : IMoveable, IUpdateable, IHitable, IPositionObject, ICollisionObject, IReadonlyPlayer
     {
         new IList<IPlayerBlock> Blocks { get; }
     }

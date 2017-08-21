@@ -48,18 +48,19 @@ namespace ReiseZumGrundDesSees
             Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
         }
 
-        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice)
+        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
         {
             foreach (ModelMesh mesh in Model.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.5f, 0.5f)));
+                    Matrix _worldMatrix = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.5f, 0.5f)));
 
-                    effect.View = _viewMatrix;
+                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
+                    if (_shadowEffect)
+                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
 
-                    effect.Projection = _perspectiveMatrix;
+                    part.Effect = _effect;
 
                 }
 

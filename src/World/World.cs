@@ -28,7 +28,7 @@ namespace ReiseZumGrundDesSees
 
     class World : BaseWorld, IUpdateable, IWorldObjectContainer
     {
-        protected readonly IDictionary<Vector3Int, ISpecialBlock> specialBlocks = new Dictionary<Vector3Int, ISpecialBlock>();
+        public readonly IDictionary<Vector3Int, ISpecialBlock> specialBlocks = new Dictionary<Vector3Int, ISpecialBlock>();
         protected readonly IList<IWorldObject> objects = new List<IWorldObject>();
 
         public IList<IWorldObject> Objects => objects;

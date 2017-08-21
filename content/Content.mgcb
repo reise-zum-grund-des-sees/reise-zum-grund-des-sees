@@ -384,12 +384,6 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/arial_20.spritefont
 
-#begin effects/player.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:effects/player.fx
-
 #begin models/gegner1.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -521,4 +515,34 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:fonts/arial_32.spritefont
+
+#begin effects/shadowmap.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/shadowmap.fx
+
+#begin effects/default.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/default.fx
+
+#begin effects/player.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/player.fx
+
+#begin effects/default.normals.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/default.normals.fx
+
+#begin effects/shadowmap.normals.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/shadowmap.normals.fx
 
