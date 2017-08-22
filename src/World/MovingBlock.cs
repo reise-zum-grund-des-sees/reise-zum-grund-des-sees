@@ -105,7 +105,7 @@ namespace ReiseZumGrundDesSees
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
             Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
-            if (moving)
+            if (moving && Vector3.Distance(this.Position,_view.Player.Position) < 50)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;
 
@@ -114,11 +114,11 @@ namespace ReiseZumGrundDesSees
 
                 Vector3 _testMovement = _movement;
                 _collisionInfo = _view.CollisionDetector.CheckCollision(ref _testMovement, this);
-
+                /*
                 foreach (var _item in _collisionInfo)
                     if (_item.Value.Object is IMoveable _moveable)
                         _moveable.Move(_movement - _testMovement, _view.CollisionDetector);
-
+                        */
                 _oldCollisionInfo = _collisionInfo;
                 if (_movement.Length() < 10)
                     _collisionInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
@@ -149,7 +149,7 @@ namespace ReiseZumGrundDesSees
                     addedToCollisionManager = true;
                 }
 
-                if (moving && !_collisionInfo.Any())
+                if (moving && _collisionInfo!=null && !_collisionInfo.Any())
                 {
                     Position += _movement;
                     Velocity = _movement;
