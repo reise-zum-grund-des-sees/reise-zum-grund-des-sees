@@ -509,7 +509,10 @@ namespace ReiseZumGrundDesSees
 
                     //Health<=0 -> sterbe
                     if (Health <= 0) gestorben(_state);
-           
+
+                //Unter der Map -> Sterbe
+                if (Position.Y < 20) gestorben(_state);
+
                 this.Position += _movement;
                 //Console.WriteLine(Position);
 
