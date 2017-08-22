@@ -46,7 +46,6 @@ namespace ReiseZumGrundDesSees
         public int Health { get; private set; }
         public int MaxHealth { get; private set; }
 
-     
 
         List<SoundEffect> soundEffects;
         public int Dialog { get; private set; }
@@ -98,7 +97,7 @@ namespace ReiseZumGrundDesSees
             AnzahlBlockS = AnzahlBlockMaxS;
             if(_playerNode.Items.Count > 5)
             DialogSave = int.Parse(_playerNode.Items["Dialog"]);
-
+            Dialog = 10000;
         }
 
         public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -211,7 +210,7 @@ namespace ReiseZumGrundDesSees
                 Jump1 = true;
                 _speedY = 0.9f;//1.1f;
                 Jumpcd = true;
-                soundEffects[0].Play();
+                soundEffects[0].Play(0.05f,0,0);
             }
 
             if (Jump1 == true && !_inputArgs.Events.HasFlag(InputEventList.Jump))
@@ -221,7 +220,7 @@ namespace ReiseZumGrundDesSees
             {
                 Jump2 = true;
                 _speedY = 0.9f;
-                soundEffects[0].Play();
+                soundEffects[0].Play(0.075f,0,0);
             }
 
             _speedY -= 0.005f * (float)_passedTime;
@@ -487,20 +486,27 @@ namespace ReiseZumGrundDesSees
 
             return (ref GameState _state) =>
             {
-                //erste Wasserstandssenkung
-                 if (_stateView.BlockWorld[158,28,185].IsFullBlock() && ersteWassersenkung==false)               
-                 {
+                /*
+                // Wasserstand wiederherstellen/ wegnehmen (zum Debugen)
+                if (ersteWassersenkung == false)
+                {
                     ersteWassersenkung = true;
-                        for (int x = 237; x <= 275; x++)
+                    for (int x = 237; x <= 275; x++)
+                    {
+                        for (int y = 28; y <= 31; y++)
                         {
                             for (int z = 237; z <= 275; z++)
                             {
-                           if(_state.World.Blocks[x, 31, z].IsWater())
-                                _state.World.Blocks[x, 31, z] = WorldBlock.None;
+                                //   if (_state.World.Blocks[x, y, z].IsWater())
+                                //      _state.World.Blocks[x, y, z] = WorldBlock.None;
+                                if (_state.World.Blocks[x, y, z]==WorldBlock.None)
+                                    _state.World.Blocks[x, y, z] = WorldBlock.Water4Infinite;
                             }
                         }
                     }
-                
+                }
+                */
+
                     //Health<=0 -> sterbe
                     if (Health <= 0) gestorben(_state);
            

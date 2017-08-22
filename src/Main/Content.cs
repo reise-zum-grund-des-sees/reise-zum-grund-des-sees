@@ -21,6 +21,8 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_STACHELN = "models/stacheln";
         public const string MODEL_PP_OBEN = "models/Knopf_ungedrückt";
         public const string MODEL_PP_UNTEN = "models/Knopf_gedrückt2";
+        public const string MODEL_SAVEPOINT = "models/Savepoint_VK";
+       
 
         public const string EFFECT_PLAYER = "effects/player";
 
