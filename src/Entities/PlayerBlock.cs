@@ -38,7 +38,7 @@ namespace ReiseZumGrundDesSees
         public int Zustand = 0;
         public double Deletetime;
         private bool wasAddedToCollisionManager = false;
-        double CD_DISTANCE = 20;
+        double CD_DISTANCE = 30;
         public double _verbleibenerCD;
         public enum State
         {
