@@ -114,11 +114,11 @@ namespace ReiseZumGrundDesSees
 
                 Vector3 _testMovement = _movement;
                 _collisionInfo = _view.CollisionDetector.CheckCollision(ref _testMovement, this);
-                /*
+               
                 foreach (var _item in _collisionInfo)
                     if (_item.Value.Object is IMoveable _moveable)
                         _moveable.Move(_movement - _testMovement, _view.CollisionDetector);
-                        */
+                        
                 _oldCollisionInfo = _collisionInfo;
                 if (_movement.Length() < 10)
                     _collisionInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
