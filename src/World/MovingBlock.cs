@@ -105,7 +105,7 @@ namespace ReiseZumGrundDesSees
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
             Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
-            if (moving && Vector3.Distance(this.Position,_view.Player.Position) < 30)
+            if (moving && Vector3.Distance(this.Position,_view.Player.Position) < 50)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;
 

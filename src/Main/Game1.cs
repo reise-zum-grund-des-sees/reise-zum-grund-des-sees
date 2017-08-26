@@ -201,14 +201,14 @@ namespace ReiseZumGrundDesSees
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                 {
-                    _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-                    _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+                    //_updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    //_updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Geschosse
                 {
-                    _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-                    _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+                   // _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    //_updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
 
             //foreach (UpdateDelegate u in _updateList)
@@ -289,7 +289,7 @@ namespace ReiseZumGrundDesSees
             if (GameFlags.HasFlag(GameFlags.Debug))
                 DebugHelper.RenderOverlay(spriteBatch, font);
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
         }
 
         // Menu Callbacks
