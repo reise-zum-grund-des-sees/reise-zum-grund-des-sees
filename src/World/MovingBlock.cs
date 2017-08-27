@@ -99,7 +99,6 @@ namespace ReiseZumGrundDesSees
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) || !_flags.HasFlag(GameFlags.GameLoaded))
                 return null;
-            return null;
             
             Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
             Vector3 _nextPosition = positionMarks[status];
@@ -107,8 +106,7 @@ namespace ReiseZumGrundDesSees
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
             Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
-            moving = false;
-            if (moving)
+            if (moving && Vector3.Distance(this.Position,_view.Player.Position) < 50)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;
 
@@ -152,7 +150,7 @@ namespace ReiseZumGrundDesSees
                     addedToCollisionManager = true;
                 }
 
-                if (moving && !_collisionInfo.Any())
+                if (moving && _collisionInfo != null && !_collisionInfo.Any())
                 {
                     Position += _movement;
                     Velocity = _movement;

@@ -88,13 +88,13 @@ namespace ReiseZumGrundDesSees
             this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
 
-            this.graphics.PreferMultiSampling = true;
+            /*this.graphics.PreferMultiSampling = true;
             GraphicsDevice.PresentationParameters.MultiSampleCount = 2;
             GraphicsDevice.RasterizerState = new RasterizerState()
             {
                 CullMode = CullMode.CullClockwiseFace,
                 MultiSampleAntiAlias = true,
-            };
+            };*/
             this.graphics.ApplyChanges();
 
             nearShadowMap = new RenderTarget2D(GraphicsDevice, 512, 512, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
@@ -119,10 +119,14 @@ namespace ReiseZumGrundDesSees
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(176.5f, 36, 166.5f), 1));
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(136.5f, 39, 234.5f), 2));
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(305.5f, 43, 187.5f), 0));
+            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(178.5f, 42, 363.5f), 1));
+            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(294.5f, 52, 359.5f), 2));
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[0]);
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[1]);
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[2]);
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[3]);
+            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[4]);
+            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[5]);
 
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 initializeList.Add(Enemy.EnemyList[i]);
@@ -213,7 +217,7 @@ namespace ReiseZumGrundDesSees
                 }
 
             //foreach (UpdateDelegate u in _updateList)
-            //u?.Invoke(ref GameState);
+                //u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
