@@ -27,7 +27,6 @@ namespace ReiseZumGrundDesSees
         private bool wasAddedToCollisionManager = false;
 
         private Model model;
-        private Effect effect;
 
         bool Jump1;//Spieler befindet sich im Sprung 1 (einfacher Sprung)
         bool Jump2;//Spieler befindet sich im Sprung 2 (Doppelsprung
@@ -258,32 +257,13 @@ namespace ReiseZumGrundDesSees
                 if (_speedY > 0)
                     _speedY = 0;
 
-            //Take Damage from Spikes
-
-            for (int x = -2; x < 3; x++)
+            foreach (Direction _dir in new[] { Direction.Top, Direction.Bottom, Direction.Left, Direction.Right, Direction.Front, Direction.Back })
             {
-                for (int y = -2; y < 3; y++)
-                {
-                    for (int z = -2; z < 3; z++)
-                    {
-                        {
-                            ISpecialBlock _obj = _stateView.WorldObjects.BlockAt(x + (int)Position.X, y + (int)Position.Y, z + (int)Position.Z);
-                            if (_obj != null && _obj.Type == WorldBlock.Spikes)
-                            {
-
-                                if (Vector3.Distance(Position, new Vector3(_obj.Position.X + 0.5f, _obj.Position.Y + 0.25f, _obj.Position.Z + 0.5f)) < 1f)
-                                {
-                                    Hit();
-                                }
-                            }
-
-                        }
-                    }
-                }
+                if (_collisionInformation.ContainsKey(_dir) &&
+                    _collisionInformation[_dir].CollisionType == CollisionDetector.CollisionSource.Type.WithWorldBlock &&
+                    _collisionInformation[_dir].WorldBlock == WorldBlock.Spikes)
+                    Hit();
             }
-
-
-          
 
             //Aufsammeln von PlayerBlöcken
             for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
@@ -626,19 +606,18 @@ namespace ReiseZumGrundDesSees
         {
             ContentManager = _contentManager;
             GraphicDevice = _graphicsDevice;
-            model = ContentManager.Load<Model>(Content.MODEL_SPIELFIGUR);
-            effect = ContentManager.Load<Effect>(Content.EFFECT_PLAYER);
+            model = ContentManager.Load<Model>(ContentRessources.MODEL_SPIELFIGUR);
             soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_JUMPING)); // Springen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_DIE)); //Sterben
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_GETHIT)); //schaden bekommen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_KLONG)); //Block setzen
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_BLOP)); //Gegner stirbt
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_ERROR)); //wenn cd von Blöcken
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_RESET)); //wenn cd von Blöcken
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SAVE)); //wenn save
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_WIN)); //wenn GetPlayerBlock
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_LEVER)); //wenn lever
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_JUMPING)); // Springen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_DIE)); //Sterben
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_GETHIT)); //schaden bekommen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_KLONG)); //Block setzen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_BLOP)); //Gegner stirbt
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_ERROR)); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_RESET)); //wenn cd von Blöcken
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_SAVE)); //wenn save
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_WIN)); //wenn GetPlayerBlock
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_LEVER)); //wenn lever
 
             //Give Player Blocks on Load
             while (AnzahlBlockL > 0)
@@ -661,29 +640,22 @@ namespace ReiseZumGrundDesSees
                 _block.Initialize(_graphicsDevice, _contentManager);
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _lightMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
             foreach (var _block in Blöcke)
-                _block.Render(_flags, _effect, _viewMatrix, _perspectiveMatrix, _grDevice, _shadowEffect, _lightMatrix);
+                _block.Render(_flags, _effect, _grDevice);
 
             if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
             {
                 _grDevice.RasterizerState = RasterizerState.CullNone;
+
+                _effect.WorldMatrix = Matrix.CreateRotationY(Blickrichtung) * Matrix.CreateTranslation(Position);
+                _effect.VertexFormat = VertexFormat.Position;
+
                 foreach (ModelMesh _mesh in model.Meshes)
                 {
                     foreach (ModelMeshPart _part in _mesh.MeshParts)
-                    {
-                        _part.Effect = _effect;
-
-                        _part.Effect.Parameters["Matrix"].SetValue(
-                            Matrix.CreateRotationY(Blickrichtung) *
-                            Matrix.CreateTranslation(Position) *
-                            _viewMatrix *
-                            _perspectiveMatrix);
-
-                        if (_shadowEffect)
-                            _effect.Parameters["LightMatrix"].SetValue(Matrix.CreateRotationY(Blickrichtung) * Matrix.CreateTranslation(Position) * _lightMatrix);
-                    }
+                        _part.Effect = _effect.Effect;
 
                     _mesh.Draw();
                 }

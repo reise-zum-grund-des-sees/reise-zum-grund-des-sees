@@ -27,7 +27,7 @@ namespace ReiseZumGrundDesSees
         public Geschoss(ContentManager contentManager, Vector3 _position, Vector3 _movement)
         {
             ContentManager = contentManager;
-            Model = contentManager.Load<Model>(Content.MODEL_GESCHOSS);
+            Model = contentManager.Load<Model>(ContentRessources.MODEL_GESCHOSS);
             Position = _position;
             SpawnPosition = _position;
             Movement = _movement;
@@ -41,23 +41,16 @@ namespace ReiseZumGrundDesSees
             //throw new NotImplementedException();
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
+            Matrix _worldMatrix = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(this.Position, new Vector3(0, 0.5f, 0)));
+            _effect.WorldMatrix = _worldMatrix;
+            _effect.VertexFormat = VertexFormat.Position;
 
             foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    //effect.EnableDefaultLighting();
-                    Matrix _worldMatrix = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(this.Position, new Vector3(0, 0.5f, 0)));
-
-                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                    if (_shadowEffect)
-                    {
-                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
-                    }
-                    part.Effect = _effect;
-                }
+                    part.Effect = _effect.Effect;
 
                 mesh.Draw();
             }

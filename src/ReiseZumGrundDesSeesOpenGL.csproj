@@ -49,6 +49,8 @@
     <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
     <Compile Include="Main\Content.cs" />
+    <Compile Include="Main\Effect.cs" />
+    <Compile Include="Main\Geometrie.cs" />
     <Compile Include="Main\IOverlay.cs" />
     <Compile Include="Main\Octree.cs" />
     <Compile Include="State\ActionSyntaxParser.cs" />

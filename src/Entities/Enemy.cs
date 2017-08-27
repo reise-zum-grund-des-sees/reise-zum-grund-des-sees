@@ -49,8 +49,6 @@ namespace ReiseZumGrundDesSees
 
         public Enemy(Vector3 _position, Art _typ)
         {
-
-
             Position = _position;
             Gegnerart = _typ;
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 0.9f, 1f - 0.5f,
@@ -90,6 +88,7 @@ namespace ReiseZumGrundDesSees
         {
             if (!_flags.HasFlag(GameFlags.GameRunning))
                 return null;
+            return null;
 
             if (_wasHit == false)
             {
@@ -263,37 +262,37 @@ namespace ReiseZumGrundDesSees
         {
             ContentManager = _contentManager;
             soundEffects = new List<SoundEffect>();
-            soundEffects.Add(ContentManager.Load<SoundEffect>(Content.SOUND_SHOOT)); //schiesen
+            soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_SHOOT)); //schiesen
             if (Gegnerart == Art.Shooting)
-                Model = ContentManager.Load<Model>(Content.MODEL_GEGNER_2);
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_2);
             else
-                Model = ContentManager.Load<Model>(Content.MODEL_GEGNER_1);
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_1);
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
+            Matrix _worldMatrix;
+            if (this._wasHit == false)
+                _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
+            else
+                _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
+
+            _effect.WorldMatrix = _worldMatrix;
+            _effect.VertexFormat = VertexFormat.Position;
+
             foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    Matrix _worldMatrix;
-                    if (this._wasHit == false)
-                        _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
-                    else
-                        _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
-
-                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                    if (_shadowEffect)
-                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
-
-                    part.Effect = _effect;
-
+                    /*foreach (EffectParameter param in part.Effect.Parameters)
+                    {
+                        Console.WriteLine(param.Name + ", " + param.ParameterType);
+                    }*/
+                    part.Effect = _effect.Effect;
                 }
 
                 mesh.Draw();
             }
-
-
         }
 
         public void Hit()

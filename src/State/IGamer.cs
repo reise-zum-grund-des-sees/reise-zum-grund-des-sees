@@ -54,17 +54,17 @@ namespace ReiseZumGrundDesSees
 
         public IGamer(ContentManager _content)
         {
-            vollesHerz = _content.Load<Texture2D>(Content.ICON_HERZ_AUSGEFUELLT);
-            leeresHerz = _content.Load<Texture2D>(Content.ICON_HERZ_UNAUSGEFUELLT);
+            vollesHerz = _content.Load<Texture2D>(ContentRessources.ICON_HERZ_AUSGEFUELLT);
+            leeresHerz = _content.Load<Texture2D>(ContentRessources.ICON_HERZ_UNAUSGEFUELLT);
 
-            skill1 = _content.Load<Texture2D>(Content.ICON_WUERFEL_HELL);
-            skill2 = _content.Load<Texture2D>(Content.ICON_WUERFEL_GRAU);
-            skill3 = _content.Load<Texture2D>(Content.ICON_WUERFEL_SCHWARZ);
+            skill1 = _content.Load<Texture2D>(ContentRessources.ICON_WUERFEL_HELL);
+            skill2 = _content.Load<Texture2D>(ContentRessources.ICON_WUERFEL_GRAU);
+            skill3 = _content.Load<Texture2D>(ContentRessources.ICON_WUERFEL_SCHWARZ);
 
-            S1 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
-            S2 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
-            S3 = _content.Load<SpriteFont>(Content.FONT_ARIAL_12);
-            S4 = _content.Load<SpriteFont>(Content.FONT_ARIAL_32);
+            S1 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
+            S2 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
+            S3 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
+            S4 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_32);
         }
 
         public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize)

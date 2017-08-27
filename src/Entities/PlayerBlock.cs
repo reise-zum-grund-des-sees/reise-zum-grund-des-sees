@@ -71,7 +71,7 @@ namespace ReiseZumGrundDesSees
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
-         
+
             return (ref GameState _state) =>
             {
                 //Livetime
@@ -238,37 +238,39 @@ namespace ReiseZumGrundDesSees
             };
         }
 
+        Texture2D texture;
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             if (Art == 0)
             {//leichterBlock
-                Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+                Model = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK_LEICHT);
             }
             if (Art == 1)//MittelschwererBlock
             {
-                Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_MEDIUM);
+                Model = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK_MEDIUM);
             }
             if (Art == 2)//SchwererBlock
             {
-                Model = _contentManager.Load<Model>(Content.MODEL_BLOCK_SCHWER);
+                Model = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK_SCHWER);
             }
+
+            texture = _contentManager.Load<Texture2D>(ContentRessources.TEXTURE);
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
             if (CurrentState == PlayerBlock.State.Gesetzt)
             {
+                Matrix _worldMatrix = Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
+                _effect.WorldMatrix = _worldMatrix;
+
+                _effect.VertexFormat = VertexFormat.PositionTexture;
+                _effect.Texture = texture;
+
                 foreach (ModelMesh mesh in Model.Meshes)
                 {
                     foreach (ModelMeshPart part in mesh.MeshParts)
-                    {
-                        Matrix _worldMatrix = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
-
-                        _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                        if (_shadowEffect)
-                            _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
-                        part.Effect = _effect;
-                    }
+                        part.Effect = _effect.Effect;
 
                     mesh.Draw();
                 }

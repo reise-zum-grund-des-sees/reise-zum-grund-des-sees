@@ -22,7 +22,7 @@ namespace ReiseZumGrundDesSees
 
         List<IRenderable> initializeList = new List<IRenderable>();
 
-        Texture2D blocktexture;
+        Texture2D texture;
 
         private List<IRenderable> worldRenderables = new List<IRenderable>();
         private List<IRenderable> otherRenderables = new List<IRenderable>();
@@ -40,7 +40,7 @@ namespace ReiseZumGrundDesSees
             set
             {
                 this.IsMouseVisible = !value.HasFlag(GameFlags.GameRunning) || value.HasFlag(GameFlags.Menu);
-                
+
                 if ((value & GameFlags.Fullscreen) != (__GameFlags & GameFlags.Fullscreen))
                 {
                     graphics.IsFullScreen = (value & GameFlags.Fullscreen) != 0;
@@ -59,27 +59,21 @@ namespace ReiseZumGrundDesSees
         WorldEditor editor;
         SpriteFont font;
 
-        //MovingBlock testBlock;
+        RenderTarget2D nearShadowMap, farShadowMap;
+        Matrix nearLightMatrix, farLightMatrix;
 
-        RenderTarget2D shadowMap;
-        Effect shadowEffect, defaultEffect, shadowNormalEffect, defaultNormalEffect;
-       
+        ShadowEffect shadowEffect;
+        DefaultEffect preShadowEffect;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            //graphics.IsFullScreen = true;
-            /*
-            testBlock = new MovingBlock(new List<Vector3>{
-                new Vector3(24, 34, 24),
-                new Vector3(24, 35, 24),
-                new Vector3(27, 34, 25),
-                new Vector3(27, 33, 25)
-            });
-            */
+
             graphics.PreparingDeviceSettings += (_sender, _preparingDeviceSettingsEventArgs) =>
             {
                 _preparingDeviceSettingsEventArgs.GraphicsDeviceInformation.GraphicsProfile = GraphicsProfile.HiDef;
+                _preparingDeviceSettingsEventArgs.GraphicsDeviceInformation.PresentationParameters.DepthStencilFormat = DepthFormat.Depth16;
             };
         }
 
@@ -91,40 +85,36 @@ namespace ReiseZumGrundDesSees
         /// </summary>
         protected override void Initialize()
         {
-            //this.graphics.ToggleFullScreen();
             this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+
+            this.graphics.PreferMultiSampling = true;
+            GraphicsDevice.PresentationParameters.MultiSampleCount = 2;
+            GraphicsDevice.RasterizerState = new RasterizerState()
+            {
+                CullMode = CullMode.CullClockwiseFace,
+                MultiSampleAntiAlias = true,
+            };
             this.graphics.ApplyChanges();
 
-            shadowMap = new RenderTarget2D(GraphicsDevice, 4096, 4096, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+            nearShadowMap = new RenderTarget2D(GraphicsDevice, 512, 512, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+            farShadowMap = new RenderTarget2D(GraphicsDevice, 512, 512, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
 
             GameFlags = GameFlags.Menu | GameFlags.Debug;
 
             Window.AllowUserResizing = true;
 
-            // TEMP: remove to show main menu
-            //StartNewGame();
-
             InputManager = new InputManager();
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             editor = new WorldEditor(new Vector3(24, 32, 24), Content);
-            initializeList.Add(editor);
-            otherRenderables.Add(editor);
+            editor.Initialize(GraphicsDevice, Content);
 
             this.IsMouseVisible = true;
 
-            //Startposition in der Mitte, damit kein Out of Bounds Error erzeugt wird
-            /*
-            Enemy a = new Enemy(new Vector3(20, 32, 20), Enemy.Art.MandS); //Create Test Enemy
-            Enemy b = new Enemy(Content, new Vector3(30, 32, 30), Enemy.Art.Shooting); //Create Test Enemy
-            Enemy c = new Enemy(Content, new Vector3(30, 32, 25), Enemy.Art.Moving); //Create Test Enemy
-            */
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
-                                             //initializeList.Add(testBlock);
 
             //add Aufsammelbare Player Blöcke
-           
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(169.5f, 34, 216.5f), 0));
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(176.5f, 36, 166.5f), 1));
             GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(136.5f, 39, 234.5f), 2));
@@ -133,7 +123,7 @@ namespace ReiseZumGrundDesSees
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[1]);
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[2]);
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[3]);
-            
+
             for (int i = 0; i < Enemy.EnemyList.Count; i++)
                 initializeList.Add(Enemy.EnemyList[i]);
             base.Initialize();
@@ -148,15 +138,14 @@ namespace ReiseZumGrundDesSees
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            blocktexture = Content.Load<Texture2D>(ReiseZumGrundDesSees.Content.TEXTURE_BLOCK);
-            font = Content.Load<SpriteFont>(ReiseZumGrundDesSees.Content.FONT_ARIAL_20);
-            shadowEffect = Content.Load<Effect>("effects/shadowmap");
-            defaultEffect = Content.Load<Effect>("effects/default");
-            shadowNormalEffect = Content.Load<Effect>("effects/shadowmap.normals");
-            defaultNormalEffect = Content.Load<Effect>("effects/default.normals");
+            texture = Content.Load<Texture2D>(ReiseZumGrundDesSees.ContentRessources.TEXTURE);
+            font = Content.Load<SpriteFont>(ReiseZumGrundDesSees.ContentRessources.FONT_ARIAL_20);
+
+            shadowEffect = new ShadowEffect(Content);
+            preShadowEffect = new DefaultEffect(Content.Load<Effect>(ContentRessources.EFFECT_PRESHADOW));
 
             // TODO: use this.Content to load your game content here
-            MainMenu = new MainMenu(Content, this);
+            MainMenu = new MainMenu(texture, Content, this);
             IGamer = new IGamer(Content);
         }
 
@@ -207,9 +196,9 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-           // _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-           // _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
-  
+            // _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            // _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                 {
@@ -224,7 +213,7 @@ namespace ReiseZumGrundDesSees
                 }
 
             //foreach (UpdateDelegate u in _updateList)
-                //u?.Invoke(ref GameState);
+            //u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
@@ -252,6 +241,33 @@ namespace ReiseZumGrundDesSees
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
             else keyPressedPause = false;
 
+            if (GameFlags.HasFlag(GameFlags.GameLoaded))
+            {
+                nearLightMatrix =
+                    Matrix.CreateLookAt(new Vector3((float)Math.Floor(GameState.Player.Position.X) - 10,
+                                                    GameState.World.Blocks.Size.Y + 1,
+                                                    (float)Math.Floor(GameState.Player.Position.Z) - 10),
+                                        new Vector3((float)Math.Floor(GameState.Player.Position.X),
+                                                    (float)Math.Floor(GameState.Player.Position.Y),
+                                                    (float)Math.Floor(GameState.Player.Position.Z)),
+                                        Vector3.Forward) *
+                    Matrix.CreateOrthographic(30, 30, 0, GameState.World.Blocks.Size.Y);
+
+                farLightMatrix =
+                    Matrix.CreateTranslation(-GameState.Camera.Center.Position) *
+                    Matrix.CreateRotationY(MathHelper.PiOver4 + MathHelper.Pi + GameState.Camera.Azimuth) *
+                    Matrix.CreateTranslation(GameState.Camera.Center.Position) *
+                    Matrix.CreateTranslation(-50f, 0, -50f) *
+                    Matrix.CreateLookAt(new Vector3((float)Math.Floor(GameState.Player.Position.X) - (float)(Math.Sin(MathHelper.Pi + MathHelper.PiOver2 + GameState.Camera.Azimuth) * Math.Sqrt(200)),
+                                                    GameState.World.Blocks.Size.Y + 1,
+                                                    (float)Math.Floor(GameState.Player.Position.Z) - (float)(Math.Cos(MathHelper.Pi + MathHelper.PiOver2 + GameState.Camera.Azimuth) * Math.Sqrt(200))),
+                                        new Vector3((float)Math.Floor(GameState.Player.Position.X),
+                                                    (float)Math.Floor(GameState.Player.Position.Y),
+                                                    (float)Math.Floor(GameState.Player.Position.Z)),
+                                        Vector3.Forward) *
+                    Matrix.CreateOrthographic(120, 120, 0, GameState.World.Blocks.Size.Y);
+            }
+
             base.Update(gameTime);
         }
 
@@ -275,17 +291,17 @@ namespace ReiseZumGrundDesSees
                 i.Initialize(GraphicsDevice, Content);
             initializeList.Clear();
 
-            // Draw Shadows
-            GraphicsDevice.SetRenderTarget(shadowMap);
+            // Draw Shadows ----------------------------------------------------------------------------------------------------
+            GraphicsDevice.SetRenderTarget(nearShadowMap);
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Red, 1f, 0);
 
-            Matrix _lightMatrix = Matrix.Identity;
             if (GameFlags.HasFlag(GameFlags.GameLoaded))
             {
-                _lightMatrix = Matrix.CreateLookAt(new Vector3(GameState.Player.Position.X - 10, GameState.World.Blocks.Size.Y + 1, GameState.Player.Position.Z - 10), GameState.Player.Position, Vector3.Forward) * Matrix.CreateOrthographic(200, 200, 0, GameState.World.Blocks.Size.Y);
-                GameState.Player.Render(GameFlags, shadowNormalEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
-                GameState.World.Render(GameFlags, shadowEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
+                preShadowEffect.ViewMatrix = Matrix.Identity;
+                preShadowEffect.ProjectionMatrix = nearLightMatrix;
+                GameState.Player.Render(GameFlags, preShadowEffect, GraphicsDevice);
+                GameState.World.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
                 foreach (var _obj in GameState.World.specialBlocks)
                     if (Vector2.Distance(
@@ -293,7 +309,7 @@ namespace ReiseZumGrundDesSees
                             new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                         < GameState.World.viewDistance)
 
-                        _obj.Value.Render(GameFlags, shadowNormalEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
+                        _obj.Value.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
                 foreach (var _obj in GameState.World.Objects)
                     if (Vector2.Distance(
@@ -301,7 +317,7 @@ namespace ReiseZumGrundDesSees
                             new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                         < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, shadowNormalEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
                 foreach (var _obj in Enemy.EnemyList) //Draw Enemy
                     if (Vector2.Distance(
@@ -309,7 +325,7 @@ namespace ReiseZumGrundDesSees
                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                        < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, shadowNormalEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
                 foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
                     if (Vector2.Distance(
@@ -317,7 +333,7 @@ namespace ReiseZumGrundDesSees
                          new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                      < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, shadowNormalEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
                 foreach (var _obj in GetPlayerBlock.GetPlayerBlockList)//Draw GetPlayerBlock
                     if (Vector2.Distance(
@@ -325,18 +341,67 @@ namespace ReiseZumGrundDesSees
                      new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                  < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, shadowNormalEffect, Matrix.Identity, _lightMatrix, GraphicsDevice);
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                defaultNormalEffect.Parameters["LightMatrix"].SetValue(_lightMatrix);
-                if (defaultNormalEffect.Parameters.Where(_param => _param.Name.Equals("shadowSampler+shadowTexture")).Any())
-                    defaultNormalEffect.Parameters["shadowSampler+shadowTexture"].SetValue(shadowMap);
-                else if (defaultNormalEffect.Parameters.Where(_param => _param.Name.Equals("shadowTexture")).Any())
-                    defaultNormalEffect.Parameters["shadowTexture"].SetValue(shadowMap);
-                defaultEffect.Parameters["LightMatrix"].SetValue(_lightMatrix);
-                if (defaultEffect.Parameters.Where(_param => _param.Name.Equals("shadowSampler+shadowTexture")).Any())
-                    defaultEffect.Parameters["shadowSampler+shadowTexture"].SetValue(shadowMap);
-                else if (defaultEffect.Parameters.Where(_param => _param.Name.Equals("shadowTexture")).Any())
-                    defaultEffect.Parameters["shadowTexture"].SetValue(shadowMap);
+
+                shadowEffect.NearLightMatrix = nearLightMatrix;
+                shadowEffect.NearLightTexture = nearShadowMap;
+            }
+
+            GraphicsDevice.SetRenderTarget(farShadowMap);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Red, 1f, 0);
+
+            if (GameFlags.HasFlag(GameFlags.GameLoaded))
+            {
+                preShadowEffect.ViewMatrix = Matrix.Identity;
+                preShadowEffect.ProjectionMatrix = farLightMatrix;
+                GameState.Player.Render(GameFlags, preShadowEffect, GraphicsDevice);
+                GameState.World.Render(GameFlags, preShadowEffect, GraphicsDevice);
+
+                foreach (var _obj in GameState.World.specialBlocks)
+                    if (Vector2.Distance(
+                            new Vector2(_obj.Key.X, _obj.Key.Z),
+                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                        < GameState.World.viewDistance)
+
+                        _obj.Value.Render(GameFlags, preShadowEffect, GraphicsDevice);
+
+                foreach (var _obj in GameState.World.Objects)
+                    if (Vector2.Distance(
+                            new Vector2(_obj.Position.X, _obj.Position.Z),
+                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                        < GameState.World.viewDistance)
+
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
+
+                foreach (var _obj in Enemy.EnemyList) //Draw Enemy
+                    if (Vector2.Distance(
+                           new Vector2(_obj.Position.X, _obj.Position.Z),
+                           new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                       < GameState.World.viewDistance)
+
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
+
+                foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
+                    if (Vector2.Distance(
+                         new Vector2(_obj.Position.X, _obj.Position.Z),
+                         new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                     < GameState.World.viewDistance)
+
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
+
+                foreach (var _obj in GetPlayerBlock.GetPlayerBlockList)//Draw GetPlayerBlock
+                    if (Vector2.Distance(
+                     new Vector2(_obj.Position.X, _obj.Position.Z),
+                     new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                 < GameState.World.viewDistance)
+
+                        _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
+
+
+                shadowEffect.FarLightMatrix = farLightMatrix;
+                shadowEffect.FarLightTexture = farShadowMap;
             }
 
 
@@ -346,13 +411,15 @@ namespace ReiseZumGrundDesSees
 
             if (GameFlags.HasFlag(GameFlags.GameLoaded))
             {
-
                 Matrix _viewMatrix = GameState.Camera.CalculateViewMatrix();
                 Matrix _perspectiveMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), Window.ClientBounds.Width * 1f / Window.ClientBounds.Height, 1f, 1000f);
 
-                GameState.Player.Render(GameFlags, defaultNormalEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                shadowEffect.ViewMatrix = _viewMatrix;
+                shadowEffect.ProjectionMatrix = _perspectiveMatrix;
 
-                GameState.World.Render(GameFlags, defaultEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                GameState.Player.Render(GameFlags, shadowEffect, GraphicsDevice);
+
+                GameState.World.Render(GameFlags, shadowEffect, GraphicsDevice);
 
                 foreach (var _obj in GameState.World.specialBlocks)
                     if (Vector2.Distance(
@@ -360,7 +427,7 @@ namespace ReiseZumGrundDesSees
                             new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                         < GameState.World.viewDistance)
 
-                        _obj.Value.Render(GameFlags, defaultNormalEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                        _obj.Value.Render(GameFlags, shadowEffect, GraphicsDevice);
 
                 foreach (var _obj in GameState.World.Objects)
                     if (Vector2.Distance(
@@ -368,7 +435,7 @@ namespace ReiseZumGrundDesSees
                             new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                         < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, defaultNormalEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                        _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
                 foreach (var _obj in Enemy.EnemyList) //Draw Enemy
                     if (Vector2.Distance(
@@ -376,7 +443,7 @@ namespace ReiseZumGrundDesSees
                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                        < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, defaultNormalEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                        _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
                 foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
                     if (Vector2.Distance(
@@ -384,7 +451,7 @@ namespace ReiseZumGrundDesSees
                          new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                      < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, defaultNormalEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                        _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
                 foreach (var _obj in GetPlayerBlock.GetPlayerBlockList)//Draw GetPlayerBlock
                     if (Vector2.Distance(
@@ -392,22 +459,21 @@ namespace ReiseZumGrundDesSees
                      new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                  < GameState.World.viewDistance)
 
-                        _obj.Render(GameFlags, defaultNormalEffect, _viewMatrix, _perspectiveMatrix, GraphicsDevice, true, _lightMatrix);
+                        _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
-                editor.Render(GameFlags, null, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-
-               
-                //foreach (var _renderable in worldRenderables)
-                    //_renderable.Render(GameFlags,  _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-                //foreach (var _renderable in otherRenderables)
-                    //_renderable.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-
-                //  testBlock.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
-
-              
+                GraphicsDevice.SetRenderTarget(null);
+                editor.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
 
                 IGamer.Render(spriteBatch);
             }
+
+            GraphicsDevice.SetRenderTarget(null);
+            // Render shadow map
+            /*spriteBatch.Begin(0, BlendState.Opaque, SamplerState.AnisotropicClamp);
+            spriteBatch.Draw(nearShadowMap, new Rectangle(0, 756, 256, 256), Color.White);
+            spriteBatch.Draw(farShadowMap, new Rectangle(0, 500, 256, 256), Color.White);
+            //spriteBatch.Draw(realRenderTarget, new Rectangle(0, 0, 1920, 1080), Color.White);
+            spriteBatch.End();*/
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Render(spriteBatch);
@@ -415,10 +481,6 @@ namespace ReiseZumGrundDesSees
             if (GameFlags.HasFlag(GameFlags.Debug))
                 DebugHelper.RenderOverlay(spriteBatch, font);
 
-            // Render shadow map
-            /*spriteBatch.Begin(0, BlendState.Opaque, SamplerState.AnisotropicClamp);
-            spriteBatch.Draw(shadowMap, new Rectangle(0, 0, 512, 512), Color.White);
-            spriteBatch.End();*/
 
             base.Draw(gameTime);
         }
@@ -487,6 +549,11 @@ namespace ReiseZumGrundDesSees
         public void ExitGame()
         {
             Exit();
+        }
+
+        public void ShowOptions()
+        {
+
         }
     }
 }

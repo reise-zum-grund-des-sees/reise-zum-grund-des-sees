@@ -35,7 +35,7 @@ namespace ReiseZumGrundDesSees
 
             if (is_pressed == false)
             {
-                Model = ContentManager.Load<Model>(Content.MODEL_PP_UNTEN);
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_PP_UNTEN);
                 is_pressed = true;
                 OnPressed?.BaseAction(_state);           
                 _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateDown;
@@ -43,7 +43,7 @@ namespace ReiseZumGrundDesSees
             }
             else
             {
-                Model = ContentManager.Load<Model>(Content.MODEL_PP_OBEN);
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_PP_OBEN);
                 is_pressed = false;
                 OnReleased?.BaseAction(_state);        
                 _state.World.Blocks[Position.X, Position.Y, Position.Z] = WorldBlock.PressurePlateUp;
@@ -79,24 +79,20 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>(Content.MODEL_PP_OBEN);
+            Model = _contentManager.Load<Model>(ContentRessources.MODEL_PP_OBEN);
        
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
+            Matrix _worldMatrix = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
+            _effect.WorldMatrix = _worldMatrix;
+            _effect.VertexFormat = VertexFormat.Position;
+
             foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    Matrix _worldMatrix = Matrix.CreateScale(0.20f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.25f, 0.5f)));
-
-                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                    if (_shadowEffect)
-                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
-
-                    part.Effect = _effect;
-                }
+                    part.Effect = _effect.Effect;
 
                 mesh.Draw();
             }

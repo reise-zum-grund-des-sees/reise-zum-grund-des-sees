@@ -8,6 +8,7 @@
 #endif
 
 matrix Matrix;
+float HardShadow;
 
 struct VertexShaderInput
 {

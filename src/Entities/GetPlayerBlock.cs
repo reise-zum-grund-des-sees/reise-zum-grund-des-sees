@@ -37,36 +37,28 @@ namespace ReiseZumGrundDesSees
         {
             ContentManager = _contentManager;
             modelarray = new Model[3];       
-                modelarray[0] = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+                modelarray[0] = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK_LEICHT);
           
-                modelarray[1] = _contentManager.Load<Model>(Content.MODEL_BLOCK_MEDIUM);
+                modelarray[1] = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK_MEDIUM);
          
-                modelarray[2] = _contentManager.Load<Model>(Content.MODEL_BLOCK_SCHWER);
+                modelarray[2] = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK_SCHWER);
             
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _lightMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
             if (Art == 0) model = modelarray[0];
             if (Art == 1) model = modelarray[1];
             if (Art == 2) model = modelarray[2];
+
+            Matrix _worldMatrix = Matrix.CreateScale(0.25f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
+            _effect.WorldMatrix = _worldMatrix;
+            _effect.VertexFormat = VertexFormat.Position;
+
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    //effect.EnableDefaultLighting();
-                    Matrix _worldMatrix = Matrix.CreateScale(0.25f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
-
-                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                    if (_shadowEffect)
-                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _lightMatrix);
-
-                    //effect.View = _viewMatrix;
-
-                    //effect.Projection = _perspectiveMatrix;
-                    part.Effect = _effect;
-
-                }
+                    part.Effect = _effect.Effect;
 
                 mesh.Draw();
             }

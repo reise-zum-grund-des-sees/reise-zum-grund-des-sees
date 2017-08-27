@@ -72,24 +72,24 @@ namespace ReiseZumGrundDesSees
             moving = false;
         }
 
+        Texture2D texture;
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
-            model = _contentManager.Load<Model>(Content.MODEL_BLOCK_LEICHT);
+            model = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK);
+            texture = _contentManager.Load<Texture2D>(ContentRessources.TEXTURE);
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
+            Matrix _worldMatrix = Matrix.CreateTranslation(Position);
+            _effect.WorldMatrix = _worldMatrix;
+            _effect.VertexFormat = VertexFormat.PositionTexture;
+            _effect.Texture = texture;
+
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    Matrix _worldMatrix = Matrix.CreateScale(0.5f)* Matrix.CreateTranslation(Position);
-                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                    if (_shadowEffect)
-                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
-
-                    part.Effect = _effect;
-                }
+                    part.Effect = _effect.Effect;
 
                 mesh.Draw();
             }
@@ -99,6 +99,7 @@ namespace ReiseZumGrundDesSees
         {
             if (!_flags.HasFlag(GameFlags.GameRunning) || !_flags.HasFlag(GameFlags.GameLoaded))
                 return null;
+            return null;
             
             Vector3 _lastPosition = positionMarks[(status + positionMarks.Length - 1) % positionMarks.Length];
             Vector3 _nextPosition = positionMarks[status];
@@ -106,6 +107,7 @@ namespace ReiseZumGrundDesSees
             Vector3 _movement = new Vector3(0, 0, 0);
             Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
             Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
+            moving = false;
             if (moving)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;

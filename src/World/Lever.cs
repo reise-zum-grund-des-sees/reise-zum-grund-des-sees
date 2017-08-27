@@ -69,13 +69,13 @@ namespace ReiseZumGrundDesSees
             {
                 if (is_pressed == false)
                 {
-                    Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_UNTEN);
+                    Model = ContentManager.Load<Model>(ContentRessources.MODEL_SCHALTER_UNTEN);
                     is_pressed = true;
                     OnPressed?.BaseAction(_gs);
                 }
                 else
                 {
-                    Model = ContentManager.Load<Model>(Content.MODEL_SCHALTER_OBEN);
+                    Model = ContentManager.Load<Model>(ContentRessources.MODEL_SCHALTER_OBEN);
                     is_pressed = false;
                     OnReleased?.BaseAction(_gs);
                 }
@@ -93,24 +93,19 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>((is_pressed)? Content.MODEL_SCHALTER_UNTEN : Content.MODEL_SCHALTER_OBEN);
+            Model = _contentManager.Load<Model>((is_pressed)? ContentRessources.MODEL_SCHALTER_UNTEN : ContentRessources.MODEL_SCHALTER_OBEN);
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
+            Matrix _worldMatrix = Matrix.CreateRotationZ((float)Rotation) * Matrix.CreateRotationX((float)Math.PI * 3 / 2) * Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.5f, 0.5f)));
+            _effect.WorldMatrix = _worldMatrix;
+            _effect.VertexFormat = VertexFormat.Position;
+
             foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    //effect.EnableDefaultLighting();
-                    Matrix _worldMatrix = Matrix.CreateRotationZ((float)Rotation) * Matrix.CreateRotationX((float)Math.PI * 3 / 2) * Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.5f, 0.5f)));
-                    _effect.Parameters["Matrix"].SetValue(_worldMatrix * _viewMatrix * _perspectiveMatrix);
-                    if (_shadowEffect)
-                    {
-                        _effect.Parameters["LightMatrix"].SetValue(_worldMatrix * _shadowMatrix);
-                    }
-                    part.Effect = _effect;
-                }
+                    part.Effect = _effect.Effect;
 
                 mesh.Draw();
             }

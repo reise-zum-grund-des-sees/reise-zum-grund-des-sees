@@ -12,8 +12,8 @@ matrix LightMatrix;
 
 struct VertexShaderInput
 {
-	float4 Position : POSITION0;
-	//float4 Normal : NORMAL0;
+	float4 Position : POSITION;
+	float4 Color : COLOR;
 };
 
 struct VertexShaderOutput
@@ -21,6 +21,7 @@ struct VertexShaderOutput
 	float4 Position : SV_POSITION;
 	float2 ShadowCoord : TEXCOORD0;
 	float Depth : TEXCOORD1;
+	float4 Color : COLOR0;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -34,6 +35,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	output.ShadowCoord.y = 1 - output.ShadowCoord.y;
 
 	output.Depth = lightPixelPosition.z / lightPixelPosition.w;
+	output.Color = input.Color;
 
 	return output;
 }
@@ -73,9 +75,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	float shadow = allShadow * max(-0.4, (_middle - input.Depth) * 10);// +allNotShadow * min(0.4, (input.Depth - _middle) * 10);
 	//if (abs(_middle - input.Depth) < 0.02)
 		//shadow = 0;
-	float value = 0.5 + shadow;
 
-	return float4(value, value, value, 1);
+	return float4(input.Color.x + shadow, input.Color.y + shadow, input.Color.z + shadow, 1);
 }
 
 technique BasicColorDrawing

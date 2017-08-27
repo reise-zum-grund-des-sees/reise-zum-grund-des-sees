@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReiseZumGrundDesSees
 {
-    static class Content
+    static class ContentRessources
     {
         public const string MODEL_CURSOR = "models/cursor";
         public const string MODEL_GEGNER_1 = "models/gegner1";
@@ -14,6 +14,7 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_BLOCK_LEICHT = "models/block_leicht";
         public const string MODEL_BLOCK_MEDIUM = "models/block_medium";
         public const string MODEL_BLOCK_SCHWER = "models/block_schwer";
+        public const string MODEL_BLOCK= "models/block";
         public const string MODEL_SPIELFIGUR = "models/spielfigur";
         public const string MODEL_GESCHOSS = "models/block";
         public const string MODEL_SCHALTER_OBEN = "models/schalter_oben";
@@ -22,9 +23,14 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_PP_OBEN = "models/Knopf_ungedrückt";
         public const string MODEL_PP_UNTEN = "models/Knopf_gedrückt2";
         public const string MODEL_SAVEPOINT = "models/Savepoint_VK";
-       
 
         public const string EFFECT_PLAYER = "effects/player";
+
+        public const string EFFECT_PRESHADOW = "effects/shadowmap";
+        public const string EFFECT_SHADOW_BASIC = "effects/default";
+        public const string EFFECT_SHADOW_COLOR = "effects/default.color";
+        public const string EFFECT_SHADOW_TEXTURE = "effects/default.texture";
+        public const string EFFECT_SHADOW_WORLD = "effects/default.world";
 
         public const string SOUND_JUMPING = "sound/jumping";
         public const string SOUND_DIE = "sound/die";
@@ -38,7 +44,8 @@ namespace ReiseZumGrundDesSees
         public const string SOUND_LEVER = "sound/lever";
         public const string SOUND_WIN = "sound/win";
 
-        public const string TEXTURE_BLOCK = "blocktexture";
+        public const string TEXTURE = "texture";
+        public const string TEXTURE_BLOCKS = "blocktexture";
         public const string TEXTURE_BACKGROUND = "interface/background";
 
         public const string BUTTON_NEUES_SPIEL_STARTEN = "interface/button_neues_spiel_starten";

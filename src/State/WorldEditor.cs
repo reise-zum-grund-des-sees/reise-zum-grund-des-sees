@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class WorldEditor : IUpdateable, IReadonlyPositionObject, IRenderable
+    class WorldEditor : IUpdateable, IReadonlyPositionObject
     {
         public Vector3 Position { get; set; }
         private ContentManager content;
@@ -26,7 +26,7 @@ namespace ReiseZumGrundDesSees
         {
             Position = _position;
             content = _content;
-            cursorModel = _content.Load<Model>(Content.MODEL_CURSOR);
+            cursorModel = _content.Load<Model>(ContentRessources.MODEL_CURSOR);
         }
 
         [Flags]
@@ -417,17 +417,17 @@ namespace ReiseZumGrundDesSees
             graphicsDevice = _graphicsDevice;
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _projectionMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _shadowMatrix = default(Matrix))
+        public void Render(GameFlags _flags, Matrix _viewMatrix, Matrix _projectionMatrix, GraphicsDevice _grDevice)
         {
             if (!_flags.HasFlag(GameFlags.EditorMode))
                 return;
 
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
+
             foreach (ModelMesh mesh in cursorModel.Meshes)
             {
                 foreach (BasicEffect e in mesh.Effects)
                 {
-                    //effect.EnableDefaultLighting();
                     Vector3 _blockPosition = new Vector3((int)Position.X + 0.5f, (int)Position.Y + 0.5f, (int)Position.Z + 0.5f);
                     Matrix _worldMatrix = Matrix.CreateTranslation(_blockPosition);
 

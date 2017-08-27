@@ -11,16 +11,16 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ReiseZumGrundDesSees
 {
-    class RenderableWorld : World, IUpdateable
+    class RenderableWorld : World, IUpdateable, IRenderable
     {
-        private readonly VertexPositionColorTexture[,][] Vertices;
+        private readonly VertexPositionTexture[,][] Vertices;
         private readonly VertexBuffer[,] VertexBuffers;
 
         private BasicEffect effect;
         private GraphicsDevice graphicsDevice;
         private ContentManager contentManager;
 
-        public double viewDistance = 30.0;
+        public double viewDistance = 100.0;
 
         private Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
@@ -31,7 +31,7 @@ namespace ReiseZumGrundDesSees
 
         public RenderableWorld(ConfigFile.ConfigNode _config, ObjectIDMapper _idMapper, string _baseDir) : base(_config, _idMapper, _baseDir)
         {
-            Vertices = new VertexPositionColorTexture[RegionsCount.X, RegionsCount.Y][];
+            Vertices = new VertexPositionTexture[RegionsCount.X, RegionsCount.Y][];
             VertexBuffers = new VertexBuffer[RegionsCount.X, RegionsCount.Y];
 
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
@@ -51,7 +51,7 @@ namespace ReiseZumGrundDesSees
         public RenderableWorld(int _regionSizeX, int _regionSizeY, int _regionSizeZ, int _regionsCountX, int _regionsCountZ, Vector3 _spawnPos, ContentManager _content)
             : base(_regionSizeX, _regionSizeY, _regionSizeZ, _regionsCountX, _regionsCountZ, _spawnPos)
         {
-            Vertices = new VertexPositionColorTexture[_regionsCountX, _regionsCountZ][];
+            Vertices = new VertexPositionTexture[_regionsCountX, _regionsCountZ][];
             VertexBuffers = new VertexBuffer[_regionsCountX, _regionsCountZ];
 
             Blocks.OnBlockChanged += (WorldBlock _, WorldBlock __, int x, int y, int z) =>
@@ -71,14 +71,14 @@ namespace ReiseZumGrundDesSees
         private void LoadVertices(int _regionX, int _regionZ)
         {
             WorldRegion _region = Regions[_regionX, _regionZ];
-            List<VertexPositionColorTexture> _vertices = new List<VertexPositionColorTexture>();
+            //List<VertexPositionTexture> _vertices = new List<VertexPositionTexture>();
 
             Vertices[_regionX, _regionZ] = VertexGenerator.GenerateVertices(this.Blocks, _regionX * RegionSize.X, 0, _regionZ * RegionSize.Z, RegionSize.X, RegionSize.Y, RegionSize.Z);
             if (Vertices[_regionX, _regionZ].Length != 0)
             {
                 if (VertexBuffers[_regionX, _regionZ] != null)
                     VertexBuffers[_regionX, _regionZ].Dispose();
-                VertexBuffers[_regionX, _regionZ] = new VertexBuffer(graphicsDevice, VertexPositionColorTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
+                VertexBuffers[_regionX, _regionZ] = new VertexBuffer(graphicsDevice, VertexPositionTexture.VertexDeclaration, Vertices[_regionX, _regionZ].Length, BufferUsage.WriteOnly);
                 VertexBuffers[_regionX, _regionZ].SetData(Vertices[_regionX, _regionZ]);
             }
         }
@@ -139,7 +139,7 @@ namespace ReiseZumGrundDesSees
             graphicsDevice = _graphicsDevice;
             contentManager = _contentManager;
 
-            blockTexture = contentManager.Load<Texture2D>(BLOCKTEXTURE_NAME);
+            blockTexture = contentManager.Load<Texture2D>(ContentRessources.TEXTURE_BLOCKS);
 
             foreach (var _blocks in specialBlocks)
                 _blocks.Value.Initialize(graphicsDevice, contentManager);
@@ -168,7 +168,7 @@ namespace ReiseZumGrundDesSees
                 _object.Initialize(graphicsDevice, contentManager);
         }
 
-        public void Render(GameFlags _flags, Effect _effect, Matrix _viewMatrix, Matrix _perspectiveMatrix, GraphicsDevice _grDevice, bool _shadowEffect = false, Matrix _lightMatrix = default(Matrix))
+        public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
             if (lastGameState.Camera != null)
             {
@@ -180,37 +180,25 @@ namespace ReiseZumGrundDesSees
             int maxX = Vertices.GetLength(0);
             int maxZ = Vertices.GetLength(1);
 
+            _effect.Texture = blockTexture;
+            _effect.VertexFormat = VertexFormat.World;
+
             for (int x = 0; x < maxX; x++)
                 for (int z = 0; z < maxZ; z++)
                 {
-                    if (Vertices[x, z]?.Length > 0)
+                    if (Vertices[x, z]?.Length > 0 && Geometrie.IsChunkInViewRadius(new Vector2(x * 16 + 8, z * 16 + 8),
+                        lastGameState.Camera.Azimuth, MathHelper.PiOver2, new Vector2(lastGameState.Player.Position.X, lastGameState.Player.Position.Z)))
                     {
                         DebugHelper.Information.RenderedWorldChunks++;
                         DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
 
-                        /*effect.View = _viewMatrix;
-                        effect.World = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
-                        effect.Projection = _perspectiveMatrix;
-                        foreach (EffectPass pass in effect.CurrentTechnique.Passes)
-                            pass.Apply();*/
-                        
-                        _effect.Parameters["Matrix"].SetValue(Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z) * _viewMatrix * _perspectiveMatrix);
-                        if (_effect.Parameters.Where(_parameter => _parameter.Name.Equals("textureSampler+otherTexture")).Any())
-                            _effect.Parameters["textureSampler+otherTexture"].SetValue(blockTexture);
-                        else if (_effect.Parameters.Where(_parameter => _parameter.Name.Equals("otherTexture")).Any())
-                            _effect.Parameters["otherTexture"].SetValue(blockTexture);
-
-
-                        if (_shadowEffect)
-                        {
-                            _effect.Parameters["LightMatrix"].SetValue(Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z) * _lightMatrix);
-                        }
+                        _effect.WorldMatrix = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
 
                         graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-
                         graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
 
-                        foreach (EffectPass pass in _effect.CurrentTechnique.Passes)
+                        Effect _baseEffect = _effect.Effect;
+                        foreach (EffectPass pass in _baseEffect.CurrentTechnique.Passes)
                             pass.Apply();
 
                         graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, Vertices[x, z].Length / 3);

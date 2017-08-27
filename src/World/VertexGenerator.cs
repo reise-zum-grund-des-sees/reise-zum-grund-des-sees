@@ -11,13 +11,13 @@ namespace ReiseZumGrundDesSees
 {
     class VertexGenerator
     {
-        public static VertexPositionColorTexture[] GenerateVertices(IReadonlyBlockWorld _world, int _startX, int _startY, int _startZ, int _sizeX, int _sizeY, int _sizeZ)
+        public static VertexPositionTexture[] GenerateVertices(IReadonlyBlockWorld _world, int _startX, int _startY, int _startZ, int _sizeX, int _sizeY, int _sizeZ)
         {
             /*int _sizeX = _region.Blocks.GetLength(0);
             int _sizeY = _region.Blocks.GetLength(1);
             int _sizeZ = _region.Blocks.GetLength(2);*/
 
-            VertexPositionColorTexture[] _vertices = new VertexPositionColorTexture[_sizeX * _sizeY * _sizeZ * 6 * 6 / 8];
+            VertexPositionTexture[] _vertices = new VertexPositionTexture[_sizeX * _sizeY * _sizeZ * 6 * 6 / 8];
             int i = 0;
 
             for (int x = _startX; x < _startX + _sizeX; x++)
@@ -42,115 +42,232 @@ namespace ReiseZumGrundDesSees
 
                             Vector2[] _textureOffsets = b.GetTextureOffsets();
 
-                            int r;
                             Random rnd = new Random(x * 16 * 16 + y * 16 + z);
 
                             // FRONT
                             if (!_world[x, y, z + 1].IsFullBlock())
                             {
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, _textureOffsets.Length);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                int r = rnd.Next(0, 5);
+                                _vertices[i++] = new VertexPositionTexture(luf, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(ruf, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(ldf, texture(b, 2, r));
+                                _vertices[i++] = new VertexPositionTexture(ruf, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(rdf, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(ldf, texture(b, 2, r));
                             }
                             else rnd.Next();
 
                             // BACK
                             if (!_world[x, y, z - 1].IsFullBlock())
                             {
-                                _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, _textureOffsets.Length);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                int r = rnd.Next(0, 5);
+                                _vertices[i++] = new VertexPositionTexture(lub, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(ldb, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(rub, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(rub, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(ldb, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(rdb, texture(b, 2, r));
                             }
                             else rnd.Next();
 
                             // LEFT
                             if (!_world[x - 1, y, z].IsFullBlock())
                             {
-                                _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, _textureOffsets.Length);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                int r = rnd.Next(0, 5);
+                                _vertices[i++] = new VertexPositionTexture(lub, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(luf, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(ldb, texture(b, 2, r));
+                                _vertices[i++] = new VertexPositionTexture(luf, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(ldf, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(ldb, texture(b, 2, r));
                             }
                             else rnd.Next();
 
                             // RIGHT
                             if (!_world[x + 1, y, z].IsFullBlock())
                             {
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, _textureOffsets.Length);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                int r = rnd.Next(0, 5);
+                                _vertices[i++] = new VertexPositionTexture(rub, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(rdb, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(ruf, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(ruf, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(rdb, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(rdf, texture(b, 2, r));
                             }
                             else rnd.Next();
 
                             // TOP
                             if (!(b.IsFullBlock() && _world[x, y + 1, z].IsFullBlock()))
                             {
-                                _vertices[i++] = new VertexPositionColorTexture(lub, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rub, Color.White, new Vector2(1, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(ruf, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(luf, Color.White, new Vector2(0, 1));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, _textureOffsets.Length);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                int r = rnd.Next(0, 5);
+                                _vertices[i++] = new VertexPositionTexture(lub, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(rub, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(luf, texture(b, 2, r));
+                                _vertices[i++] = new VertexPositionTexture(rub, texture(b, 1, r));
+                                _vertices[i++] = new VertexPositionTexture(ruf, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(luf, texture(b, 2, r));
                             }
                             else rnd.Next();
 
                             // BOTTOM
                             if (!_world[x, y - 1, z].IsFullBlock())
                             {
-                                _vertices[i++] = new VertexPositionColorTexture(ldb, Color.White, new Vector2(0, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(rdb, Color.White, new Vector2(1, 1));
-                                _vertices[i++] = new VertexPositionColorTexture(ldf, Color.White, new Vector2(0, 0));
-                                _vertices[i++] = new VertexPositionColorTexture(rdf, Color.White, new Vector2(1, 0));
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate *= new Vector2(0.5f, 1f / 3);
-                                r = rnd.Next(0, _textureOffsets.Length);
-                                for (int j = i - 6; j < i; j++) _vertices[j].TextureCoordinate += _textureOffsets[r];
+                                int r = rnd.Next(0, 5);
+                                _vertices[i++] = new VertexPositionTexture(ldb, texture(b, 2, r));
+                                _vertices[i++] = new VertexPositionTexture(ldf, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(rdb, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(rdb, texture(b, 3, r));
+                                _vertices[i++] = new VertexPositionTexture(ldf, texture(b, 0, r));
+                                _vertices[i++] = new VertexPositionTexture(rdf, texture(b, 1, r));
                             }
                             else rnd.Next();
                         }
                     }
 
-            VertexPositionColorTexture[] _finalArray = new VertexPositionColorTexture[i];
+            VertexPositionTexture[] _finalArray = new VertexPositionTexture[i];
             Array.Copy(_vertices, _finalArray, i);
             return _finalArray;
         }
 
-        /*private static Vector2[] TextureAtlasLookup(WorldBlock _block)
+        private static Vector2[,] vertices = new Vector2[4, 5]
+        {
+            { new Vector2(0, 0), new Vector2(1 / 4f, 0), new Vector2(2 / 4f, 0), new Vector2(3 / 4f, 0), new Vector2(1f, 0) },
+            { new Vector2(0, 1 / 3f), new Vector2(1 / 4f, 1 / 3f), new Vector2(2 / 4f, 1 / 3f), new Vector2(3 / 4f, 1 / 3f), new Vector2(1f, 1 / 3f) },
+            { new Vector2(0, 2 / 3f), new Vector2(1 / 4f, 2 / 3f), new Vector2(2 / 4f, 2 / 3f), new Vector2(3 / 4f, 2 / 3f), new Vector2(1f, 2 / 3f) },
+            { new Vector2(0, 3 / 3f), new Vector2(1 / 4f, 3 / 3f), new Vector2(2 / 4f, 3 / 3f), new Vector2(3 / 4f, 3 / 3f), new Vector2(1f, 3 / 3f) }
+        };
+        private static Vector2 texture(WorldBlock _block, int _position, int _randomness)
         {
             switch (_block)
             {
                 case WorldBlock.Wall:
-                    return new Vector2[] {
-                        new Vector2()
-                    };
+                    switch (_randomness)
+                    {
+                        case 0:
+                            switch (_position)
+                            {
+                                case 0: return vertices[0, 0];
+                                case 1: return vertices[0, 1];
+                                case 2: return vertices[1, 0];
+                                case 3: return vertices[1, 1];
+                            }
+                            break;
+                        case 1:
+                            switch (_position)
+                            {
+                                case 0: return vertices[1, 0];
+                                case 1: return vertices[1, 1];
+                                case 2: return vertices[2, 0];
+                                case 3: return vertices[2, 1];
+                            }
+                            break;
+                        case 2:
+                            switch (_position)
+                            {
+                                case 0: return vertices[2, 0];
+                                case 1: return vertices[2, 1];
+                                case 2: return vertices[3, 0];
+                                case 3: return vertices[3, 1];
+                            }
+                            break;
+                        case 3:
+                            switch (_position)
+                            {
+                                case 0: return vertices[0, 1];
+                                case 1: return vertices[0, 2] - new Vector2(0.001f, 0);
+                                case 2: return vertices[1, 1];
+                                case 3: return vertices[1, 2] - new Vector2(0.001f, 0);
+                            }
+                            break;
+                        case 4:
+                            switch (_position)
+                            {
+                                case 0: return vertices[1, 1];
+                                case 1: return vertices[1, 2] - new Vector2(0.001f, 0);
+                                case 2: return vertices[2, 1];
+                                case 3: return vertices[2, 2] - new Vector2(0.001f, 0);
+                            }
+                            break;
+                        case 5:
+                            switch (_position)
+                            {
+                                case 0: return vertices[2, 1];
+                                case 1: return vertices[2, 2] - new Vector2(0.001f, 0);
+                                case 2: return vertices[3, 1];
+                                case 3: return vertices[3, 2] - new Vector2(0.001f, 0);
+                            }
+                            break;
+                    }
+                    break;
+
+                case WorldBlock.Water1:
+                case WorldBlock.Water2:
+                case WorldBlock.Water3:
+                case WorldBlock.Water4:
+                case WorldBlock.Water4Infinite:
+                    
+                    switch (_randomness)
+                    {
+                        case 0:
+                            switch (_position)
+                            {
+                                case 0: return vertices[0, 2];
+                                case 1: return vertices[0, 3];
+                                case 2: return vertices[1, 2];
+                                case 3: return vertices[1, 3];
+                            }
+                            break;
+                        case 1:
+                            switch (_position)
+                            {
+                                case 0: return vertices[1, 2];
+                                case 1: return vertices[1, 3];
+                                case 2: return vertices[2, 2];
+                                case 3: return vertices[2, 3];
+                            }
+                            break;
+                        case 2:
+                            switch (_position)
+                            {
+                                case 0: return vertices[2, 2];
+                                case 1: return vertices[2, 3];
+                                case 2: return vertices[3, 2];
+                                case 3: return vertices[3, 3];
+                            }
+                            break;
+                        case 3:
+                            switch (_position)
+                            {
+                                case 0: return vertices[0, 2];
+                                case 1: return vertices[0, 3];
+                                case 2: return vertices[1, 2];
+                                case 3: return vertices[1, 3];
+                            }
+                            break;
+                        case 4:
+                            switch (_position)
+                            {
+                                case 0: return vertices[1, 3];
+                                case 1: return vertices[1, 4];
+                                case 2: return vertices[2, 3];
+                                case 3: return vertices[2, 4];
+                            }
+                            break;
+                        case 5:
+                            switch (_position)
+                            {
+                                case 0: return vertices[2, 3];
+                                case 1: return vertices[2, 4];
+                                case 2: return vertices[3, 3];
+                                case 3: return vertices[3, 4];
+                            }
+                            break;
+                    }
+                    break;
+
             }
-        }*/
+
+            return Vector2.Zero;
+        }
     }
 }
