@@ -43,9 +43,13 @@ namespace ReiseZumGrundDesSees
         private Vector2 CD2 = new Vector2(230, 740);
         private Vector2 CD3 = new Vector2(320, 740);
 
+        private Rectangle RTextbox = new Rectangle(640, 730, 350, 240);
+   
+
         private Vector2 Textboxtext1 = new Vector2(650, 740);
         private Vector2 Textboxtext2 = new Vector2(650, 780);
         private Vector2 Textboxtext3 = new Vector2(650, 820);
+
         private int Dialog;
 
         private Vector2 scalingFactor = new Vector2(1f, 1f);
@@ -107,7 +111,12 @@ namespace ReiseZumGrundDesSees
             _spriteBatch.DrawString(S3, Player.AnzahlBlockReadyS.ToString(), CD3 * scalingFactor, Color.White);
 
             //Tipps
-            
+            if (Dialog != -1)
+            {
+                _spriteBatch.Draw(skill1, RTextbox.Scale(scalingFactor), Color.White);
+
+            }
+
             switch (Dialog) {
                 case 0:
                     _spriteBatch.DrawString(S4, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
@@ -144,6 +153,10 @@ namespace ReiseZumGrundDesSees
                 case 7:
                     _spriteBatch.DrawString(S4, "Lasse ein Bloeck auf die Platte", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "fallen um sie zu aktivieren.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 100:
+                    _spriteBatch.DrawString(S4, "Glückwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 default:
                     break;
