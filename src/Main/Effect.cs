@@ -76,11 +76,21 @@ namespace ReiseZumGrundDesSees
         {
             _effect.Parameters["Matrix"].SetValue(WorldMatrix * ViewMatrix * ProjectionMatrix);
             if (_effect == textureEffect || _effect == worldEffect)
-                _effect.Parameters["textureSampler+otherTexture"].SetValue(Texture);
+                #if LINUX
+                    _effect.Parameters["textureSampler+otherTexture"].SetValue(Texture);
+                #elif WINDOWS
+                    _effect.Parameters["otherTexture"].SetValue(Texture);
+                #endif
             _effect.Parameters["NearLightMatrix"].SetValue(WorldMatrix * NearLightMatrix);
             _effect.Parameters["FarLightMatrix"].SetValue(WorldMatrix * FarLightMatrix);
-            _effect.Parameters["nearShadowSampler+nearShadowTexture"].SetValue(NearLightTexture);
-            _effect.Parameters["farShadowSampler+farShadowTexture"].SetValue(FarLightTexture);
+
+            #if LINUX
+                _effect.Parameters["nearShadowSampler+nearShadowTexture"].SetValue(NearLightTexture);
+                _effect.Parameters["farShadowSampler+farShadowTexture"].SetValue(FarLightTexture);
+            #elif WINDOWS
+                _effect.Parameters["nearShadowTexture"].SetValue(NearLightTexture);
+                _effect.Parameters["farShadowTexture"].SetValue(FarLightTexture);
+            #endif
         }
 
         public Effect Effect
