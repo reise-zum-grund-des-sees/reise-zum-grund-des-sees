@@ -45,6 +45,8 @@ namespace ReiseZumGrundDesSees
                     $"Vertices: { RenderedWorldVertices } (World) + { RenderedOtherVertices } (Models)\r\n" +
                     $"Update Time: { updateTime }\r\n" +
                     $"Render Time: { renderTime }\r\n" +
+                    $"Player position: { PlayerPosition }\n" +
+                    $"EditorCursor position: { EditorCursorPosition }\n" +
                     $"Expexted FPS: { 1.0 / (updateTime + renderTime) }";
             }
         }
