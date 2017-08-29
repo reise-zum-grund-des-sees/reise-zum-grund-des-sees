@@ -542,6 +542,12 @@ namespace ReiseZumGrundDesSees
                             }
                 }
 
+              // Schatz aktivieren 
+              if(_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
+                {
+                    if (Vector3.Distance(Position, new Vector3(255.5f, 28f, 256.5f)) < 0.5f)
+                        Dialog = 100; //Dialog 100 für Spiel Ende
+                }
 
                 foreach (UpdateDelegate u in blockUpdateList)
                     u(ref _state);
