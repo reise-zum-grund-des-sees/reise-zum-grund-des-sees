@@ -84,7 +84,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
 	if (inNearShadow)
 	{
-		float size = 1 / 4096;
+		float size = 1 / 512;
 		float values[4];
 		values[0] = (nearShadowTexture.Sample(nearShadowSampler, input.NearShadowCoord)).x;
 		values[1] = (nearShadowTexture.Sample(nearShadowSampler, input.NearShadowCoord + float2(size, 0))).x;
@@ -106,7 +106,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	}
 	else if (inFarShadow)
 	{
-		float size = 1 / 4096;
+		float size = 1 / 512;
 		float values[4];
 		values[0] = (farShadowTexture.Sample(farShadowSampler, input.FarShadowCoord)).x;
 		values[1] = (farShadowTexture.Sample(farShadowSampler, input.FarShadowCoord + float2(size, 0))).x;

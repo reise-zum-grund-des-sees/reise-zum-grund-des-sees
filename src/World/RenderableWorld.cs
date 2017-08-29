@@ -20,7 +20,7 @@ namespace ReiseZumGrundDesSees
         private GraphicsDevice graphicsDevice;
         private ContentManager contentManager;
 
-        public double viewDistance = 100.0;
+        public double viewDistance = 70.0;
 
         private Texture2D blockTexture;
         private const string BLOCKTEXTURE_NAME = "blocktexture";
@@ -183,6 +183,8 @@ namespace ReiseZumGrundDesSees
             _effect.Texture = blockTexture;
             _effect.VertexFormat = VertexFormat.World;
 
+            List<Vector2Int> renderList = new List<Vector2Int>(256);
+
             for (int x = 0; x < maxX; x++)
                 for (int z = 0; z < maxZ; z++)
                 {
@@ -192,18 +194,37 @@ namespace ReiseZumGrundDesSees
                         DebugHelper.Information.RenderedWorldChunks++;
                         DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
 
-                        _effect.WorldMatrix = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
-
-                        graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-                        graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
-
-                        Effect _baseEffect = _effect.Effect;
-                        foreach (EffectPass pass in _baseEffect.CurrentTechnique.Passes)
-                            pass.Apply();
-
-                        graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, Vertices[x, z].Length / 3);
+                        renderList.Add(new Vector2Int(x, z));
                     }
                 }
+
+            renderList.Sort(new Comparison<Vector2Int>((v1, v2) =>
+            {
+                int v1x = v1.X * 16 - (int)lastGameState.Player.Position.X;
+                int v1y = v1.Y * 16 - (int)lastGameState.Player.Position.Z;
+                int v2x = v2.X * 16 - (int)lastGameState.Player.Position.X;
+                int v2y = v2.Y * 16 - (int)lastGameState.Player.Position.Z;
+
+                int _result = v1x * v1x + v1y * v1y - v2x * v2x - v2y * v2y;
+                return _result;
+            }));
+
+            foreach (Vector2Int v in renderList)
+            {
+                int x = v.X;
+                int z = v.Y;
+
+                _effect.WorldMatrix = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
+
+                graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+                graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
+
+                Effect _baseEffect = _effect.Effect;
+                foreach (EffectPass pass in _baseEffect.CurrentTechnique.Passes)
+                    pass.Apply();
+
+                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, Vertices[x, z].Length / 3);
+            }
         }
     }
 }

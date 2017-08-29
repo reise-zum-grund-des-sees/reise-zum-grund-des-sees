@@ -31,9 +31,7 @@ namespace ReiseZumGrundDesSees
             Position = _position;
             SpawnPosition = _position;
             Movement = _movement;
-            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.25f - 0.125f, 0.25f, 0.25f - 0.125f,
-                (_block) => true,
-                (_obj) => !(_obj is Enemy));
+            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.25f - 0.125f, 0.25f, 0.25f - 0.125f, Hitbox.Type.Geschoss);
             GeschossList.Add(this);
         }
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
@@ -60,9 +58,7 @@ namespace ReiseZumGrundDesSees
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             double MaxDistance = 15;
-            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.25f - 0.125f, 0.25f, 0.25f - 0.125f,
-                (_block) => true,
-                (_obj) => !(_obj is Enemy));
+            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.25f - 0.125f, 0.25f, 0.25f - 0.125f, Hitbox.Type.Geschoss);
             Vector3 _movement = new Vector3(0, 0, 0);
             if (Vector3.Distance(Position, SpawnPosition) > MaxDistance)
                 GeschossList.Remove(this);

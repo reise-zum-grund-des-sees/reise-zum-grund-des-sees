@@ -17,10 +17,13 @@ namespace ReiseZumGrundDesSees
             public static TimeSpan TotalGameTime;
             public static ulong TotalFrameCount;
             public static uint RenderedWorldVertices;
+            public static uint RenderedOtherVertices;
             public static uint RenderedWorldChunks;
             public static Vector3 EditorCursorPosition;
             public static Vector3 PlayerPosition;
             public static float CameraRotation;
+            public static double updateTime;
+            public static double renderTime;
             public static Queue<string> Logs = new Queue<string>();
 
             public static string ToString()
@@ -38,16 +41,11 @@ namespace ReiseZumGrundDesSees
                 }
 
                 return
-                    $"Total game time: { TotalGameTime.ToString() }\n" +
-                    $"Total Frame Count: { TotalFrameCount }\n" +
                     $"FPS: { FPS }\n" +
-                    $"Player position: { PlayerPosition }\n" +
-                    $"EditorCursor position: { EditorCursorPosition }\n" +
-                    $"Camera rotation: { CameraRotation }\n" +
-                    $"Rendered World Vertices: { RenderedWorldVertices }\n" +
-                    $"Rendered World Chunks: { RenderedWorldChunks }\n" +
-                    $"Logs:\n { logs.ToString() }";
-
+                    $"Vertices: { RenderedWorldVertices } (World) + { RenderedOtherVertices } (Models)\r\n" +
+                    $"Update Time: { updateTime }\r\n" +
+                    $"Render Time: { renderTime }\r\n" +
+                    $"Expexted FPS: { 1.0 / (updateTime + renderTime) }";
             }
         }
 

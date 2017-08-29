@@ -17,13 +17,9 @@ namespace ReiseZumGrundDesSees
         public float LifetimePercentage { get; private set; }
 
         public bool HasMultipleHitboxes => ((Type)Art == Type.Medium) ? true : false;
-        public Hitbox Hitbox => new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f,
-            (_block) => !_block.IsWater(),
-            (_obj) => true);
+        public Hitbox Hitbox => new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f, Hitbox.Type.PlayerBlock);
         public Hitbox[] Hitboxes => new Hitbox[] {
-            new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f,
-                (_block) => !_block.IsWater(),
-                (_obj) => true),
+            new Hitbox(Position.X - 0.5f, Position.Y, Position.Z - 0.5f, 1f, 1f, 1f, Hitbox.Type.PlayerBlock),
             new Hitbox(Position.X - 0.5f, Position.Y + 0.5f, Position.Z - 0.5f, 1f, 0.5f, 1f)
         };
         public bool IsEnabled => CurrentState == State.Gesetzt;
@@ -270,7 +266,10 @@ namespace ReiseZumGrundDesSees
                 foreach (ModelMesh mesh in Model.Meshes)
                 {
                     foreach (ModelMeshPart part in mesh.MeshParts)
+                    {
+                        DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                         part.Effect = _effect.Effect;
+                    }
 
                     mesh.Draw();
                 }

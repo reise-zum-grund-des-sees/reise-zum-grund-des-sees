@@ -47,10 +47,11 @@ namespace ReiseZumGrundDesSees
 
             positionMarks = _positionMarks.ToArray();
             Position = positionMarks[0];
+            Hitbox = new Hitbox(Position.X - 0.5f, Position.Y - 0.5f, Position.Z - 0.5f, 1f, 1f, 1f);
         }
 
         public bool HasMultipleHitboxes => false;
-        public Hitbox Hitbox => new Hitbox(Position.X - 0.5f, Position.Y - 0.5f, Position.Z - 0.5f, 1f, 1f, 1f);
+        public Hitbox Hitbox { get; private set; }
         public Hitbox[] Hitboxes => throw new NotImplementedException();
         public bool IsEnabled => true;
 
@@ -89,7 +90,10 @@ namespace ReiseZumGrundDesSees
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
+                {
+                    DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                     part.Effect = _effect.Effect;
+                }
 
                 mesh.Draw();
             }
@@ -104,8 +108,8 @@ namespace ReiseZumGrundDesSees
             Vector3 _nextPosition = positionMarks[status];
 
             Vector3 _movement = new Vector3(0, 0, 0);
-            Dictionary<Direction, CollisionDetector.CollisionSource> _collisionInfo = null;
-            Dictionary<Direction, CollisionDetector.CollisionSource> _oldCollisionInfo = null;
+            CollisionDetector.CollisionInfo _collisionInfo = null;
+            CollisionDetector.CollisionInfo _oldCollisionInfo = null;
             if (moving && Vector3.Distance(this.Position,_view.Player.Position) < 50)
             {
                 float _newPercentage = percentage + (float)_passedTime * 0.0005f;
@@ -156,6 +160,8 @@ namespace ReiseZumGrundDesSees
                     Velocity = _movement;
                 }
                 else Velocity = Vector3.Zero;
+
+                Hitbox = new Hitbox(Position.X - 0.5f, Position.Y - 0.5f, Position.Z - 0.5f, 1f, 1f, 1f);
             };
         }
 

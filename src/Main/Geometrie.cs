@@ -14,7 +14,7 @@ namespace ReiseZumGrundDesSees
         {
             double difX = _chunkCenter.X - _playerPosition.X;
             double difY = _chunkCenter.Y - _playerPosition.Y;
-            if (Math.Sqrt(difX * difX + difY * difY) < 32)
+            if (Math.Sqrt(difX * difX + difY * difY) < 16)
                 return true;
             else
                 try

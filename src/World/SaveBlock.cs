@@ -45,7 +45,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>(ContentRessources.MODEL_SAVEPOINT);
+            Model = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK);
         }
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
@@ -61,7 +61,11 @@ namespace ReiseZumGrundDesSees
             foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
+                {
+                    DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                     part.Effect = _effect.Effect;
+                }
+
 
                 mesh.Draw();
             }

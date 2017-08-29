@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace ReiseZumGrundDesSees
 {
     interface IReadonlyCollisionDetector
     {
-        Dictionary<Direction, CollisionDetector.CollisionSource> CheckCollision(ref Vector3 _movement, ICollisionObject _object);
+        CollisionDetector.CollisionInfo CheckCollision(ref Vector3 _movement, ICollisionObject _object);
     }
 
     interface ICollisionDetector : IReadonlyCollisionDetector
@@ -19,10 +20,12 @@ namespace ReiseZumGrundDesSees
         void RemoveObject(ICollisionObject _object);
     }
 
-    class CollisionDetector : IReadonlyCollisionDetector
+    class CollisionDetector : ICollisionDetector
     {
         private List<ICollisionObject> objects = new List<ICollisionObject>();
         private IBlockWorld world;
+        private List<ICollisionObject>[,] chunkedObjects;
+        private const int CHUNK_SIZE = 128;
 
         public CollisionDetector(IBlockWorld _world)
         {
@@ -67,21 +70,187 @@ namespace ReiseZumGrundDesSees
             }
         }
 
+        public class CollisionInfo : IEnumerable<KeyValuePair<Direction, CollisionSource>>
+        {
+            public CollisionSource? Left;
+            public CollisionSource? Right;
+            public CollisionSource? Top;
+            public CollisionSource? Bottom;
+            public CollisionSource? Front;
+            public CollisionSource? Back;
 
-        public Dictionary<Direction, CollisionSource> CheckCollision(ref Vector3 _movement, ICollisionObject _object)
+            public CollisionInfo() { }
+
+            public CollisionSource this[Direction d]
+            {
+                get
+                {
+                    switch (d)
+                    {
+                        case Direction.Left: return Left.Value;
+                        case Direction.Right: return Right.Value;
+                        case Direction.Top: return Top.Value;
+                        case Direction.Bottom: return Bottom.Value;
+                        case Direction.Front: return Front.Value;
+                        case Direction.Back: return Back.Value;
+                        default: throw new ArgumentException();
+                    }
+                }
+                set
+                {
+                    switch (d)
+                    {
+                        case Direction.Left:
+                            Left = value;
+                            break;
+                        case Direction.Right:
+                            Right = value;
+                            break;
+                        case Direction.Top:
+                            Top = value;
+                            break;
+                        case Direction.Bottom:
+                            Bottom = value;
+                            break;
+                        case Direction.Front:
+                            Front = value;
+                            break;
+                        case Direction.Back:
+                            Back = value;
+                            break;
+                    }
+                }
+            }
+
+            public bool Any()
+            {
+                return Left != null | Right != null | Top != null | Bottom != null | Front != null | Back != null;
+            }
+            public bool ContainsKey(Direction _dir)
+            {
+                switch (_dir)
+                {
+                    case Direction.Left:
+                        return Left.HasValue;
+                    case Direction.Right:
+                        return Right.HasValue;
+                    case Direction.Top:
+                        return Top.HasValue;
+                    case Direction.Bottom:
+                        return Bottom.HasValue;
+                    case Direction.Front:
+                        return Front.HasValue;
+                    case Direction.Back:
+                        return Back.HasValue;
+                    default: throw new ArgumentException();
+                }
+            }
+
+            public IEnumerator<KeyValuePair<Direction, CollisionSource>> GetEnumerator()
+            {
+                return new Enumerator(this);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public class Enumerator : IEnumerator<KeyValuePair<Direction, CollisionSource>>
+            {
+                private readonly CollisionInfo info;
+                private int i = -1;
+
+                public Enumerator(CollisionInfo _info)
+                {
+                    info = _info;
+                }
+
+                public KeyValuePair<Direction, CollisionSource> Current { get; private set; }
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext()
+                {
+                    i++;
+                    if (i >= 6) return false;
+                    Direction _dir = DirectionHelper.AsDirection(i);
+                    while (!info.ContainsKey(_dir))
+                    {
+                        i++;
+                        if (i >= 6) return false;
+                        _dir = DirectionHelper.AsDirection(i);
+                    }
+                    Current = new KeyValuePair<Direction, CollisionSource>(_dir, info[_dir]);
+                    return true;
+                }
+
+                public void Reset()
+                {
+                    i = -1;
+                }
+            }
+        }
+
+        public void Update()
+        {
+            chunkedObjects = new List<ICollisionObject>[CHUNK_SIZE, CHUNK_SIZE];
+
+            int worldX = world.Size.X;
+            int worldY = world.Size.Y;
+
+            foreach (ICollisionObject _obj in objects)
+            {
+                if (!_obj.IsEnabled)
+                    continue;
+
+                Hitbox _hitbox;
+                if (_obj.HasMultipleHitboxes)
+                    _hitbox = _obj.Hitboxes[0];
+                else
+                    _hitbox = _obj.Hitbox;
+
+                int x = (int)_hitbox.X * CHUNK_SIZE / worldX;
+                int y = (int)_hitbox.Y * CHUNK_SIZE / worldY;
+
+                if (y >= 0 & y < CHUNK_SIZE &
+                    x >= 0 & x < CHUNK_SIZE)
+                {
+                    if (chunkedObjects[x, y] == null)
+                        chunkedObjects[x, y] = new List<ICollisionObject>();
+                    chunkedObjects[x, y].Add(_obj);
+                }
+            }
+        }
+
+
+        public CollisionInfo CheckCollision(ref Vector3 _movement, ICollisionObject _object)
         {
             Vector3[] _splits = splitVector(_movement);
-            Dictionary<Direction, CollisionSource> _collisionList = new Dictionary<Direction, CollisionSource>();
+            CollisionInfo _collInfo = new CollisionInfo();
+
+            int worldX = world.Size.X;
+            int worldY = world.Size.Y;
 
             if (!_object.HasMultipleHitboxes)
             {
                 Hitbox _tmpHit = _object.Hitbox;
                 for (int i = 0; i < _splits.Length; i++)
                 {
-                    _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHit, world));
-                    foreach (ICollisionObject _otherObj in objects)
-                        if (_otherObj != _object && _otherObj.IsEnabled)
-                            _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHit, _otherObj));
+                    checkCollisionWithWorld(ref _splits[i], _tmpHit, world, _collInfo);
+
+                    int chkX = (int)_tmpHit.X * CHUNK_SIZE / worldX;
+                    int chkY = (int)_tmpHit.Y * CHUNK_SIZE / worldY;
+
+                    for (int x = Math.Max(0, chkX - 1); x < Math.Min(CHUNK_SIZE, chkX + 1); x++)
+                        for (int y = Math.Max(0, chkY - 1); y < Math.Min(CHUNK_SIZE, chkY + 1); y++)
+                            if (chunkedObjects[x, y] != null)
+                                foreach (ICollisionObject _otherObj in chunkedObjects[x, y])
+                                    if (_otherObj != _object && _otherObj.IsEnabled)
+                                        checkCollisionWithObject(ref _splits[i], _tmpHit, _otherObj, _collInfo);
 
                     _tmpHit += _splits[i];
                 }
@@ -93,10 +262,10 @@ namespace ReiseZumGrundDesSees
                 {
                     for (int j = 0; j < _tmpHitboxes.Length; j++)
                     {
-                        _collisionList.Update(checkCollisionWithWorld(ref _splits[i], _tmpHitboxes[j], world));
+                        checkCollisionWithWorld(ref _splits[i], _tmpHitboxes[j], world, _collInfo);
                         foreach (ICollisionObject _otherObj in objects)
                             if (_otherObj != _object && _otherObj.IsEnabled)
-                                _collisionList.Update(checkCollisionWithObject(ref _splits[i], _tmpHitboxes[j], _otherObj));
+                                checkCollisionWithObject(ref _splits[i], _tmpHitboxes[j], _otherObj, _collInfo);
                     }
 
                     for (int j = 0; j < _tmpHitboxes.Length; j++)
@@ -107,13 +276,11 @@ namespace ReiseZumGrundDesSees
             if (_splits.Any())
                 _movement = _splits.Aggregate((v1, v2) => v1 + v2);
 
-            return _collisionList;
+            return _collInfo;
         }
 
-        private Dictionary<Direction, CollisionSource> checkCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world)
+        private void checkCollisionWithWorld(ref Vector3 _movement, Hitbox _hitbox, IReadonlyBlockWorld _world, CollisionInfo _info)
         {
-            Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
-
             int _hitX = (int)_hitbox.X;
             int _hitY = (int)_hitbox.Y;
             int _hitZ = (int)_hitbox.Z;
@@ -128,49 +295,26 @@ namespace ReiseZumGrundDesSees
                         {
                             Direction _dir = CollisionDetection(ref _movement, _hitbox, new Hitbox(x, y, z, b.GetBounds()));
                             if (_dir != Direction.None)
-                                _dir.Foreach(d => _dict[d] = new CollisionSource(b));
+                                _dir.Foreach(d => _info[d] = new CollisionSource(b));
                         }
                     }
-
-            return _dict;
         }
 
-        private Dictionary<Direction, CollisionSource> checkCollisionWithObject(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _otherObj)
+        private void checkCollisionWithObject(ref Vector3 _movement, Hitbox _hitbox, ICollisionObject _otherObj, CollisionInfo _collInfo)
         {
-            Dictionary<Direction, CollisionSource> _dict = new Dictionary<Direction, CollisionSource>();
             if (_hitbox.CollidesWithObject(_otherObj))
             {
                 if (!_otherObj.HasMultipleHitboxes)
-                    CollisionDetection(ref _movement, _hitbox, _otherObj.Hitbox)
-                        .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
+                {
+                    Hitbox _otherHitbox = _otherObj.Hitbox;
+                    Direction _dir = CollisionDetection(ref _movement, _hitbox, _otherHitbox);
+                    _dir.Foreach(d => _collInfo[d] = new CollisionSource(_otherObj));
+                }
                 else
                     foreach (Hitbox b in _otherObj.Hitboxes)
                         CollisionDetection(ref _movement, _hitbox, b)
-                            .Foreach(_dir => _dict[_dir] = new CollisionSource(_otherObj));
+                            .Foreach(_dir => _collInfo[_dir] = new CollisionSource(_otherObj));
             }
-            return _dict;
-        }
-
-
-        public static Direction CollisionDetectionWithSplittedMovement(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
-        {
-            Vector3[] _splits = splitVector(_movA);
-            Direction _dir = Direction.None;
-
-            Hitbox _tmpHit = _hitA;
-            for (int i = 0; i < _splits.Length; i++)
-            {
-                _dir |= CollisionDetection(ref _splits[i], _tmpHit, _hitB);
-                _tmpHit = new Hitbox(_tmpHit.X + _splits[i].X, _tmpHit.Y + _splits[i].Y, _tmpHit.Z + _splits[i].Z,
-                    _tmpHit.Width, _tmpHit.Height, _tmpHit.Depth);
-            }
-
-            if (_splits.Length == 0)
-                _movA = Vector3.Zero;
-            else
-                _movA = _splits.Aggregate((v1, v2) => v1 + v2);
-
-            return _dir;
         }
 
         const float MAX_SPLIT_PART_LENGTH = 0.1f;
@@ -219,15 +363,19 @@ namespace ReiseZumGrundDesSees
         /// <param name="_hitB">Die Hitbox des statischen Objektes</param>
         /// <param name="_possibleMovements">Mögliche Ausweichbewegungen des bewegten Hitbox</param>
         /// <returns>Flags, die die Seiten der bewegenden Hitbox angeben, welche mit der statischen Hitbox kollidieren</returns>
+        public static int COUNTER = 0;
         private static Direction CollisionDetection(ref Vector3 _movA, Hitbox _hitA, Hitbox _hitB)
         {
+            COUNTER++;
             Direction _collInfo = Direction.None;
 
             float xDiff = 0, yDiff = 0, zDiff = 0;
             bool xCollFlag = false, yCollFlag = false, zCollFlag = false;
 
+            Vector3 _movement = _movA;
+
             // collision left
-            if (_hitA.X + _movA.X < _hitB.X + _hitB.Width - FLOATING_POINT_INCORRECTION &
+            if (_hitA.X + _movA.X < _hitB.X + _hitB.Width - FLOATING_POINT_INCORRECTION &&
                 _hitA.X + _hitA.Width + _movA.X > _hitB.X + FLOATING_POINT_INCORRECTION)
             {
                 xCollFlag = true;
@@ -244,7 +392,7 @@ namespace ReiseZumGrundDesSees
             }
 
             // collision top/bottom
-            if (_hitA.Y + _movA.Y < _hitB.Y + _hitB.Height - FLOATING_POINT_INCORRECTION &
+            if (_hitA.Y + _movA.Y < _hitB.Y + _hitB.Height - FLOATING_POINT_INCORRECTION &&
                 _hitA.Y + _hitA.Height + _movA.Y > _hitB.Y + FLOATING_POINT_INCORRECTION)
             {
                 yCollFlag = true;
@@ -261,7 +409,7 @@ namespace ReiseZumGrundDesSees
             }
 
             // collision front/back
-            if (_hitA.Z + _movA.Z < _hitB.Z + _hitB.Depth - FLOATING_POINT_INCORRECTION &
+            if (_hitA.Z + _movA.Z < _hitB.Z + _hitB.Depth - FLOATING_POINT_INCORRECTION &&
                 _hitA.Z + _hitA.Depth + _movA.Z > _hitB.Z + FLOATING_POINT_INCORRECTION)
             {
                 zCollFlag = true;
@@ -282,16 +430,22 @@ namespace ReiseZumGrundDesSees
                 if (_collInfo.HasFlag(Direction.Top) | _collInfo.HasFlag(Direction.Bottom))
                 {
                     _movA.Y += yDiff;
+                    if (Math.Abs(_movA.Y) > Math.Abs(_movement.Y))
+                        _movA.Y = _movement.Y;
                     return _collInfo & (Direction.Top | Direction.Bottom);
                 }
                 else if (_collInfo.HasFlag(Direction.Left) | _collInfo.HasFlag(Direction.Right))
                 {
                     _movA.X += xDiff;
+                    if (Math.Abs(_movA.X) > Math.Abs(_movement.X))
+                        _movA.X = _movement.X;
                     return _collInfo & (Direction.Left | Direction.Right);
                 }
                 else if (_collInfo.HasFlag(Direction.Front) | _collInfo.HasFlag(Direction.Back))
                 {
                     _movA.Z += zDiff;
+                    if (Math.Abs(_movA.Z) > Math.Abs(_movement.Z))
+                        _movA.Z = _movement.Z;
                     return _collInfo & (Direction.Front | Direction.Back);
                 }
                 else return Direction.None;
@@ -305,17 +459,15 @@ namespace ReiseZumGrundDesSees
         public readonly float X, Y, Z;
         public readonly float Width, Depth, Height;
 
-        private static Predicate<WorldBlock> COLLIDES_WITH_ALL_WORLD_BLOCKS = (_) => true;
-        private static Predicate<ICollisionObject> COLLIDES_WITH_ALL_OBJECTS = (_) => true;
+        private readonly Type type;
 
-        private Predicate<WorldBlock> collidesWithWorldBlock;
-        private Predicate<ICollisionObject> collidesWithObject;
+        //private static Predicate<WorldBlock> COLLIDES_WITH_ALL_WORLD_BLOCKS = (_) => true;
+        //private static Predicate<ICollisionObject> COLLIDES_WITH_ALL_OBJECTS = (_) => true;
 
-        public Hitbox(float x, float y, float z, float _width, float _height, float _depth) :
-            this(x, y, z, _width, _height, _depth, COLLIDES_WITH_ALL_WORLD_BLOCKS, COLLIDES_WITH_ALL_OBJECTS)
-        { }
+        //private Predicate<WorldBlock> collidesWithWorldBlock;
+        //private Predicate<ICollisionObject> collidesWithObject;
 
-        public Hitbox(float x, float y, float z, float _width, float _height, float _depth, Predicate<WorldBlock> _collidesWithWorldBlock, Predicate<ICollisionObject> _collidesWithObject)
+        public Hitbox(float x, float y, float z, float _width, float _height, float _depth, Type _type = Type.Default)
         {
             Width = _width;
             Depth = _depth;
@@ -323,10 +475,9 @@ namespace ReiseZumGrundDesSees
             X = x;
             Y = y;
             Z = z;
-            collidesWithWorldBlock = _collidesWithWorldBlock;
-            collidesWithObject = _collidesWithObject;
+            type = _type;
         }
-        public Hitbox(Hitbox b, Predicate<WorldBlock> _collidesWithWorldBlock, Predicate<ICollisionObject> _collidesWithObject)
+        public Hitbox(Hitbox b, Type t)
         {
             Width = b.Width;
             Depth = b.Depth;
@@ -334,12 +485,31 @@ namespace ReiseZumGrundDesSees
             X = b.X;
             Y = b.Y;
             Z = b.Z;
-            collidesWithObject = _collidesWithObject;
-            collidesWithWorldBlock = _collidesWithWorldBlock;
+            type = t;
         }
 
-        public bool CollidesWithWorldBlock(WorldBlock _block) => collidesWithWorldBlock(_block);
-        public bool CollidesWithObject(ICollisionObject _object) => collidesWithObject(_object);
+        public bool CollidesWithWorldBlock(WorldBlock _block)
+        {
+            switch (type)
+            {
+                case Type.PlayerBlock:
+                    return !_block.IsWater();
+                default:
+                    return true;
+            }
+        }
+        public bool CollidesWithObject(ICollisionObject _object)
+        {
+            switch (type)
+            {
+                case Type.Enemy:
+                    return !(_object is Geschoss);
+                case Type.Geschoss:
+                    return !(_object is Enemy);
+                default:
+                    return true;
+            }
+        }
 
         public Hitbox(Vector3 _position, Vector3 _size)
             : this(_position.X, _position.Y, _position.Z, _size.X, _size.Y, _size.Z)
@@ -352,8 +522,15 @@ namespace ReiseZumGrundDesSees
             : this(_position.X, _position.Y, _position.Z, _width, _height, _depth) { }
 
         public static Hitbox operator +(Hitbox h, Vector3 v) =>
-            new Hitbox(h.X + v.X, h.Y + v.Y, h.Z + v.Z, h.Width, h.Height, h.Depth,
-                h.collidesWithWorldBlock, h.collidesWithObject);
+            new Hitbox(h.X + v.X, h.Y + v.Y, h.Z + v.Z, h.Width, h.Height, h.Depth, h.type);
+
+        public enum Type
+        {
+            Default,
+            Enemy,
+            Geschoss,
+            PlayerBlock
+        }
     }
 
     [Flags]
@@ -373,12 +550,12 @@ namespace ReiseZumGrundDesSees
     {
         public static void Foreach(this Direction _dir, Action<Direction> _func)
         {
-            if (_dir.HasFlag(Direction.Front)) _func(Direction.Front);
-            if (_dir.HasFlag(Direction.Back)) _func(Direction.Back);
-            if (_dir.HasFlag(Direction.Left)) _func(Direction.Left);
-            if (_dir.HasFlag(Direction.Right)) _func(Direction.Right);
-            if (_dir.HasFlag(Direction.Top)) _func(Direction.Top);
-            if (_dir.HasFlag(Direction.Bottom)) _func(Direction.Bottom);
+            if ((_dir & Direction.Front) == Direction.Front) _func(Direction.Front);
+            if ((_dir & Direction.Back) == Direction.Back) _func(Direction.Back);
+            if ((_dir & Direction.Left) == Direction.Left) _func(Direction.Left);
+            if ((_dir & Direction.Right) == Direction.Right) _func(Direction.Right);
+            if ((_dir & Direction.Top) == Direction.Top) _func(Direction.Top);
+            if ((_dir & Direction.Bottom) == Direction.Bottom) _func(Direction.Bottom);
         }
 
         public static int SingleDirectionAsInt(this Direction _dir)
@@ -399,6 +576,28 @@ namespace ReiseZumGrundDesSees
                     return 5;
                 default:
                     throw new ArgumentException();
+            }
+        }
+
+        public static Direction AsDirection(this int _int)
+        {
+            switch (_int)
+            {
+                case 0:
+                    return Direction.Left;
+                case 1:
+                    return Direction.Right;
+                case 2:
+                    return Direction.Front;
+                case 3:
+                    return Direction.Back;
+                case 4:
+                    return Direction.Top;
+                case 5:
+                    return Direction.Bottom;
+                default:
+                    throw new ArgumentException();
+
             }
         }
     }

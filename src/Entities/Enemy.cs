@@ -51,9 +51,7 @@ namespace ReiseZumGrundDesSees
         {
             Position = _position;
             Gegnerart = _typ;
-            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 0.9f, 1f - 0.5f,
-                (_block) => true,
-                (_obj) => !(_obj is Geschoss));
+            Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 0.9f, 1f - 0.5f, Hitbox.Type.Enemy);
             HitPlayer = false;
             HitTimer = 0;
             IdleTimer = 0;
@@ -88,14 +86,15 @@ namespace ReiseZumGrundDesSees
         {
             if (!_flags.HasFlag(GameFlags.GameRunning))
                 return null;
-            return null;
 
             if (_wasHit == false)
             {
                 int Aggrorange = 15;
-                Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
+                /*Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 1f - 0.5f, 1f, 1f - 0.5f,
                     (_block) => true,
-                    (_obj) => !(_obj is Geschoss));
+                    (_obj) => !(_obj is Geschoss));*/
+
+                Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.5f, 1f, 0.5f, Hitbox.Type.Enemy);
 
                 Vector3 _movement = new Vector3(0, 0, 0);
 
@@ -284,10 +283,7 @@ namespace ReiseZumGrundDesSees
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    /*foreach (EffectParameter param in part.Effect.Parameters)
-                    {
-                        Console.WriteLine(param.Name + ", " + param.ParameterType);
-                    }*/
+                    DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                     part.Effect = _effect.Effect;
                 }
 

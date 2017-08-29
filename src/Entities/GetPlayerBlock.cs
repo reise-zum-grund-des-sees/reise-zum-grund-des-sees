@@ -58,7 +58,10 @@ namespace ReiseZumGrundDesSees
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
+                {
+                    DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                     part.Effect = _effect.Effect;
+                }
 
                 mesh.Draw();
             }

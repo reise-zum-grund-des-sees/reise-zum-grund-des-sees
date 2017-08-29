@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
@@ -87,6 +88,8 @@ namespace ReiseZumGrundDesSees
         {
             this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            //this.graphics.SynchronizeWithVerticalRetrace = false;
+            //this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 1);
 
             /*this.graphics.PreferMultiSampling = true;
             GraphicsDevice.PresentationParameters.MultiSampleCount = 2;
@@ -167,9 +170,14 @@ namespace ReiseZumGrundDesSees
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        Stopwatch stopwatch = new Stopwatch();
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
+            //CollisionDetector.COUNTER = 0;
+            if (GameFlags.HasFlag(GameFlags.Debug))
+                stopwatch.Start();
+
             if (!GameFlags.HasFlag(GameFlags.Fullscreen))
                 if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
                     graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
@@ -187,6 +195,8 @@ namespace ReiseZumGrundDesSees
                     graphics.ApplyChanges();
                 }
 
+            GameState.CollisionDetector?.Update();
+
 
             InputEventArgs _args = InputManager.Update(GameFlags, Window.ClientBounds);
             GameState.View _gameStateView = new GameState.View(GameState);
@@ -196,19 +206,31 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(GameState.Camera?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+            //stopwatch.Restart();
             _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+            //stopwatch.Stop();
+            //if (GameFlags.HasFlag(GameFlags.GameRunning))
+                //Console.WriteLine("World update: " + stopwatch.Elapsed.ToString() + " FPS: " + (1.0 / stopwatch.Elapsed.TotalSeconds).ToString());
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             // _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             // _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.GameRunning))
+            {
+                //double _sum = 0;
                 for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
                 {
+                    //stopwatch.Restart();
                     _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
+
+                    //stopwatch.Stop();
+                    //_sum += stopwatch.Elapsed.TotalSeconds;
+                    //Console.WriteLine("Enemy " + i + " Art: " + Enemy.EnemyList[i].Gegnerart.ToString() + "-" + stopwatch.Elapsed.ToString() + " FPS: " + (1.0 / stopwatch.Elapsed.TotalSeconds) + " sum: " + _sum);
                 }
+            }
             if (GameFlags.HasFlag(GameFlags.GameRunning))
                 for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Geschosse
                 {
@@ -217,7 +239,7 @@ namespace ReiseZumGrundDesSees
                 }
 
             //foreach (UpdateDelegate u in _updateList)
-                //u?.Invoke(ref GameState);
+            //u?.Invoke(ref GameState);
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
@@ -245,6 +267,17 @@ namespace ReiseZumGrundDesSees
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
             else keyPressedPause = false;
 
+            if (kb.IsKeyDown(Keys.OemComma))
+            {
+                shadowRotation += 0.0001f;
+                Console.WriteLine(shadowRotation);
+            }
+            else if (kb.IsKeyDown(Keys.OemPeriod))
+            {
+                shadowRotation -= 0.0001f;
+                Console.WriteLine(shadowRotation);
+            }
+
             if (GameFlags.HasFlag(GameFlags.GameLoaded))
             {
                 nearLightMatrix =
@@ -259,12 +292,13 @@ namespace ReiseZumGrundDesSees
 
                 farLightMatrix =
                     Matrix.CreateTranslation(-GameState.Camera.Center.Position) *
-                    Matrix.CreateRotationY(MathHelper.PiOver4 + MathHelper.Pi + GameState.Camera.Azimuth) *
+                    //Matrix.CreateRotationY(MathHelper.PiOver4 + MathHelper.Pi + GameState.Camera.Azimuth) *
+                    Matrix.CreateRotationY(-0.011f) * // magic number. gives best shadow results.
                     Matrix.CreateTranslation(GameState.Camera.Center.Position) *
-                    Matrix.CreateTranslation(-50f, 0, -50f) *
-                    Matrix.CreateLookAt(new Vector3((float)Math.Floor(GameState.Player.Position.X) - (float)(Math.Sin(MathHelper.Pi + MathHelper.PiOver2 + GameState.Camera.Azimuth) * Math.Sqrt(200)),
+                    //Matrix.CreateTranslation(-50f, 0, -50f) *
+                    Matrix.CreateLookAt(new Vector3((float)Math.Floor(GameState.Player.Position.X) - (float)(Math.Sin(MathHelper.PiOver4 + 0.011f) * Math.Sqrt(200)),
                                                     GameState.World.Blocks.Size.Y + 1,
-                                                    (float)Math.Floor(GameState.Player.Position.Z) - (float)(Math.Cos(MathHelper.Pi + MathHelper.PiOver2 + GameState.Camera.Azimuth) * Math.Sqrt(200))),
+                                                    (float)Math.Floor(GameState.Player.Position.Z) - (float)(Math.Cos(MathHelper.PiOver4 + 0.011f) * Math.Sqrt(200))),
                                         new Vector3((float)Math.Floor(GameState.Player.Position.X),
                                                     (float)Math.Floor(GameState.Player.Position.Y),
                                                     (float)Math.Floor(GameState.Player.Position.Z)),
@@ -272,8 +306,17 @@ namespace ReiseZumGrundDesSees
                     Matrix.CreateOrthographic(120, 120, 0, GameState.World.Blocks.Size.Y);
             }
 
+            stopwatch.Stop();
+
+
+            DebugHelper.Information.updateTime = stopwatch.Elapsed.TotalSeconds;
+
+            stopwatch.Reset();
+
             base.Update(gameTime);
         }
+
+        float shadowRotation = 0f;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -281,13 +324,14 @@ namespace ReiseZumGrundDesSees
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            DebugHelper.Information.TotalFrameCount++;
-            DebugHelper.Information.FPS = 1 / gameTime.ElapsedGameTime.TotalSeconds;// DebugHelper.Information.FPS * 0.9 + 0.1 / gameTime.ElapsedGameTime.TotalSeconds;
-            DebugHelper.Information.TotalGameTime = gameTime.TotalGameTime;
-            DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
-            DebugHelper.Information.EditorCursorPosition = editor?.Position ?? Vector3.Zero;
-            DebugHelper.Information.CameraRotation = GameState.Camera?.Azimuth ?? 0;
+            
+            DebugHelper.Information.FPS = 1000.0 / gameTime.ElapsedGameTime.TotalMilliseconds;
+            DebugHelper.Information.RenderedOtherVertices = 0;
 
+            if (GameFlags.HasFlag(GameFlags.Debug))
+                stopwatch.Start();
+
+            
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
 
@@ -351,7 +395,7 @@ namespace ReiseZumGrundDesSees
                 shadowEffect.NearLightMatrix = nearLightMatrix;
                 shadowEffect.NearLightTexture = nearShadowMap;
             }
-
+            
             GraphicsDevice.SetRenderTarget(farShadowMap);
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Red, 1f, 0);
@@ -470,20 +514,26 @@ namespace ReiseZumGrundDesSees
 
                 IGamer.Render(spriteBatch);
             }
+            
 
             GraphicsDevice.SetRenderTarget(null);
             // Render shadow map
-            /*spriteBatch.Begin(0, BlendState.Opaque, SamplerState.AnisotropicClamp);
+            spriteBatch.Begin(0, BlendState.Opaque, SamplerState.AnisotropicClamp);
             spriteBatch.Draw(nearShadowMap, new Rectangle(0, 756, 256, 256), Color.White);
             spriteBatch.Draw(farShadowMap, new Rectangle(0, 500, 256, 256), Color.White);
             //spriteBatch.Draw(realRenderTarget, new Rectangle(0, 0, 1920, 1080), Color.White);
-            spriteBatch.End();*/
+            spriteBatch.End();
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Render(spriteBatch);
 
+            stopwatch.Stop();
+            DebugHelper.Information.renderTime = stopwatch.Elapsed.TotalSeconds;
+            stopwatch.Reset();
+
             if (GameFlags.HasFlag(GameFlags.Debug))
                 DebugHelper.RenderOverlay(spriteBatch, font);
+
 
 
             base.Draw(gameTime);
