@@ -25,7 +25,7 @@ namespace ReiseZumGrundDesSees
         private List<ICollisionObject> objects = new List<ICollisionObject>();
         private IBlockWorld world;
         private List<ICollisionObject>[,] chunkedObjects;
-        private const int CHUNK_SIZE = 128;
+        private const int CHUNK_SIZE = 64;
 
         public CollisionDetector(IBlockWorld _world)
         {
@@ -200,7 +200,7 @@ namespace ReiseZumGrundDesSees
             chunkedObjects = new List<ICollisionObject>[CHUNK_SIZE, CHUNK_SIZE];
 
             int worldX = world.Size.X;
-            int worldY = world.Size.Y;
+            int worldY = world.Size.Z;
 
             foreach (ICollisionObject _obj in objects)
             {
@@ -214,7 +214,7 @@ namespace ReiseZumGrundDesSees
                     _hitbox = _obj.Hitbox;
 
                 int x = (int)_hitbox.X * CHUNK_SIZE / worldX;
-                int y = (int)_hitbox.Y * CHUNK_SIZE / worldY;
+                int y = (int)_hitbox.Z * CHUNK_SIZE / worldY;
 
                 if (y >= 0 & y < CHUNK_SIZE &
                     x >= 0 & x < CHUNK_SIZE)
@@ -233,7 +233,7 @@ namespace ReiseZumGrundDesSees
             CollisionInfo _collInfo = new CollisionInfo();
 
             int worldX = world.Size.X;
-            int worldY = world.Size.Y;
+            int worldY = world.Size.Z;
 
             if (!_object.HasMultipleHitboxes)
             {
@@ -243,14 +243,17 @@ namespace ReiseZumGrundDesSees
                     checkCollisionWithWorld(ref _splits[i], _tmpHit, world, _collInfo);
 
                     int chkX = (int)_tmpHit.X * CHUNK_SIZE / worldX;
-                    int chkY = (int)_tmpHit.Y * CHUNK_SIZE / worldY;
+                    int chkY = (int)_tmpHit.Z * CHUNK_SIZE / worldY;
 
-                    for (int x = Math.Max(0, chkX - 1); x < Math.Min(CHUNK_SIZE, chkX + 1); x++)
-                        for (int y = Math.Max(0, chkY - 1); y < Math.Min(CHUNK_SIZE, chkY + 1); y++)
-                            if (chunkedObjects[x, y] != null)
-                                foreach (ICollisionObject _otherObj in chunkedObjects[x, y])
+                    for (int x = Math.Max(0, chkX - 1); x <= Math.Min(CHUNK_SIZE - 1, chkX + 1); x++)
+                        for (int y = Math.Max(0, chkY - 1); y <= Math.Min(CHUNK_SIZE - 1, chkY + 1); y++)
+                        {
+                            var chk = chunkedObjects[x, y];
+                            if (chk != null)
+                                foreach (ICollisionObject _otherObj in chk)
                                     if (_otherObj != _object && _otherObj.IsEnabled)
                                         checkCollisionWithObject(ref _splits[i], _tmpHit, _otherObj, _collInfo);
+                        }
 
                     _tmpHit += _splits[i];
                 }

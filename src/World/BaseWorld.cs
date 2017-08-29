@@ -55,7 +55,7 @@ namespace ReiseZumGrundDesSees
             RegionsCount = Vector2Int.Parse(_regions_count);
 
             string _spawn_position = _config["spawn"];
-            SpawnPos = Vector3Int.Parse(_spawn_position);
+            SpawnPos = _spawn_position.ToVector3();
 
             Regions = new WorldRegion[RegionsCount.X, RegionsCount.Y];
             for (int x = 0; x < RegionsCount.X; x++)
