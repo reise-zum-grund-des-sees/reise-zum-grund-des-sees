@@ -118,7 +118,8 @@ namespace ReiseZumGrundDesSees
 
             }
 
-            switch (Dialog) {
+            switch (Dialog)
+            {
                 case 0:
                     _spriteBatch.DrawString(S4, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "2x Spacebar -> Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
@@ -126,7 +127,7 @@ namespace ReiseZumGrundDesSees
                 case 1:
                     _spriteBatch.DrawString(S4, "Dieser Block speichert", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "Spawnposition und setzt", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);                   
+                    _spriteBatch.DrawString(S4, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 2:
                     _spriteBatch.DrawString(S4, "Springe auf Gegner um", Textboxtext1 * scalingFactor, Color.Black);
@@ -141,7 +142,7 @@ namespace ReiseZumGrundDesSees
                 case 4:
                     _spriteBatch.DrawString(S4, "Bloecke verschwinden auch wenn", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "du Speicherst oder dich zu weit", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "entfernst. Leichte Blöcke (1)", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "entfernst. Leichte Bloecke (1)", Textboxtext3 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "schweben in der Luft.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 5:
@@ -151,7 +152,7 @@ namespace ReiseZumGrundDesSees
                     _spriteBatch.DrawString(S4, "Akiviere ihn mit E.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 6:
-                    _spriteBatch.DrawString(S4, "Mittelschwere Blöcke (2)", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Mittelschwere Bloecke (2)", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "fallen zu Boden und", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "schwimmen im Wasser.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
@@ -163,22 +164,22 @@ namespace ReiseZumGrundDesSees
                     _spriteBatch.DrawString(S4, "Lasse ein mittelschweren (2)", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "oder schweren (3) Block auf", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "die Bodenplatte fallen um ", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "die Bodenplatte z u aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "die Bodenplatte zu aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 9:
                     _spriteBatch.DrawString(S4, "Vergiss nicht, dass du mit Q", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Blöcke wieder aufsammeln kannst.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Bloecke wieder aufsammeln kannst.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 10:
-                    _spriteBatch.DrawString(S4, "Schwere Blöcke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Schwere Bloecke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "zu Boden und gehen", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "im Wasser unter.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 11:
                     _spriteBatch.DrawString(S4, "Diese Schalter senkt den", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "Wasserstand. Doch ein weiterer", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Schalter wird für Rückweg", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "benötigt", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Schalter wird fuer Rueckweg", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "benoetigt", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 12:
                     _spriteBatch.DrawString(S4, "Hier scheint kein Schalter zur", Textboxtext1 * scalingFactor, Color.Black);
@@ -194,12 +195,14 @@ namespace ReiseZumGrundDesSees
                     _spriteBatch.DrawString(S4, "Erkunde den Grund des Sees!", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 15:
-                    _spriteBatch.DrawString(S4, "Glückwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Glueckwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 100:
                     break;
                 default:
                     break;
-        }
+            }
             _spriteBatch.End();
         }
     }

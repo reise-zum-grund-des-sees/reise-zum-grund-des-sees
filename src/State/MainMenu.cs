@@ -30,14 +30,17 @@ namespace ReiseZumGrundDesSees
         private GameFlags flags;
 
         private readonly IMenuCallback menuCallback;
+        private Vector2 scalingFactor = new Vector2(1f, 1f);
+        ContentManager content;
 
         private readonly SpriteFont font;
 
-        public MainMenu(Texture2D _texture, ContentManager Content, IMenuCallback _menuCallback)
+        public MainMenu(Texture2D _texture, ContentManager _content, IMenuCallback _menuCallback)
         {
             menuCallback = _menuCallback;
             texture = _texture;
-            font = Content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_20);
+            font = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_20);
+            content = _content;
         }
 
         public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize)
@@ -99,6 +102,8 @@ namespace ReiseZumGrundDesSees
 
                 if (scale(box_endGameBox, windowSize).Contains(_args.MousePosition))
                     menuCallback.ExitGame();
+
+                scalingFactor = _windowSize.ToVector2() * 0.001f;
             }
         }
 
@@ -218,6 +223,19 @@ namespace ReiseZumGrundDesSees
 
                 _spriteBatch.Draw(texture, scale(box_endGameBox, windowSize), tex_box1, Color.White);
                 _spriteBatch.Draw(texture, scale(box_endGameText, windowSize), tex_endGame, Color.White);
+            }
+
+            if (flags.HasFlag(GameFlags.Credits)) //Credits
+            {
+                SpriteFont S1 = content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_32);
+                SpriteFont S2 = content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_20);
+                _spriteBatch.Draw(texture, scale(box_square, windowSize), tex_box1, Color.White);
+                _spriteBatch.DrawString(S1, "Glueckwunsch, du hast den Schatz geborgen!", new Vector2(30, 100) * scalingFactor, Color.Black);
+                _spriteBatch.DrawString(S1, "Ein Spiel von:", new Vector2(30, 150) * scalingFactor, Color.Black);
+                _spriteBatch.DrawString(S1, "Tom Heimbrodt\nSimon Nestrowicz\nSarah Fuchs", new Vector2(30, 200) * scalingFactor, Color.Black);
+                _spriteBatch.DrawString(S1, "Erstellt mit Unterstuetzung von Acagamics", new Vector2(30, 350) * scalingFactor, Color.Black);
+                _spriteBatch.DrawString(S1, "Soundeffekte von:", new Vector2(30, 425) * scalingFactor, Color.Black);
+                _spriteBatch.DrawString(S2, " https://www.freesound.org/people/fins/sounds/172205/ \n https://www.freesound.org/people/Davidsraba/sounds/347171/ \n https://www.freesound.org/people/deleted_user_877451/sounds/76376/ \n https://www.freesound.org/people/Under7dude/sounds/163441/ \n https://www.freesound.org/people/Raggaman/sounds/25515/ \n https://www.freesound.org/people/CrazyFrog249/sounds/161628/ \n https://www.freesound.org/people/Autistic%20Lucario/sounds/142608/ \n https://www.freesound.org/people/Isaac200000/sounds/188013/ \n https://www.freesound.org/people/RunnerPack/sounds/87045/ \n https://freesound.org/people/D%20W/sounds/143606/ \n https://freesound.org/people/BMacZero/sounds/94127/ \n https://freesound.org/people/GameAudio/sounds/220184/", new Vector2(30, 475) * scalingFactor, Color.Black);
             }
 
             if (!flags.HasFlag(GameFlags.GameLoaded))

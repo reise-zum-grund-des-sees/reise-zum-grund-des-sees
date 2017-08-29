@@ -137,7 +137,7 @@ namespace ReiseZumGrundDesSees
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[5]);
 
 
-            Truhe = new Treasure(new Vector3(150f, 33f, 200f));
+            Truhe = new Treasure(new Vector3(256f, 28f, 256f));
             initializeList.Add(Truhe);
 
             base.Initialize();
@@ -270,7 +270,12 @@ namespace ReiseZumGrundDesSees
             {
                 GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning);
             }
-
+            if (GameFlags.HasFlag(GameFlags.GameRunning)  && kb.IsKeyDown(Keys.E)  && _gameStateView.Dialog == 100 && keyPressedPause)
+            {
+                Truhe.ChangeModel();
+                GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning | GameFlags.Credits); // Öffne Menü wenn wenn Spiel gewonnen + neuer Teil
+                
+            }
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
             else keyPressedPause = false;
 

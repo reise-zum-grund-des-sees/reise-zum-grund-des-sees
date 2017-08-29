@@ -12,7 +12,7 @@ namespace ReiseZumGrundDesSees
     class Treasure : IRenderable
     {
         ContentManager ContentManager;
-        Model model;     
+        Model model;
         public Vector3 Position
         {
             get;
@@ -26,17 +26,20 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            model = ContentManager.Load<Model>(ContentRessources.MODEL_TRUHE_OFFEN); //Modell muss noch geändert werden
+            model = ContentManager.Load<Model>(ContentRessources.MODEL_TRUHE_ZU); //Modell muss noch geändert werden
         }
 
         public void ChangeModel()
         {
-            model = ContentManager.Load<Model>(ContentRessources.MODEL_TRUHE_ZU); //Modell muss noch geändert werden
+            model = ContentManager.Load<Model>(ContentRessources.MODEL_TRUHE_OFFEN); //Modell muss noch geändert werden
+          
         }
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
-            Matrix _worldMatrix = Matrix.CreateScale(0.25f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
+
+            Matrix _worldMatrix = Matrix.CreateScale(1f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0, 0.5f, 0)));
+      
             _effect.WorldMatrix = _worldMatrix;
             _effect.VertexFormat = VertexFormat.Position;
 

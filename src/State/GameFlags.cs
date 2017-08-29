@@ -14,6 +14,7 @@ namespace ReiseZumGrundDesSees
 		GameRunning = 4,
 		EditorMode = 8,
         Debug = 16,
-        Fullscreen = 32
+        Fullscreen = 32,
+        Credits = 64
 	}
 }
