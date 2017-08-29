@@ -49,6 +49,7 @@ namespace ReiseZumGrundDesSees
         private Vector2 Textboxtext1 = new Vector2(650, 740);
         private Vector2 Textboxtext2 = new Vector2(650, 780);
         private Vector2 Textboxtext3 = new Vector2(650, 820);
+        private Vector2 Textboxtext4 = new Vector2(650, 860);
 
         private int Dialog;
 
@@ -134,27 +135,65 @@ namespace ReiseZumGrundDesSees
                 case 3:
                     _spriteBatch.DrawString(S4, "Mit 1,2 und 3 koennen gefundene", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "Bloecke gesetzt werden.", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Druecke Q um sie aufzusammeln.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Druecke Q um sie aufzusammeln,", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "wenn du davor stehst.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 4:
-                    _spriteBatch.DrawString(S4, "Bloecke verschwinden auch", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "wenn du Speicherst oder", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "wenn du dich weit entfernst.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Bloecke verschwinden auch wenn", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "du Speicherst oder dich zu weit", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "entfernst. Leichte Blöcke (1)", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "schweben in der Luft.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 5:
                     _spriteBatch.DrawString(S4, "Schalter lassen Bloecke ", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "erscheinen,verschwinden", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "oder bewegen Bloecke.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Akiviere ihn mit E.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 6:
+                    _spriteBatch.DrawString(S4, "Mittelschwere Blöcke (2)", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "fallen zu Boden und", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "schwimmen im Wasser.", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 7:
                     _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
-                case 7:
-                    _spriteBatch.DrawString(S4, "Lasse ein Bloeck auf die Platte", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "fallen um sie zu aktivieren.", Textboxtext2 * scalingFactor, Color.Black);
+                case 8:
+                    _spriteBatch.DrawString(S4, "Lasse ein mittelschweren (2)", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "oder schweren (3) Block auf", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "die Bodenplatte fallen um ", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "die Bodenplatte z u aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
-                case 100:
+                case 9:
+                    _spriteBatch.DrawString(S4, "Vergiss nicht, dass du mit Q", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Blöcke wieder aufsammeln kannst.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 10:
+                    _spriteBatch.DrawString(S4, "Schwere Blöcke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "zu Boden und gehen", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "im Wasser unter.", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 11:
+                    _spriteBatch.DrawString(S4, "Diese Schalter senkt den", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Wasserstand. Doch ein weiterer", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Schalter wird für Rückweg", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "benötigt", Textboxtext4 * scalingFactor, Color.Black);
+                    break;
+                case 12:
+                    _spriteBatch.DrawString(S4, "Hier scheint kein Schalter zur", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Wasserstandssenkung zu sein.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 13:
+                    _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+                case 14:
+                    _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Erkunde den Grund des Sees!", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 15:
                     _spriteBatch.DrawString(S4, "Glückwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(S4, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
                     break;

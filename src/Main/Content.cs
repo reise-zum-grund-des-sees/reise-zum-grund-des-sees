@@ -11,6 +11,8 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_CURSOR = "models/cursor";
         public const string MODEL_GEGNER_1 = "models/gegner1";
         public const string MODEL_GEGNER_2 = "models/gegner2";
+        public const string MODEL_GEGNER_3 = "models/gegner3";
+        public const string MODEL_GEGNER_4 = "models/gegner4";
         public const string MODEL_BLOCK_LEICHT = "models/block_leicht";
         public const string MODEL_BLOCK_MEDIUM = "models/block_medium";
         public const string MODEL_BLOCK_SCHWER = "models/block_schwer";
@@ -23,9 +25,10 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_PP_OBEN = "models/Knopf_ungedrückt";
         public const string MODEL_PP_UNTEN = "models/Knopf_gedrückt2";
         public const string MODEL_SAVEPOINT = "models/Savepoint_VK";
+        public const string MODEL_TRUHE_OFFEN = "models/Truhe_offen_VK";
+        public const string MODEL_TRUHE_ZU = "models/Truhe_zu_VK";
 
         public const string EFFECT_PLAYER = "effects/player";
-
         public const string EFFECT_PRESHADOW = "effects/shadowmap";
         public const string EFFECT_SHADOW_BASIC = "effects/default";
         public const string EFFECT_SHADOW_COLOR = "effects/default.color";

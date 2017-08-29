@@ -334,6 +334,8 @@ namespace ReiseZumGrundDesSees
 
             DebugHelper.Information.FPS = 1000.0 / gameTime.ElapsedGameTime.TotalMilliseconds;
             DebugHelper.Information.RenderedOtherVertices = 0;
+            DebugHelper.Information.PlayerPosition = GameState.Player?.Position ?? Vector3.Zero;
+            DebugHelper.Information.EditorCursorPosition = editor?.Position ?? Vector3.Zero;
 
             if (GameFlags.HasFlag(GameFlags.Debug))
                 stopwatch.Start();

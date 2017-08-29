@@ -438,7 +438,7 @@ namespace ReiseZumGrundDesSees
                 DialogSave = 3;
                 Dialog = 3;
             }
-            if (ChebyshevDistance(Position, new Vector3(169, 33, 193)) < 3 && DialogSave == 3)
+            if (ChebyshevDistance(Position, new Vector3(159, 32, 29)) < 5 && DialogSave == 3)
             {
                 Dialogcd = 0;
                 DialogSave = 4;
@@ -450,19 +450,60 @@ namespace ReiseZumGrundDesSees
                 DialogSave = 5;
                 Dialog = 5;
             }
-            if (ChebyshevDistance(Position, new Vector3(157, 40, 185)) < 3 && DialogSave == 5)
+            if (ChebyshevDistance(Position, new Vector3(176,34,166)) < 3 && DialogSave == 5)
             {
                 Dialogcd = 0;
                 DialogSave = 6;
                 Dialog = 6;
             }
-            if (ChebyshevDistance(Position, new Vector3(231, 32, 257)) < 5 && DialogSave == 6)
+            if (ChebyshevDistance(Position, new Vector3(157, 40, 185)) < 3 && DialogSave == 6)
             {
                 Dialogcd = 0;
                 DialogSave = 7;
                 Dialog = 7;
             }
-
+            if (ChebyshevDistance(Position, new Vector3(231, 32, 257)) < 5 && DialogSave == 7)
+            {
+                Dialogcd = 0;
+                DialogSave = 8;
+                Dialog = 8;
+            }
+            if (ChebyshevDistance(Position, new Vector3(201, 34, 263)) < 3 && DialogSave == 8)
+            {
+                Dialogcd = 0;
+                DialogSave = 9;
+                Dialog = 9;
+            }
+            if (ChebyshevDistance(Position, new Vector3(136,39,234)) < 3 && DialogSave == 9)
+            {
+                Dialogcd = 0;
+                DialogSave = 10;
+                Dialog = 10;
+            }
+            if (ChebyshevDistance(Position, new Vector3(159,38,317)) < 5 && DialogSave == 10)
+            {
+                Dialogcd = 0;
+                DialogSave = 11;
+                Dialog = 11;
+            }
+            if (ChebyshevDistance(Position, new Vector3(330, 35, 256)) < 3 && DialogSave == 11)
+            {
+                Dialogcd = 0;
+                DialogSave = 12;
+                Dialog = 12;
+            }
+            if (ChebyshevDistance(Position, new Vector3(171, 40, 309)) < 3 && DialogSave == 12)
+            {
+                Dialogcd = 0;
+                DialogSave = 13;
+                Dialog = 13;
+            }
+            if (ChebyshevDistance(Position, new Vector3(333, 32, 267)) < 3 && DialogSave == 13)
+            {
+                Dialogcd = 0;
+                DialogSave = 14;
+                Dialog = 14;
+            }
 
             return (ref GameState _state) =>
             {
@@ -510,7 +551,7 @@ namespace ReiseZumGrundDesSees
                             
                                 if (Position.Y >= _obj.Position.Y -1.5f && Position.Y<_obj.Position.Y+0.1f && Math.Abs(Position.X-(_obj.Position.X+0.5f))<= 0.8f && Math.Abs(Position.Z - (_obj.Position.Z + 0.5f)) <= 0.8f)
                                 {
-                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), (int)(Position.Y - 0.3f),(int)(Position.Z+0.5f) );
+                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), ((int)(Position.Y+0.5f))-0.5f,(int)(Position.Z+0.5f) );
                                     Savecd = 0;
                                     soundEffects[7].Play();
                                         //Reset Blöcke

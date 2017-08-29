@@ -263,18 +263,30 @@ namespace ReiseZumGrundDesSees
             soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_SHOOT)); //schiesen
             if (Gegnerart == Art.Shooting)
                 Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_2);
-            else
+            if (Gegnerart == Art.Moving)
                 Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_1);
+            if (Gegnerart == Art.Jumping)
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_1);
+            if (Gegnerart == Art.Climbing)
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_3);
+            if (Gegnerart == Art.MandS)
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_4);
         }
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
             Matrix _worldMatrix;
             if (this._wasHit == false)
+            {
+                if(this.Gegnerart==Art.Shooting)
                 _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
+                else
+                    _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(new Vector3(0, 0.5f, 0)) * Matrix.CreateTranslation(this.Position); 
+            }
             else
+            {
                 _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
-
+            }
             _effect.WorldMatrix = _worldMatrix;
             _effect.VertexFormat = VertexFormat.Position;
 
@@ -284,6 +296,7 @@ namespace ReiseZumGrundDesSees
                 {
                     DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                     part.Effect = _effect.Effect;
+                    
                 }
 
                 mesh.Draw();
