@@ -510,7 +510,7 @@ namespace ReiseZumGrundDesSees
                             
                                 if (Position.Y >= _obj.Position.Y -1.5f && Position.Y<_obj.Position.Y+0.1f && Math.Abs(Position.X-(_obj.Position.X+0.5f))<= 0.8f && Math.Abs(Position.Z - (_obj.Position.Z + 0.5f)) <= 0.8f)
                                 {
-                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), (int)(Position.Y - 0.3f),(int)(Position.Z+0.5f) );
+                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), ((int)(Position.Y+0.5f))-0.5f,(int)(Position.Z+0.5f) );
                                     Savecd = 0;
                                     soundEffects[7].Play();
                                         //Reset Blöcke

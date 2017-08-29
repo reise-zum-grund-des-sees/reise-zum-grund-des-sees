@@ -272,10 +272,16 @@ namespace ReiseZumGrundDesSees
         {
             Matrix _worldMatrix;
             if (this._wasHit == false)
+            {
+                if(this.Gegnerart==Art.Shooting)
                 _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
+                else
+                    _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(new Vector3(0, 0.5f, 0)) * Matrix.CreateTranslation(this.Position); 
+            }
             else
+            {
                 _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
-
+            }
             _effect.WorldMatrix = _worldMatrix;
             _effect.VertexFormat = VertexFormat.Position;
 
