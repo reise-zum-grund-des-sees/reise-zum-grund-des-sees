@@ -508,28 +508,30 @@ namespace ReiseZumGrundDesSees
             return (ref GameState _state) =>
             {
                /*
-                // Wasserstand wiederherstellen/ wegnehmen (zum Debugen)
-                if (ersteWassersenkung == false)
-                {
-                    ersteWassersenkung = true;
-                    for (int x = 237; x <= 275; x++)
-                    {
-                        for (int y = 28; y <= 31; y++)
-                        {
-                            for (int z = 237; z <= 275; z++)
-                            {
-                                   if (_state.World.Blocks[x, y, z].IsWater())
-                                      _state.World.Blocks[x, y, z] = WorldBlock.None;
-                               // if (_state.World.Blocks[x, y, z]==WorldBlock.None)
-                               //     _state.World.Blocks[x, y, z] = WorldBlock.Water4Infinite;
-                            }
-                        }
-                    }
-                }
-               */
+                 // Wasserstand wiederherstellen/ wegnehmen (zum Debugen)
+                 if (ersteWassersenkung == false)
+                 {
+                     ersteWassersenkung = true;
+                    
+                     for (int x = 237; x <= 275; x++)
+                     {
+                         for (int y = 28; y <= 31; y++)
+                         {
+                             for (int z = 237; z <= 275; z++)
+                             {
+                                  //  if (_state.World.Blocks[x, y, z].IsWater())
+                                   //    _state.World.Blocks[x, y, z] = WorldBlock.None;
 
-                    //Health<=0 -> sterbe
-                    if (Health <= 0) gestorben(_state);
+                                 if (_state.World.Blocks[x, y, z]==WorldBlock.None)
+                                     _state.World.Blocks[x, y, z] = WorldBlock.Water4Infinite;
+                             }
+                         }
+                     }
+                 }
+                */
+
+                //Health<=0 -> sterbe
+                if (Health <= 0) gestorben(_state);
 
                 //Unter der Map -> Sterbe
                 if (Position.Y < 20) gestorben(_state);
@@ -584,11 +586,10 @@ namespace ReiseZumGrundDesSees
                 }
 
               // Schatz aktivieren 
-              if(_inputArgs.Events.HasFlag(InputEventList.Interact) && Levercd >= 1000)
-                {
-                    if (Vector3.Distance(Position, new Vector3(257f, 28f, 257.5f)) < 0.5f)
+            
+                    if (Vector3.Distance(Position, new Vector3(256.5f, 28f, 256f)) < 0.5f)
                         Dialog = 100; //Dialog 100 für Spiel Ende
-                }
+               
 
                 foreach (UpdateDelegate u in blockUpdateList)
                     u(ref _state);

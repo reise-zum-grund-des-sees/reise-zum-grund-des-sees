@@ -271,11 +271,13 @@ namespace ReiseZumGrundDesSees
                 GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning);
             }
             if (GameFlags.HasFlag(GameFlags.GameRunning)  && kb.IsKeyDown(Keys.E)  && _gameStateView.Dialog == 100 && keyPressedPause)
-            {
-                Truhe.ChangeModel();
+            {           
                 GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning | GameFlags.Credits); // Öffne Menü wenn wenn Spiel gewonnen + neuer Teil
                 
-            }
+            }//kann hier nicht auf den gamestate zugreifen
+            //if (Vector3.Distance(_gameStateView.Player.Position, new Vector3(256.5f, 28f, 256f)) < 0.5f)
+            //Truhe.ChangeModel();
+
             if ((kb.GetPressedKeys().Length == 0) || (kb.GetPressedKeys().Length == 1 && kb.IsKeyDown(Keys.LeftControl))) keyPressedPause = true;
             else keyPressedPause = false;
 

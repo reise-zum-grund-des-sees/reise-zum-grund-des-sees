@@ -112,7 +112,7 @@ namespace ReiseZumGrundDesSees
             _spriteBatch.DrawString(S3, Player.AnzahlBlockReadyS.ToString(), CD3 * scalingFactor, Color.White);
 
             //Tipps
-            if (Dialog != -1)
+            if (Dialog != -1 && Dialog!= 100)
             {
                 _spriteBatch.Draw(skill1, RTextbox.Scale(scalingFactor), Color.White);
 
