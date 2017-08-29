@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,6 @@ namespace ReiseZumGrundDesSees
         double Geschosstimer;
         float speedY;
         List<SoundEffect> soundEffects;
-        public static List<Enemy> EnemyList = new List<Enemy>();
         public Vector3 Position { get; set; }
 
         private bool wasAddedToCollisionManager = false;
@@ -61,7 +60,6 @@ namespace ReiseZumGrundDesSees
             Random = new Vector2();
             Jumptimer = 1;
             speedY = 0;
-            EnemyList.Add(this);
         }
 
         public Enemy(ConfigFile.ConfigNode _config)
@@ -85,6 +83,9 @@ namespace ReiseZumGrundDesSees
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
         {
             if (!_flags.HasFlag(GameFlags.GameRunning))
+                return null;
+
+            if (ContentManager == null)
                 return null;
 
             if (_wasHit == false)
@@ -200,7 +201,8 @@ namespace ReiseZumGrundDesSees
                         }
                         if (dazwischen == false)
                         {
-                            new Geschoss(ContentManager, new Vector3(Position.X, Position.Y + 0.25f, Position.Z), EnemytoPlayer);
+                            Geschoss g = new Geschoss(ContentManager, new Vector3(Position.X, Position.Y + 0.25f, Position.Z), EnemytoPlayer);
+                            _view.Geschosse.Add(g);
                             soundEffects[0].Play();
                         }
                     }
@@ -226,7 +228,7 @@ namespace ReiseZumGrundDesSees
                     {
                         if (wasAddedToCollisionManager)
                             _state.CollisionDetector.RemoveObject(this);
-                        EnemyList.Remove(this);
+                        _state.Enemies.Remove(this);
                     }
                     else if (!wasAddedToCollisionManager)
                     {
@@ -249,11 +251,8 @@ namespace ReiseZumGrundDesSees
 
                     if (disposed)
                     {
-                        EnemyList.Remove(this);
+                        _state.Enemies.Remove(this);
                     }
-
-
-
                 };
             }
         }

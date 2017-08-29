@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,10 +22,26 @@ namespace ReiseZumGrundDesSees
             {
                 Blocks = new WorldBlock[_sizeX, _sizeY, _sizeZ];
 
+                /*uint _count = 0;
+                byte _value = 255;*/
+
                 for (int x = 0; x < _sizeX; x++)
                     for (int y = 0; y < _sizeY; y++)
                         for (int z = 0; z < _sizeZ; z++)
+                        {
+                            /*if (_count > 0)
+                            {
+                                Blocks[x, y, z] = (WorldBlock)_value;
+                                _count--;
+                            }
+                            else
+                            {
+                                _count = _reader.ReadUInt32() - 1;
+                                _value = _reader.ReadByte();
+                                Blocks[x, y, z] = (WorldBlock)_value;
+                            }*/
                             Blocks[x, y, z] = (WorldBlock)_reader.ReadByte();
+                        }
             }
         }
 
@@ -34,6 +50,8 @@ namespace ReiseZumGrundDesSees
 
         public void Save(Stream _outputStream)
         {
+            uint _count = 0;
+            byte _value = 255;
             using (BinaryWriter _writer = new BinaryWriter(_outputStream))
             {
                 int _sizeX = Blocks.GetLength(0);
@@ -44,10 +62,26 @@ namespace ReiseZumGrundDesSees
                     for (int y = 0; y < _sizeY; y++)
                         for (int z = 0; z < _sizeZ; z++)
                         {
-                            if (Blocks[x, y, z] != WorldBlock.None)
-                                Console.WriteLine();
                             _writer.Write((byte)Blocks[x, y, z]);
+                            /*byte b = (byte)Blocks[x, y, z];
+                            if (_value == 255)
+                            {
+                                _count = 1;
+                                _value = b;
+                            }
+                            else if (b != _value)
+                            {
+                                _writer.Write(_count);
+                                _writer.Write(_value);
+                                _count = 1;
+                                _value = b;
+                            }
+                            else
+                                _count++;*/
                         }
+
+                /*_writer.Write(_count);
+                _writer.Write(_value);*/
             }
         }
     }

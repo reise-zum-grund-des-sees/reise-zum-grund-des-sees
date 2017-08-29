@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -324,11 +324,11 @@ namespace ReiseZumGrundDesSees
 
                 }
 
-                for (int i = 0; i < Enemy.EnemyList.Count; i++)
+                for (int i = 0; i < _state.Enemies.Count; i++)
                 {
-                    if (Vector3.Distance(Enemy.EnemyList[i].Position, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1)
+                    if (Vector3.Distance(_state.Enemies[i].Position, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)) < 1)
                     {
-                        Enemy.EnemyList.RemoveAt(i);
+                        _state.Enemies.RemoveAt(i);
                         break;
                     }
                 }
@@ -375,28 +375,33 @@ namespace ReiseZumGrundDesSees
             }
             else if (_actions.HasFlag(Actions.PutEnemy1))
             {
-                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Moving);
-                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+                Enemy e = new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Moving);
+                e.Initialize(graphicsDevice, content);
+                _state.Enemies.Add(e);
             }
             else if (_actions.HasFlag(Actions.PutEnemy2))
             {
-                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Climbing);
-                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+                Enemy e = new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Climbing);
+                e.Initialize(graphicsDevice, content);
+                _state.Enemies.Add(e);
             }
             else if (_actions.HasFlag(Actions.PutEnemy3))
             {
-                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Jumping);
-                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+                Enemy e = new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Jumping);
+                e.Initialize(graphicsDevice, content);
+                _state.Enemies.Add(e);
             }
             else if (_actions.HasFlag(Actions.PutEnemy4))
             {
-                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Shooting);
-                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+                Enemy e = new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.Shooting);
+                e.Initialize(graphicsDevice, content);
+                _state.Enemies.Add(e);
             }
             else if (_actions.HasFlag(Actions.PutEnemy5))
             {
-                new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.MandS);
-                Enemy.EnemyList[Enemy.EnemyList.Count - 1].Initialize(graphicsDevice, content);
+                Enemy e = new Enemy(new Vector3(x + 0.5f, y, z + 0.5f), Enemy.Art.MandS);
+                e.Initialize(graphicsDevice, content);
+                _state.Enemies.Add(e);
             }
             else if (_actions.HasFlag(Actions.PutMovingBlockEnd))
             {

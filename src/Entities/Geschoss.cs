@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +22,6 @@ namespace ReiseZumGrundDesSees
 
         ContentManager ContentManager;
         public Model Model;
-        public static List<Geschoss> GeschossList = new List<Geschoss>();
 
         public Geschoss(ContentManager contentManager, Vector3 _position, Vector3 _movement)
         {
@@ -32,7 +31,6 @@ namespace ReiseZumGrundDesSees
             SpawnPosition = _position;
             Movement = _movement;
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.25f - 0.125f, 0.25f, 0.25f - 0.125f, Hitbox.Type.Geschoss);
-            GeschossList.Add(this);
         }
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
@@ -61,14 +59,14 @@ namespace ReiseZumGrundDesSees
             Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.25f - 0.125f, 0.25f, 0.25f - 0.125f, Hitbox.Type.Geschoss);
             Vector3 _movement = new Vector3(0, 0, 0);
             if (Vector3.Distance(Position, SpawnPosition) > MaxDistance)
-                GeschossList.Remove(this);
+                _view.Geschosse.Remove(this);
             else
                 _movement += Movement * (float)(_passedTime * 0.006f);
 
             var _collInfo = _view.CollisionDetector.CheckCollision(ref _movement, this);
 
             if (_collInfo.Any())
-                GeschossList.Remove(this);
+                _view.Geschosse.Remove(this);
 
             return (ref GameState _state) =>
             {

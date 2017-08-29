@@ -52,6 +52,9 @@ namespace ReiseZumGrundDesSees
                 else if (value.HasFlag(GameFlags.GameRunning) && GameState.Camera != null)
                     GameState.Camera.Center = GameState.Player;
 
+                if (!value.HasFlag(GameFlags.Menu))
+                    MainMenu.CurrentState = MainMenu.State.Default;
+
                 __GameFlags = value;
                 DebugHelper.Log("GameMode changed to " + value);
             }
@@ -133,10 +136,8 @@ namespace ReiseZumGrundDesSees
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[4]);
             initializeList.Add(GetPlayerBlock.GetPlayerBlockList[5]);
 
-            for (int i = 0; i < Enemy.EnemyList.Count; i++)
-                initializeList.Add(Enemy.EnemyList[i]);
 
-            Truhe = new Treasure(new Vector3(150f,33f,200f));
+            Truhe = new Treasure(new Vector3(150f, 33f, 200f));
             initializeList.Add(Truhe);
 
             base.Initialize();
@@ -185,14 +186,14 @@ namespace ReiseZumGrundDesSees
                 stopwatch.Start();
 
             if (!GameFlags.HasFlag(GameFlags.Fullscreen))
-                if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
+                /*if (graphics.PreferredBackBufferHeight != Window.ClientBounds.Height ||
                     graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
                 {
                     graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
                     graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
                     graphics.ApplyChanges();
                 }
-                else
+                else*/
                 if (graphics.PreferredBackBufferHeight != GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height ||
                     graphics.PreferredBackBufferWidth != GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width)
                 {
@@ -217,7 +218,7 @@ namespace ReiseZumGrundDesSees
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             //stopwatch.Stop();
             //if (GameFlags.HasFlag(GameFlags.GameRunning))
-                //Console.WriteLine("World update: " + stopwatch.Elapsed.ToString() + " FPS: " + (1.0 / stopwatch.Elapsed.TotalSeconds).ToString());
+            //Console.WriteLine("World update: " + stopwatch.Elapsed.ToString() + " FPS: " + (1.0 / stopwatch.Elapsed.TotalSeconds).ToString());
             _updateList.Add(editor.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             // _updateList.Add(testBlock.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
@@ -226,10 +227,10 @@ namespace ReiseZumGrundDesSees
             if (GameFlags.HasFlag(GameFlags.GameRunning))
             {
                 //double _sum = 0;
-                for (int i = 0; i < Enemy.EnemyList.Count; i++)//Update Enemies
+                for (int i = 0; i < GameState.Enemies.Count; i++)//Update Enemies
                 {
                     //stopwatch.Restart();
-                    _updateList.Add(Enemy.EnemyList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    _updateList.Add(GameState.Enemies[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
 
                     //stopwatch.Stop();
@@ -238,9 +239,9 @@ namespace ReiseZumGrundDesSees
                 }
             }
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                for (int i = 0; i < Geschoss.GeschossList.Count; i++)//Update Geschosse
+                for (int i = 0; i < GameState.Geschosse.Count; i++)//Update Geschosse
                 {
-                    _updateList.Add(Geschoss.GeschossList[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+                    _updateList.Add(GameState.Geschosse[i].Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
                     _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
                 }
 
@@ -330,14 +331,14 @@ namespace ReiseZumGrundDesSees
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            
+
             DebugHelper.Information.FPS = 1000.0 / gameTime.ElapsedGameTime.TotalMilliseconds;
             DebugHelper.Information.RenderedOtherVertices = 0;
 
             if (GameFlags.HasFlag(GameFlags.Debug))
                 stopwatch.Start();
 
-            
+
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1f, 0);
 
@@ -373,7 +374,7 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                foreach (var _obj in Enemy.EnemyList) //Draw Enemy
+                foreach (var _obj in GameState.Enemies) //Draw Enemy
                     if (Vector2.Distance(
                            new Vector2(_obj.Position.X, _obj.Position.Z),
                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
@@ -381,7 +382,7 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
+                foreach (var _obj in GameState.Geschosse)//Draw Geschosse
                     if (Vector2.Distance(
                          new Vector2(_obj.Position.X, _obj.Position.Z),
                          new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
@@ -402,12 +403,12 @@ namespace ReiseZumGrundDesSees
                      new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
                  < GameState.World.viewDistance)
 
-                        Truhe.Render(GameFlags, preShadowEffect, GraphicsDevice);
+                    Truhe.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
                 shadowEffect.NearLightMatrix = nearLightMatrix;
                 shadowEffect.NearLightTexture = nearShadowMap;
             }
-            
+
             GraphicsDevice.SetRenderTarget(farShadowMap);
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Red, 1f, 0);
@@ -435,7 +436,7 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                foreach (var _obj in Enemy.EnemyList) //Draw Enemy
+                foreach (var _obj in GameState.Enemies) //Draw Enemy
                     if (Vector2.Distance(
                            new Vector2(_obj.Position.X, _obj.Position.Z),
                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
@@ -443,7 +444,7 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
+                foreach (var _obj in GameState.Geschosse)//Draw Geschosse
                     if (Vector2.Distance(
                          new Vector2(_obj.Position.X, _obj.Position.Z),
                          new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
@@ -503,7 +504,7 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
-                foreach (var _obj in Enemy.EnemyList) //Draw Enemy
+                foreach (var _obj in GameState.Enemies) //Draw Enemy
                     if (Vector2.Distance(
                            new Vector2(_obj.Position.X, _obj.Position.Z),
                            new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
@@ -511,7 +512,7 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
-                foreach (var _obj in Geschoss.GeschossList)//Draw Geschosse
+                foreach (var _obj in GameState.Geschosse)//Draw Geschosse
                     if (Vector2.Distance(
                          new Vector2(_obj.Position.X, _obj.Position.Z),
                          new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
@@ -539,15 +540,15 @@ namespace ReiseZumGrundDesSees
 
                 IGamer.Render(spriteBatch);
             }
-            
+
 
             GraphicsDevice.SetRenderTarget(null);
             // Render shadow map
-            spriteBatch.Begin(0, BlendState.Opaque, SamplerState.AnisotropicClamp);
+            /*spriteBatch.Begin(0, BlendState.Opaque, SamplerState.AnisotropicClamp);
             spriteBatch.Draw(nearShadowMap, new Rectangle(0, 756, 256, 256), Color.White);
             spriteBatch.Draw(farShadowMap, new Rectangle(0, 500, 256, 256), Color.White);
             //spriteBatch.Draw(realRenderTarget, new Rectangle(0, 0, 1920, 1080), Color.White);
-            spriteBatch.End();
+            spriteBatch.End();*/
 
             if (GameFlags.HasFlag(GameFlags.Menu))
                 MainMenu.Render(spriteBatch);
@@ -568,52 +569,42 @@ namespace ReiseZumGrundDesSees
 
         public void StartNewGame()
         {
-            RenderableWorld _world = CreateWorld();
-            _world.Initialize(GraphicsDevice, Content);
-
-            worldRenderables.Clear();
-            //worldRenderables.Add(_world);
-            foreach (var _renderable in worldRenderables)
-                initializeList.Add(_renderable);
-
-            GameState = new GameState(_world, new Player(new Vector3(_world.SpawnPos.X, _world.SpawnPos.Y, _world.SpawnPos.Z)), new Camera());
-            GameState.Player.Initialize(GraphicsDevice, Content);
-            //initializeList.Add(GameState.Player);
-
-            GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
-            GameFlags &= ~GameFlags.Menu;
-        }
-
-        private RenderableWorld CreateWorld()
-        {
-            RenderableWorld w = new RenderableWorld(16, 128, 16, 128, 128, new Vector3(24, 32, 24), Content);
-            w.GenerateTestWorld();
-            return w;
+            LoadGame(System.IO.Path.Combine(Environment.CurrentDirectory, "world"));
         }
 
         public void LoadGame(string _path)
         {
-            GameState = GameState.Load(_path);
+            try
+            {
+                GameState = GameState.Load(_path);
 
-            worldRenderables.Clear();
-            //worldRenderables.Add(GameState.World as IRenderable);
-            GameState.World.Initialize(GraphicsDevice, Content);
+                worldRenderables.Clear();
+                //worldRenderables.Add(GameState.World as IRenderable);
+                GameState.World.Initialize(GraphicsDevice, Content);
 
-            initializeList.Clear();
-            foreach (var _renderable in worldRenderables)
-                initializeList.Add(_renderable);
+                initializeList.Clear();
+                foreach (var _renderable in worldRenderables)
+                    initializeList.Add(_renderable);
 
-            //initializeList.Add(GameState.Player);
-            GameState.Player.Initialize(GraphicsDevice, Content);
+                //initializeList.Add(GameState.Player);
+                GameState.Player.Initialize(GraphicsDevice, Content);
 
-            for (int i = 0; i < Enemy.EnemyList.Count; i++)
-                initializeList.Add(Enemy.EnemyList[i]);
-            GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
-            GameFlags &= ~GameFlags.Menu;
+                for (int i = 0; i < GameState.Enemies.Count; i++)
+                    initializeList.Add(GameState.Enemies[i]);
+
+                GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
+                GameFlags &= ~GameFlags.Menu;
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show("Die angegebene Welt konnte nicht geladen werden.\r\nUrsache: " + e.Message);
+            }
         }
 
         public void SaveGame(string _path)
         {
+            if (!System.IO.Directory.Exists(_path))
+                System.IO.Directory.CreateDirectory(_path);
             GameState.Save(_path);
         }
 

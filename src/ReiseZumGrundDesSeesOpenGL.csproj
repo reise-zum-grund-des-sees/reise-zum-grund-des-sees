@@ -48,6 +48,7 @@
     <Compile Include="Entities\IEnemy.cs" />
     <Compile Include="Entities\IHitable.cs" />
     <Compile Include="Entities\IPlayer.cs" />
+    <Compile Include="Entities\Treasure.cs" />
     <Compile Include="Main\Content.cs" />
     <Compile Include="Main\Effect.cs" />
     <Compile Include="Main\Geometrie.cs" />
