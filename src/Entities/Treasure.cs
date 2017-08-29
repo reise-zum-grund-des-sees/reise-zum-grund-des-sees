@@ -26,12 +26,12 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            model = ContentManager.Load<Model>(ContentRessources.MODEL_BLOCK_LEICHT); //Modell muss noch geändert werden
+            model = ContentManager.Load<Model>(ContentRessources.MODEL_TRUHE_OFFEN); //Modell muss noch geändert werden
         }
 
         public void ChangeModel()
         {
-            model = ContentManager.Load<Model>(ContentRessources.MODEL_BLOCK_MEDIUM); //Modell muss noch geändert werden
+            model = ContentManager.Load<Model>(ContentRessources.MODEL_TRUHE_ZU); //Modell muss noch geändert werden
         }
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)

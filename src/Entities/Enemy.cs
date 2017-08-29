@@ -264,8 +264,14 @@ namespace ReiseZumGrundDesSees
             soundEffects.Add(ContentManager.Load<SoundEffect>(ContentRessources.SOUND_SHOOT)); //schiesen
             if (Gegnerart == Art.Shooting)
                 Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_2);
-            else
+            if (Gegnerart == Art.Moving)
                 Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_1);
+            if (Gegnerart == Art.Jumping)
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_1);
+            if (Gegnerart == Art.Climbing)
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_3);
+            if (Gegnerart == Art.MandS)
+                Model = ContentManager.Load<Model>(ContentRessources.MODEL_GEGNER_4);
         }
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
@@ -291,6 +297,7 @@ namespace ReiseZumGrundDesSees
                 {
                     DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
                     part.Effect = _effect.Effect;
+                    
                 }
 
                 mesh.Draw();
