@@ -400,10 +400,9 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                if (Vector2.Distance(
-                     new Vector2(Truhe.Position.X, Truhe.Position.Z),
-                     new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
-                 < GameState.World.viewDistance)
+                if (Vector2.Distance(new Vector2(Truhe.Position.X, Truhe.Position.Z),
+                                     new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                    < GameState.World.viewDistance)
 
                     Truhe.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
@@ -462,10 +461,9 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
-                if (Vector2.Distance(
-                 new Vector2(Truhe.Position.X, Truhe.Position.Z),
-                 new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
-             < GameState.World.viewDistance)
+                if (Vector2.Distance(new Vector2(Truhe.Position.X, Truhe.Position.Z),
+                                     new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                    < GameState.World.viewDistance)
 
                     Truhe.Render(GameFlags, preShadowEffect, GraphicsDevice);
 
@@ -530,12 +528,11 @@ namespace ReiseZumGrundDesSees
 
                         _obj.Render(GameFlags, shadowEffect, GraphicsDevice);
 
-                if (Vector2.Distance(
-               new Vector2(Truhe.Position.X, Truhe.Position.Z),
-               new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
-           < GameState.World.viewDistance)
+                if (Vector2.Distance(new Vector2(Truhe.Position.X, Truhe.Position.Z),
+                                     new Vector2(GameState.Camera.Center.Position.X, GameState.Camera.Center.Position.Z))
+                    < GameState.World.viewDistance)
 
-                    Truhe.Render(GameFlags, preShadowEffect, GraphicsDevice);
+                    Truhe.Render(GameFlags, shadowEffect, GraphicsDevice);
 
                 GraphicsDevice.SetRenderTarget(null);
                 editor.Render(GameFlags, _viewMatrix, _perspectiveMatrix, GraphicsDevice);
