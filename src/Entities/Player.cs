@@ -296,6 +296,7 @@ namespace ReiseZumGrundDesSees
                             Blöcke.Add(new PlayerBlock(this, 0));
                             AnzahlBlockMaxL++;
                             AnzahlBlockL++;
+                            
                         }
                         if (GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
                         {
@@ -312,6 +313,7 @@ namespace ReiseZumGrundDesSees
                         Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
                         GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
                         soundEffects[8].Play();
+                        aufsammelcd = 0;
                     }
                 }
             }
@@ -530,29 +532,29 @@ namespace ReiseZumGrundDesSees
 
             return (ref GameState _state) =>
             {
-               /*
-                 // Wasserstand wiederherstellen/ wegnehmen (zum Debugen)
-                 if (ersteWassersenkung == false)
-                 {
-                     ersteWassersenkung = true;
-                    
-                     for (int x = 237; x <= 275; x++)
-                     {
-                         for (int y = 28; y <= 31; y++)
-                         {
-                             for (int z = 237; z <= 275; z++)
-                             {
-                                  //  if (_state.World.Blocks[x, y, z].IsWater())
-                                   //    _state.World.Blocks[x, y, z] = WorldBlock.None;
+                /*
+                  // Wasserstand wiederherstellen/ wegnehmen (zum Debugen)
+                  if (ersteWassersenkung == false)
+                  {
+                      ersteWassersenkung = true;
 
-                                 if (_state.World.Blocks[x, y, z]==WorldBlock.None)
-                                     _state.World.Blocks[x, y, z] = WorldBlock.Water4Infinite;
-                             }
-                         }
-                     }
-                 }
-                */
+                      for (int x = 237; x <= 275; x++)
+                      {
+                          for (int y = 28; y <= 31; y++)
+                          {
+                              for (int z = 237; z <= 275; z++)
+                              {
+                                   //  if (_state.World.Blocks[x, y, z].IsWater())
+                                    //    _state.World.Blocks[x, y, z] = WorldBlock.None;
 
+                                  if (_state.World.Blocks[x, y, z]==WorldBlock.None)
+                                      _state.World.Blocks[x, y, z] = WorldBlock.Water4Infinite;
+                              }
+                          }
+                      }
+                  }
+                 */
+         
                 //Health<=0 -> sterbe
                 if (Health <= 0) gestorben(_state);
 
@@ -576,7 +578,7 @@ namespace ReiseZumGrundDesSees
                             
                                 if (Position.Y >= _obj.Position.Y -1.5f && Position.Y<_obj.Position.Y+0.1f && Math.Abs(Position.X-(_obj.Position.X+0.5f))<= 0.8f && Math.Abs(Position.Z - (_obj.Position.Z + 0.5f)) <= 0.8f)
                                 {
-                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), ((int)(Position.Y+0.5f))-0.5f,(int)(Position.Z+0.5f) );
+                                    _state.World.SpawnPos = new Vector3( (int)(Position.X+0.5f), ((int)(Position.Y+0.5f)),(int)(Position.Z+0.5f) );
                                     Savecd = 0;
                                     soundEffects[7].Play();
                                         //Reset Blöcke
