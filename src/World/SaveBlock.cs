@@ -45,7 +45,7 @@ namespace ReiseZumGrundDesSees
         public void Initialize(GraphicsDevice _graphicsDevice, ContentManager _contentManager)
         {
             ContentManager = _contentManager;
-            Model = _contentManager.Load<Model>(ContentRessources.MODEL_BLOCK);
+            Model = _contentManager.Load<Model>(ContentRessources.MODEL_SAVEPOINT);
         }
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
@@ -56,18 +56,31 @@ namespace ReiseZumGrundDesSees
                 Matrix.CreateScale(1, 0.15f, 1) *
                 Matrix.CreateTranslation(Position + new Vector3(0.5f, 0.0f, 0.5f));
             _effect.WorldMatrix = _worldMatrix;
-            _effect.VertexFormat = VertexFormat.Position;
+            _effect.VertexFormat = VertexFormat.PositionColor;
 
             foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
                     DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
-                    part.Effect = _effect.Effect;
+                    _effect.Color = new Color((part.Effect as BasicEffect).DiffuseColor);
+                    
+
+                    if (part.PrimitiveCount > 0)
+                    {
+                        _grDevice.SetVertexBuffer(part.VertexBuffer);
+                        _grDevice.Indices = part.IndexBuffer;
+
+                        for (int j = 0; j < part.Effect.CurrentTechnique.Passes.Count; j++)
+                        {
+                            _effect.Effect.CurrentTechnique.Passes[j].Apply();
+                            _grDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                        }
+                    }
+                   
+
                 }
 
-
-                mesh.Draw();
             }
         }
 
