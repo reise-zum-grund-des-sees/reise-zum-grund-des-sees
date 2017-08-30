@@ -35,6 +35,7 @@ namespace ReiseZumGrundDesSees
         double Levercd;
         double Savecd;
         double Dialogcd;
+        double aufsammelcd;
         public double Healthcd { get; private set; }
         public float Blickrichtung { get; private set; } //in Rad
         float BlickrichtungAdd; //schaue in Richtung W/A/S/D
@@ -56,13 +57,13 @@ namespace ReiseZumGrundDesSees
         public static int AnzahlBlockReadyS = 0;
 
         //Startblöcke, müsssen später auf Pickup hinzugefügt werden -> default 0
-        int AnzahlBlockMaxL = 3;
-        int AnzahlBlockMaxM = 3;
-        int AnzahlBlockMaxS = 3;
+        int AnzahlBlockMaxL = 0;
+        int AnzahlBlockMaxM = 0;
+        int AnzahlBlockMaxS = 0;
 
-        int AnzahlBlockL = 3;
-        int AnzahlBlockM = 3;
-        int AnzahlBlockS = 3;
+        int AnzahlBlockL = 0;
+        int AnzahlBlockM = 0;
+        int AnzahlBlockS = 0;
 
         public Player(Vector3 _position)
         {
@@ -96,7 +97,21 @@ namespace ReiseZumGrundDesSees
             AnzahlBlockS = AnzahlBlockMaxS;
             if(_playerNode.Items.Count > 5)
             DialogSave = int.Parse(_playerNode.Items["Dialog"]);
-            Dialog = 10000;
+            Dialog = -1;
+            //add Aufsammelbare Player Blöcke
+            if(AnzahlBlockMaxL==0)
+                GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(169.5f, 34, 216.5f), 0));
+            if (AnzahlBlockMaxM == 0)
+                GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(176.5f, 36, 166.5f), 1));
+            if (AnzahlBlockMaxS == 0)
+                GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(136.5f, 39, 234.5f), 2));
+            if (AnzahlBlockMaxL == 0 || AnzahlBlockMaxL == 1)
+                GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(305.5f, 43, 187.5f), 0));
+            if (AnzahlBlockMaxM == 0 || AnzahlBlockMaxM == 1)
+                GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(178.5f, 42, 363.5f), 1));
+            if (AnzahlBlockMaxS == 0 || AnzahlBlockMaxS == 1)
+                GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(294.5f, 52, 359.5f), 2));
+         
         }
 
         public UpdateDelegate Update(GameState.View _stateView, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
@@ -266,37 +281,40 @@ namespace ReiseZumGrundDesSees
             }
 
             //Aufsammeln von PlayerBlöcken
-            for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
-            {
-
-                if (Vector3.Distance(Position, new Vector3(GetPlayerBlock.GetPlayerBlockList[i].Position.X + 0.5f,
-                    GetPlayerBlock.GetPlayerBlockList[i].Position.Y + 0.25f, GetPlayerBlock.GetPlayerBlockList[i].Position.Z + 0.5f)) < 1f)
+            if(aufsammelcd<=2000)
+            aufsammelcd += _passedTime;
+            if (aufsammelcd >= 1000) {
+                for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
                 {
 
-                    if (GetPlayerBlock.GetPlayerBlockList[i].Art == 0)
+                    if (Vector3.Distance(Position, new Vector3(GetPlayerBlock.GetPlayerBlockList[i].Position.X + 0.5f,
+                        GetPlayerBlock.GetPlayerBlockList[i].Position.Y + 0.25f, GetPlayerBlock.GetPlayerBlockList[i].Position.Z + 0.5f)) < 1f)
                     {
-                        Blöcke.Add(new PlayerBlock(this, 0));
-                        AnzahlBlockMaxL++;
-                        AnzahlBlockL++;
+
+                        if (GetPlayerBlock.GetPlayerBlockList[i].Art == 0)
+                        {
+                            Blöcke.Add(new PlayerBlock(this, 0));
+                            AnzahlBlockMaxL++;
+                            AnzahlBlockL++;
+                        }
+                        if (GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
+                        {
+                            Blöcke.Add(new PlayerBlock(this, 1));
+                            AnzahlBlockMaxM++;
+                            AnzahlBlockM++;
+                        }
+                        if (GetPlayerBlock.GetPlayerBlockList[i].Art == 2)
+                        {
+                            Blöcke.Add(new PlayerBlock(this, 2));
+                            AnzahlBlockMaxS++;
+                            AnzahlBlockS++;
+                        }
+                        Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
+                        GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
+                        soundEffects[8].Play();
                     }
-                    if (GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
-                    {
-                        Blöcke.Add(new PlayerBlock(this, 1));
-                        AnzahlBlockMaxM++;
-                        AnzahlBlockM++;
-                    }
-                    if (GetPlayerBlock.GetPlayerBlockList[i].Art == 2)
-                    {
-                        Blöcke.Add(new PlayerBlock(this, 2));
-                         AnzahlBlockMaxS++;
-                        AnzahlBlockS++;
-                    }
-                    Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
-                    GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
-                    soundEffects[8].Play();
                 }
             }
-      
             Levercd += _passedTime;
             Blockcd += _passedTime;      //Zeit erhöhen      
             Healthcd += _passedTime;
@@ -420,6 +438,11 @@ namespace ReiseZumGrundDesSees
             if (Dialogcd > 9999)
                 Dialog = -1; //no Dialog after 10s
             //Auslösen durch Entfernung zu Positionen
+            if (DialogSave == 0)
+            {
+                Dialog = 0;
+                Dialogcd = 0;
+            }
             if(ChebyshevDistance(Position, new Vector3(143,32,200)) < 3 && DialogSave==0) 
             {
                 Dialogcd = 0;

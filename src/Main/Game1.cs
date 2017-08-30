@@ -122,20 +122,9 @@ namespace ReiseZumGrundDesSees
 
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
 
-            //add Aufsammelbare Player Blöcke
-            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(169.5f, 34, 216.5f), 0));
-            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(176.5f, 36, 166.5f), 1));
-            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(136.5f, 39, 234.5f), 2));
-            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(305.5f, 43, 187.5f), 0));
-            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(178.5f, 42, 363.5f), 1));
-            GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(294.5f, 52, 359.5f), 2));
-            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[0]);
-            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[1]);
-            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[2]);
-            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[3]);
-            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[4]);
-            initializeList.Add(GetPlayerBlock.GetPlayerBlockList[5]);
-
+           
+           
+     
 
             Truhe = new Treasure(new Vector3(256f, 28f, 256f));
             initializeList.Add(Truhe);
@@ -597,6 +586,9 @@ namespace ReiseZumGrundDesSees
 
                 for (int i = 0; i < GameState.Enemies.Count; i++)
                     initializeList.Add(GameState.Enemies[i]);
+
+                for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
+                   GetPlayerBlock.GetPlayerBlockList[i].Initialize(GraphicsDevice,Content);
 
                 GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
                 GameFlags &= ~GameFlags.Menu;
