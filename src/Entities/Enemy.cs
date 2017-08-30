@@ -278,28 +278,38 @@ namespace ReiseZumGrundDesSees
             Matrix _worldMatrix;
             if (this._wasHit == false)
             {
-                if(this.Gegnerart==Art.Shooting)
-                _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(this.Position);
+                if (this.Gegnerart == Art.Shooting)
+                    _worldMatrix = Matrix.CreateRotationY(MathHelper.Pi + (float)Rotate) * Matrix.CreateTranslation(this.Position);
                 else
-                    _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateTranslation(new Vector3(0, 0.5f, 0)) * Matrix.CreateTranslation(this.Position); 
+                    _worldMatrix = Matrix.CreateRotationY(MathHelper.Pi + (float)Rotate) * Matrix.CreateTranslation(new Vector3(0, 0.5f, 0)) * Matrix.CreateTranslation(this.Position);
             }
             else
             {
                 _worldMatrix = Matrix.CreateRotationY((float)Rotate) * Matrix.CreateScale(1, 0.3f, 1) * Matrix.CreateTranslation(this.Position);
             }
             _effect.WorldMatrix = _worldMatrix;
-            _effect.VertexFormat = VertexFormat.Position;
+            _effect.VertexFormat = VertexFormat.PositionColor;
+            _grDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
-            foreach (ModelMesh mesh in this.Model.Meshes)
+            foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
+                    _effect.Color = new Color((part.Effect as BasicEffect).DiffuseColor);
                     DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
-                    part.Effect = _effect.Effect;
-                    
-                }
 
-                mesh.Draw();
+                    if (part.PrimitiveCount > 0)
+                    {
+                        _grDevice.SetVertexBuffer(part.VertexBuffer);
+                        _grDevice.Indices = part.IndexBuffer;
+
+                        for (int j = 0; j < part.Effect.CurrentTechnique.Passes.Count; j++)
+                        {
+                            _effect.Effect.CurrentTechnique.Passes[j].Apply();
+                            _grDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                        }
+                    }
+                }
             }
         }
 

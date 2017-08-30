@@ -100,14 +100,27 @@ namespace ReiseZumGrundDesSees
         {
             Matrix _worldMatrix = Matrix.CreateRotationZ((float)Rotation) * Matrix.CreateRotationX((float)Math.PI * 3 / 2) * Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(Vector3.Add(Position, new Vector3(0.5f, 0.5f, 0.5f)));
             _effect.WorldMatrix = _worldMatrix;
-            _effect.VertexFormat = VertexFormat.Position;
+            _effect.VertexFormat = VertexFormat.PositionColor;
 
             foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
-                    part.Effect = _effect.Effect;
+                {
+                    _effect.Color = new Color((part.Effect as BasicEffect).DiffuseColor);
+                    DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
 
-                mesh.Draw();
+                    if (part.PrimitiveCount > 0)
+                    {
+                        _grDevice.SetVertexBuffer(part.VertexBuffer);
+                        _grDevice.Indices = part.IndexBuffer;
+
+                        for (int j = 0; j < part.Effect.CurrentTechnique.Passes.Count; j++)
+                        {
+                            _effect.Effect.CurrentTechnique.Passes[j].Apply();
+                            _grDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                        }
+                    }
+                }
             }
         }
 

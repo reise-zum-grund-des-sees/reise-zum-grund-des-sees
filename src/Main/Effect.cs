@@ -18,6 +18,8 @@ namespace ReiseZumGrundDesSees
 
         Texture2D Texture { set; get; }
 
+        Color Color { get; set; }
+
         VertexFormat VertexFormat { get; set; }
 
         Effect Effect { get; }
@@ -30,6 +32,8 @@ namespace ReiseZumGrundDesSees
         public Matrix ProjectionMatrix { get; set; }
 
         public Texture2D Texture { get; set; }
+
+        public Color Color { get; set; }
 
         public VertexFormat VertexFormat { get; set; }
 
@@ -63,6 +67,8 @@ namespace ReiseZumGrundDesSees
         public Texture2D NearLightTexture { get; set; }
         public Texture2D FarLightTexture { get; set; }
 
+        public Color Color { get; set; }
+
         public Vector2 AnimationValue { get; set; }
 
         public VertexFormat VertexFormat { get; set; }
@@ -76,21 +82,23 @@ namespace ReiseZumGrundDesSees
         {
             _effect.Parameters["Matrix"].SetValue(WorldMatrix * ViewMatrix * ProjectionMatrix);
             if (_effect == textureEffect || _effect == worldEffect)
-                #if LINUX
+#if LINUX
                     _effect.Parameters["textureSampler+otherTexture"].SetValue(Texture);
-                #elif WINDOWS
-                    _effect.Parameters["otherTexture"].SetValue(Texture);
-                #endif
+#elif WINDOWS
+                _effect.Parameters["otherTexture"].SetValue(Texture);
+#endif
+            if (_effect == colorEffect)
+                _effect.Parameters["Color"].SetValue(Color.ToVector4());
             _effect.Parameters["NearLightMatrix"].SetValue(WorldMatrix * NearLightMatrix);
             _effect.Parameters["FarLightMatrix"].SetValue(WorldMatrix * FarLightMatrix);
 
-            #if LINUX
+#if LINUX
                 _effect.Parameters["nearShadowSampler+nearShadowTexture"].SetValue(NearLightTexture);
                 _effect.Parameters["farShadowSampler+farShadowTexture"].SetValue(FarLightTexture);
-            #elif WINDOWS
-                _effect.Parameters["nearShadowTexture"].SetValue(NearLightTexture);
-                _effect.Parameters["farShadowTexture"].SetValue(FarLightTexture);
-            #endif
+#elif WINDOWS
+            _effect.Parameters["nearShadowTexture"].SetValue(NearLightTexture);
+            _effect.Parameters["farShadowTexture"].SetValue(FarLightTexture);
+#endif
         }
 
         public Effect Effect

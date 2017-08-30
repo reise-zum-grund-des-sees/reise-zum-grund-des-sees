@@ -698,20 +698,30 @@ namespace ReiseZumGrundDesSees
 
             if (!(Healthcd <= 1000 && Healthcd % 100 < 50))
             {
-                _grDevice.RasterizerState = RasterizerState.CullNone;
+                _grDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
                 _effect.WorldMatrix = Matrix.CreateRotationY(Blickrichtung) * Matrix.CreateTranslation(Position);
-                _effect.VertexFormat = VertexFormat.Position;
+                _effect.VertexFormat = VertexFormat.PositionColor;
 
-                foreach (ModelMesh _mesh in model.Meshes)
+                foreach (ModelMesh mesh in model.Meshes)
                 {
-                    foreach (ModelMeshPart _part in _mesh.MeshParts)
+                    foreach (ModelMeshPart part in mesh.MeshParts)
                     {
-                        DebugHelper.Information.RenderedOtherVertices += (uint)_part.NumVertices;
-                        _part.Effect = _effect.Effect;
-                    }
+                        _effect.Color = new Color((part.Effect as BasicEffect).DiffuseColor);
+                        DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
 
-                    _mesh.Draw();
+                        if (part.PrimitiveCount > 0)
+                        {
+                            _grDevice.SetVertexBuffer(part.VertexBuffer);
+                            _grDevice.Indices = part.IndexBuffer;
+
+                            for (int j = 0; j < part.Effect.CurrentTechnique.Passes.Count; j++)
+                            {
+                                _effect.Effect.CurrentTechnique.Passes[j].Apply();
+                                _grDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                            }
+                        }
+                    }
                 }
             }
         }
