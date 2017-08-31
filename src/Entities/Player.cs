@@ -435,7 +435,7 @@ namespace ReiseZumGrundDesSees
                 DialogSave = 3;
                 Dialog = 3;
             }
-            if (ChebyshevDistance(Position, new Vector3(159, 32, 29)) < 5 && DialogSave == 3)
+            if (ChebyshevDistance(Position, new Vector3(159, 32, 209)) < 5 && DialogSave == 3)
             {
                 Dialogcd = 0;
                 DialogSave = 4;
@@ -447,7 +447,7 @@ namespace ReiseZumGrundDesSees
                 DialogSave = 5;
                 Dialog = 5;
             }
-            if (ChebyshevDistance(Position, new Vector3(176,34,166)) < 3 && DialogSave == 5)
+            if (ChebyshevDistance(Position, new Vector3(176, 34, 166)) < 3 && DialogSave == 5)
             {
                 Dialogcd = 0;
                 DialogSave = 6;
@@ -471,13 +471,13 @@ namespace ReiseZumGrundDesSees
                 DialogSave = 9;
                 Dialog = 9;
             }
-            if (ChebyshevDistance(Position, new Vector3(136,39,234)) < 3 && DialogSave == 9)
+            if (ChebyshevDistance(Position, new Vector3(136 ,39 ,234)) < 3 && DialogSave == 9)
             {
                 Dialogcd = 0;
                 DialogSave = 10;
                 Dialog = 10;
             }
-            if (ChebyshevDistance(Position, new Vector3(159,38,317)) < 5 && DialogSave == 10)
+            if (ChebyshevDistance(Position, new Vector3(159, 38, 317)) < 5 && DialogSave == 10)
             {
                 Dialogcd = 0;
                 DialogSave = 11;
