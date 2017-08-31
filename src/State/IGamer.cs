@@ -167,8 +167,9 @@ namespace ReiseZumGrundDesSees
                     _spriteBatch.DrawString(S4, "die Bodenplatte zu aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 9:
-                    _spriteBatch.DrawString(S4, "Vergiss nicht, dass du mit Q", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Bloecke wieder aufsammeln kannst.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "Vergiss nicht, dass du mit", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "der Taste Q Bloecke wieder", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(S4, "aufsammeln kannst.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 10:
                     _spriteBatch.DrawString(S4, "Schwere Bloecke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);

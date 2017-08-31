@@ -477,7 +477,7 @@ namespace ReiseZumGrundDesSees
                 DialogSave = 10;
                 Dialog = 10;
             }
-            if (ChebyshevDistance(Position, new Vector3(159, 38, 317)) < 5 && DialogSave == 10)
+            if (ChebyshevDistance(Position, new Vector3(151, 38, 317)) < 5 && DialogSave == 10)
             {
                 Dialogcd = 0;
                 DialogSave = 11;
