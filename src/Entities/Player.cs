@@ -157,64 +157,36 @@ namespace ReiseZumGrundDesSees
             if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) //Port zum 2. Level
                 Position = new Vector3(250, 32, 230);
 
-                Vector3 _movement = new Vector3(0, 0, 0);
+            Vector3 _movement = new Vector3(0, 0, 0);
+
+            float _movementScaling;
+            if (Jump1)
+                _movementScaling = (float)(_passedTime * 0.003);
+            else
+                _movementScaling = (float)(_passedTime * 0.005);
 
             if (_inputArgs.Events.HasFlag(InputEventList.MoveForwards))
             {
-                //_movement.Z -= (float)(_passedTime * 0.005);
-                //_movement -= Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                if (Jump1)
-                {
-                    _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
-                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
-                }
-                else
-                {
-                    _movement.X += (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                }
+                _movement.X += (float)Math.Sin(_stateView.CamAngle);
+                _movement.Z -= (float)Math.Cos(_stateView.CamAngle);
             }
-            else if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveBackwards))
             {
-                //_movement += Vector3.Multiply(_stateView.TargetToCam, (float)(_passedTime * 0.001f));
-                if (Jump1)
-                {
-                    _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
-                    _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.003f);
-                }
-                else
-                {
-                    _movement.X -= (float)Math.Sin(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                    _movement.Z += (float)Math.Cos(_stateView.CamAngle) * (float)(_passedTime * 0.005f);
-                }
+                _movement.X -= (float)Math.Sin(_stateView.CamAngle);
+                _movement.Z += (float)Math.Cos(_stateView.CamAngle);
             }
-
             if (_inputArgs.Events.HasFlag(InputEventList.MoveLeft))
             {
-                if (Jump1)
-                {
-                    _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
-                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
-                }
-                else
-                {
-                    _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                    _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                }
+                _movement.X -= (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2);
+                _movement.Z += (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2);
             }
-            else if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
+            if (_inputArgs.Events.HasFlag(InputEventList.MoveRight))
             {
-                if (Jump1)
-                {
-                    _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
-                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.003f);
-                }
-                else
-                {
-                    _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                    _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2) * (float)(_passedTime * 0.005f);
-                }
+                _movement.X += (float)Math.Sin(_stateView.CamAngle + MathHelper.PiOver2);
+                _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2);
             }
+
+            _movement = Vector3.Normalize(_movement) * _movementScaling;
 
 
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
