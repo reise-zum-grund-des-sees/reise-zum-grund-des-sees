@@ -22,6 +22,7 @@ namespace ReiseZumGrundDesSees
             public static Vector3 EditorCursorPosition;
             public static Vector3 PlayerPosition;
             public static float CameraRotation;
+            public static Vector3 CameraPosition;
             public static double updateTime;
             public static double renderTime;
             public static Queue<string> Logs = new Queue<string>();
@@ -47,7 +48,8 @@ namespace ReiseZumGrundDesSees
                     $"Render Time: { renderTime }\r\n" +
                     $"Player position: { PlayerPosition }\n" +
                     $"EditorCursor position: { EditorCursorPosition }\n" +
-                    $"Expexted FPS: { 1.0 / (updateTime + renderTime) }";
+                    $"Expexted FPS: { 1.0 / (updateTime + renderTime) }\r\n" +
+                    $"Camera Position: { CameraPosition }";
             }
         }
 

@@ -79,8 +79,6 @@ namespace ReiseZumGrundDesSees
             MaxHealth = 3;
             Health = 3;
             Blöcke = new List<IPlayerBlock>();
-
-
         }
 
         public Player(ConfigFile.ConfigNode _playerNode) :
@@ -240,6 +238,7 @@ namespace ReiseZumGrundDesSees
             _speedY -= 0.005f * (float)_passedTime;
             _movement.Y = _speedY * (float)_passedTime * 0.01f;
 
+            Vector3 _originalMovement = _movement;
             var _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
 
             if (_collisionInformation.ContainsKey(Direction.Bottom) &&
@@ -247,7 +246,8 @@ namespace ReiseZumGrundDesSees
                 _collisionInformation[Direction.Bottom].Object is IMovingObject _moving &&
                 _moving.Velocity != Vector3.Zero)
             {
-                _movement += _moving.Velocity;
+                _originalMovement += _moving.Velocity;
+                _movement = _originalMovement;
                 _collisionInformation = _stateView.CollisionDetector.CheckCollision(ref _movement, this);
                 Jump1 = false;
                 Jump2 = false;

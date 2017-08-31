@@ -170,60 +170,61 @@ namespace ReiseZumGrundDesSees
 
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
-            if (lastGameState.Camera != null)
-            {
-            }
-
             DebugHelper.Information.RenderedWorldChunks = 0;
             DebugHelper.Information.RenderedWorldVertices = 0;
 
-            int maxX = Vertices.GetLength(0);
-            int maxZ = Vertices.GetLength(1);
+            if (lastGameState.Camera != null)
+            {
+                int maxX = Vertices.GetLength(0);
+                int maxZ = Vertices.GetLength(1);
 
-            _effect.Texture = blockTexture;
-            _effect.VertexFormat = VertexFormat.World;
+                _effect.Texture = blockTexture;
+                _effect.VertexFormat = VertexFormat.World;
 
-            List<Vector2Int> renderList = new List<Vector2Int>(256);
+                List<Vector2Int> renderList = new List<Vector2Int>(256);
 
-            for (int x = 0; x < maxX; x++)
-                for (int z = 0; z < maxZ; z++)
-                {
-                    if (Vertices[x, z]?.Length > 0 && Geometrie.IsChunkInViewRadius(new Vector2(x * 16 + 8, z * 16 + 8),
-                        lastGameState.Camera.Azimuth, MathHelper.PiOver2, new Vector2(lastGameState.Player.Position.X, lastGameState.Player.Position.Z)))
+                DebugHelper.Information.CameraPosition = lastGameState.Camera.Position;
+
+                for (int x = 0; x < maxX; x++)
+                    for (int z = 0; z < maxZ; z++)
                     {
-                        DebugHelper.Information.RenderedWorldChunks++;
-                        DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
+                        if (Vertices[x, z]?.Length > 0 && Geometrie.IsChunkInViewRadius(new Vector2(x * 16 + 8, z * 16 + 8),
+                            lastGameState.Camera.Azimuth, MathHelper.PiOver2, new Vector2(lastGameState.Camera.Position.X, lastGameState.Camera.Position.Z)))
+                        {
+                            DebugHelper.Information.RenderedWorldChunks++;
+                            DebugHelper.Information.RenderedWorldVertices += (uint)(Vertices[x, z]?.Length ?? 0);
 
-                        renderList.Add(new Vector2Int(x, z));
+                            renderList.Add(new Vector2Int(x, z));
+                        }
                     }
+
+                renderList.Sort(new Comparison<Vector2Int>((v1, v2) =>
+                {
+                    int v1x = v1.X * 16 - (int)lastGameState.Player.Position.X;
+                    int v1y = v1.Y * 16 - (int)lastGameState.Player.Position.Z;
+                    int v2x = v2.X * 16 - (int)lastGameState.Player.Position.X;
+                    int v2y = v2.Y * 16 - (int)lastGameState.Player.Position.Z;
+
+                    int _result = v1x * v1x + v1y * v1y - v2x * v2x - v2y * v2y;
+                    return _result;
+                }));
+
+                foreach (Vector2Int v in renderList)
+                {
+                    int x = v.X;
+                    int z = v.Y;
+
+                    _effect.WorldMatrix = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
+
+                    graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+                    graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
+
+                    Effect _baseEffect = _effect.Effect;
+                    foreach (EffectPass pass in _baseEffect.CurrentTechnique.Passes)
+                        pass.Apply();
+
+                    graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, Vertices[x, z].Length / 3);
                 }
-
-            renderList.Sort(new Comparison<Vector2Int>((v1, v2) =>
-            {
-                int v1x = v1.X * 16 - (int)lastGameState.Player.Position.X;
-                int v1y = v1.Y * 16 - (int)lastGameState.Player.Position.Z;
-                int v2x = v2.X * 16 - (int)lastGameState.Player.Position.X;
-                int v2y = v2.Y * 16 - (int)lastGameState.Player.Position.Z;
-
-                int _result = v1x * v1x + v1y * v1y - v2x * v2x - v2y * v2y;
-                return _result;
-            }));
-
-            foreach (Vector2Int v in renderList)
-            {
-                int x = v.X;
-                int z = v.Y;
-
-                _effect.WorldMatrix = Matrix.CreateTranslation(x * RegionSize.X, 0, z * RegionSize.Z);
-
-                graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-                graphicsDevice.SetVertexBuffer(VertexBuffers[x, z]);
-
-                Effect _baseEffect = _effect.Effect;
-                foreach (EffectPass pass in _baseEffect.CurrentTechnique.Passes)
-                    pass.Apply();
-
-                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, Vertices[x, z].Length / 3);
             }
         }
     }

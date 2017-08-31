@@ -22,10 +22,10 @@ namespace ReiseZumGrundDesSees
         float Azimuth { get; }
     }
 
-	class Camera : ICamera
-	{
+    class Camera : ICamera
+    {
         public IReadonlyPositionObject Center { get; set; }
-		public Vector3 Position { get; private set; }
+        public Vector3 Position { get; private set; }
         public Vector3 LookAt;
         public float Azimuth { get; private set; }
         public float Altitude { get; private set; }
@@ -38,14 +38,8 @@ namespace ReiseZumGrundDesSees
         {
             if (Center != null)
                 LookAt = Center.Position;
-            Vector2 _diffToPlayer = new Vector2(5, 0);
-            Vector3 _position =
-                new Vector3(
-                    LookAt.X - (float)Math.Sin(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.X,
-                    LookAt.Y + (float)Math.Sin(Altitude) * _diffToPlayer.X,
-                    LookAt.Z + (float)Math.Cos(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.X);
-            return Matrix.CreateLookAt(_position, LookAt + new Vector3(0, 1, 0), Vector3.UnitY);
-          
+            return Matrix.CreateLookAt(Position, LookAt + new Vector3(0, 1, 0), Vector3.UnitY);
+
         }
 
         public void CenterOn(IReadonlyPositionObject _centerObject)
@@ -59,7 +53,7 @@ namespace ReiseZumGrundDesSees
         }
 
         public UpdateDelegate Update(GameState.View _view, GameFlags _flags, InputEventArgs _inputArgs, double _passedTime)
-		{
+        {
             return (ref GameState _state) =>
             {
                 if (_flags.HasFlag(GameFlags.GameRunning))
@@ -78,8 +72,14 @@ namespace ReiseZumGrundDesSees
 
                     if (Center != null)
                         LookAt = Center.Position;
+
+                    Vector2 _diffToPlayer = new Vector2(5, 0);
+                    Position = new Vector3(
+                        LookAt.X - (float)Math.Sin(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.X,
+                        LookAt.Y + (float)Math.Sin(Altitude) * _diffToPlayer.X,
+                        LookAt.Z + (float)Math.Cos(Azimuth) * (float)Math.Cos(Altitude) * _diffToPlayer.X);
                 }
             };
         }
-	}
+    }
 }

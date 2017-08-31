@@ -433,21 +433,21 @@ namespace ReiseZumGrundDesSees
                 if (_collInfo.HasFlag(Direction.Top) | _collInfo.HasFlag(Direction.Bottom))
                 {
                     _movA.Y += yDiff;
-                    if (Math.Abs(_movA.Y) > Math.Abs(_movement.Y))
+                    if (Math.Abs(_movA.Y) > Math.Abs(_movement.Y) && Math.Abs(_movA.Y) > 1)
                         _movA.Y = _movement.Y;
                     return _collInfo & (Direction.Top | Direction.Bottom);
                 }
                 else if (_collInfo.HasFlag(Direction.Left) | _collInfo.HasFlag(Direction.Right))
                 {
                     _movA.X += xDiff;
-                    if (Math.Abs(_movA.X) > Math.Abs(_movement.X))
+                    if (Math.Abs(_movA.X) > Math.Abs(_movement.X) && Math.Abs(_movA.X) > 1)
                         _movA.X = _movement.X;
                     return _collInfo & (Direction.Left | Direction.Right);
                 }
                 else if (_collInfo.HasFlag(Direction.Front) | _collInfo.HasFlag(Direction.Back))
                 {
                     _movA.Z += zDiff;
-                    if (Math.Abs(_movA.Z) > Math.Abs(_movement.Z))
+                    if (Math.Abs(_movA.Z) > Math.Abs(_movement.Z) && Math.Abs(_movA.Z) > 1)
                         _movA.Z = _movement.Z;
                     return _collInfo & (Direction.Front | Direction.Back);
                 }

@@ -10,10 +10,10 @@ namespace ReiseZumGrundDesSees
 {
     class Geometrie
     {
-        public static bool IsChunkInViewRadius(Vector2 _chunkCenter, float _cameraRotation, float _viewAngle, Vector2 _playerPosition)
+        public static bool IsChunkInViewRadius(Vector2 _chunkCenter, float _cameraRotation, float _viewAngle, Vector2 _cameraPosition)
         {
-            double difX = _chunkCenter.X - _playerPosition.X;
-            double difY = _chunkCenter.Y - _playerPosition.Y;
+            double difX = _chunkCenter.X - _cameraPosition.X;
+            double difY = _chunkCenter.Y - _cameraPosition.Y;
             if (Math.Sqrt(difX * difX + difY * difY) < 16)
                 return true;
             else
@@ -25,9 +25,9 @@ namespace ReiseZumGrundDesSees
                     double wx = -vy;
                     double wy = vx;
 
-                    double n1 = (_playerPosition.Y + vy * _chunkCenter.X / vx - vy * _playerPosition.X / vx - _chunkCenter.Y) /
+                    double n1 = (_cameraPosition.Y + vy * _chunkCenter.X / vx - vy * _cameraPosition.X / vx - _chunkCenter.Y) /
                                 (wy - vy * wx / vx);
-                    double n2 = (_chunkCenter.X + wx * n1 - _playerPosition.X) / vx;
+                    double n2 = (_chunkCenter.X + wx * n1 - _cameraPosition.X) / vx;
 
                     double abstCHKvLFP = Math.Sqrt(n1 * n1 * wx * wx + n1 * n1 * wy * wy);
                     double abstLFPvPlayer = Math.Sqrt(n2 * n2 * vx * vx + n2 * n2 * vy * vy);
