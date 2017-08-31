@@ -266,21 +266,30 @@ namespace ReiseZumGrundDesSees
                         if (GetPlayerBlock.GetPlayerBlockList[i].Art == 0)
                         {
                             Blöcke.Add(new PlayerBlock(this, 0));
-                            AnzahlBlockMaxL++;
-                            AnzahlBlockL++;
+                            if (AnzahlBlockMaxL < 3)
+                            {
+                                AnzahlBlockMaxL++;
+                                AnzahlBlockL++;
+                            }
                             
                         }
                         if (GetPlayerBlock.GetPlayerBlockList[i].Art == 1)
                         {
-                            Blöcke.Add(new PlayerBlock(this, 1));
-                            AnzahlBlockMaxM++;
-                            AnzahlBlockM++;
+                            if (AnzahlBlockMaxM < 3)
+                            {
+                                Blöcke.Add(new PlayerBlock(this, 1));
+                                AnzahlBlockMaxM++;
+                                AnzahlBlockM++;
+                            }
                         }
                         if (GetPlayerBlock.GetPlayerBlockList[i].Art == 2)
                         {
-                            Blöcke.Add(new PlayerBlock(this, 2));
-                            AnzahlBlockMaxS++;
-                            AnzahlBlockS++;
+                            if (AnzahlBlockMaxS < 3)
+                            {
+                                Blöcke.Add(new PlayerBlock(this, 2));
+                                AnzahlBlockMaxS++;
+                                AnzahlBlockS++;
+                            }
                         }
                         Blöcke[Blöcke.Count - 1].Initialize(GraphicDevice, ContentManager);
                         GetPlayerBlock.GetPlayerBlockList.RemoveAt(i);
