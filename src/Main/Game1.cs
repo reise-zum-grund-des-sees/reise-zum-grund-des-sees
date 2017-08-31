@@ -198,13 +198,13 @@ namespace ReiseZumGrundDesSees
             GameState.View _gameStateView = new GameState.View(GameState);
             List<UpdateDelegate> _updateList = new List<UpdateDelegate>();
 
+            _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
+            _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(GameState.Player?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             _updateList.Add(GameState.Camera?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             //stopwatch.Restart();
-            _updateList.Add(GameState.World?.Update(_gameStateView, GameFlags, _args, gameTime.ElapsedGameTime.TotalMilliseconds));
-            _updateList[_updateList.Count - 1]?.Invoke(ref GameState);
             //stopwatch.Stop();
             //if (GameFlags.HasFlag(GameFlags.GameRunning))
             //Console.WriteLine("World update: " + stopwatch.Elapsed.ToString() + " FPS: " + (1.0 / stopwatch.Elapsed.TotalSeconds).ToString());
