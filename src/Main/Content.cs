@@ -48,6 +48,7 @@ namespace ReiseZumGrundDesSees
         public const string SOUND_WIN = "sound/win";
 
         public const string TEXTURE = "texture";
+        public const string TEXTURE_SCREENSHOT = "screenshot";
         public const string TEXTURE_BLOCKS = "blocktexture";
         public const string TEXTURE_BACKGROUND = "interface/background";
 

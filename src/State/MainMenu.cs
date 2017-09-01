@@ -36,13 +36,18 @@ namespace ReiseZumGrundDesSees
         private Vector2 scalingFactor = new Vector2(1f, 1f);
         ContentManager content;
 
+        private bool canSave = false;
+
         private readonly SpriteFont font;
+
+        private Texture2D screenshot;
 
         public MainMenu(Texture2D _texture, ContentManager _content, IMenuCallback _menuCallback)
         {
             menuCallback = _menuCallback;
             texture = _texture;
             font = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_20);
+            screenshot = _content.Load<Texture2D>(ContentRessources.TEXTURE_SCREENSHOT);
             content = _content;
         }
 
@@ -55,6 +60,10 @@ namespace ReiseZumGrundDesSees
         public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize, GameTime _gameTime)
         {
             hide = !_flags.HasFlag(GameFlags.Menu);
+
+            if (_flags.HasFlag(GameFlags.GameLoaded))
+                canSave = true;
+
             if (hide)
             {
                 if (AnimationProgress > 0)
@@ -80,7 +89,8 @@ namespace ReiseZumGrundDesSees
                     else if (scale(box_loadGameBox, windowSize).Contains(_args.MousePosition))
                         CurrentState = State.Load;
                     else if (scale(box_saveGameBox, windowSize).Contains(_args.MousePosition))
-                        CurrentState = State.Save;
+                        if (_flags.HasFlag(GameFlags.GameLoaded))
+                            CurrentState = State.Save;
                 }
                 else if (CurrentState == State.Load)
                 {
@@ -175,7 +185,8 @@ namespace ReiseZumGrundDesSees
                 _spriteBatch.Draw(texture, animate(scale(box_loadGameText, windowSize), new Vector2(windowSize.X, box_loadGameText.Y / 1000f * windowSize.Y)), tex_loadGame, Color.White);
 
                 _spriteBatch.Draw(texture, animate(scale(box_saveGameBox, windowSize), new Vector2(windowSize.X, box_saveGameBox.Y / 1000f * windowSize.Y)), tex_box3, Color.White);
-                _spriteBatch.Draw(texture, animate(scale(box_saveGameText, windowSize), new Vector2(windowSize.X, box_saveGameText.Y / 1000f * windowSize.Y)), tex_saveGame, Color.White);
+                if (canSave)
+                    _spriteBatch.Draw(texture, animate(scale(box_saveGameText, windowSize), new Vector2(windowSize.X, box_saveGameText.Y / 1000f * windowSize.Y)), tex_saveGame, Color.White);
 
                 _spriteBatch.Draw(texture, animate(scale(box_emptyBox, windowSize), new Vector2(windowSize.X, box_emptyBox.Y / 1000f * windowSize.Y)), tex_box2, Color.White);
 
@@ -268,7 +279,7 @@ namespace ReiseZumGrundDesSees
             }
 
             if (!flags.HasFlag(GameFlags.GameLoaded))
-                _spriteBatch.Draw(texture, scale(box_square, windowSize), tex_square1, Color.White);
+                _spriteBatch.Draw(screenshot, scale(box_square, windowSize), Color.White);
 
             _spriteBatch.End();
         }

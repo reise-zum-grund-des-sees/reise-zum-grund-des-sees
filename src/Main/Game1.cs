@@ -247,7 +247,7 @@ namespace ReiseZumGrundDesSees
                 GameFlags ^= GameFlags.Debug;
             else if (kb.IsKeyDown(Keys.F11) && keyPressedPause)
                 GameFlags ^= GameFlags.Fullscreen;
-            else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause)
+            else if (kb.IsKeyDown(Keys.Escape) && keyPressedPause && GameFlags.HasFlag(GameFlags.GameLoaded))
             {
                 GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning);
             }
