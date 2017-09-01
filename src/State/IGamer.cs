@@ -48,6 +48,8 @@ namespace ReiseZumGrundDesSees
         private Vector2 Textboxtext3 = new Vector2(650, 820);
         private Vector2 Textboxtext4 = new Vector2(650, 860);
 
+        private readonly Rectangle tex_box1 = new Rectangle(407, 3, 408, 138);
+
         private int Dialog;
 
         private Vector2 scalingFactor = new Vector2(1f, 1f);
@@ -137,7 +139,7 @@ namespace ReiseZumGrundDesSees
             //Tipps
             if (Dialog != -1 && Dialog!= 100)
             {
-                _spriteBatch.Draw(skill1, RTextbox.Scale(scalingFactor), Color.White);
+                _spriteBatch.Draw(texture, RTextbox.Scale(scalingFactor), tex_box1, Color.White);
 
             }
 
@@ -145,8 +147,9 @@ namespace ReiseZumGrundDesSees
             {
 
                 case 0:
-                    _spriteBatch.DrawString(arial_32, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(arial_32, "2x Spacebar -> Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Bewegen mit W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Einfach- und Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "mit Leertaste", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 1:
                     _spriteBatch.DrawString(arial_32, "Dieser Block speichert", Textboxtext1 * scalingFactor, Color.Black);
@@ -165,8 +168,8 @@ namespace ReiseZumGrundDesSees
                 case 4:
                     _spriteBatch.DrawString(arial_32, "Mit 1,2 und 3 koennen gefundene", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "Bloecke gesetzt werden.", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(arial_32, "Druecke Q um sie aufzusammeln,", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(arial_32, "wenn du davor stehst.", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Druecke Q um sie wieder aufzu-,", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "sammeln wenn du davor stehst.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 5:
                     _spriteBatch.DrawString(arial_32, "Bloecke verschwinden auch wenn", Textboxtext1 * scalingFactor, Color.Black);
