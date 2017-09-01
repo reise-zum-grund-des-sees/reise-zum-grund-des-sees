@@ -198,8 +198,8 @@ namespace ReiseZumGrundDesSees
                 _movement.Z -= (float)Math.Cos(_stateView.CamAngle + MathHelper.PiOver2);
             }
 
-            _movement = Vector3.Normalize(_movement) * _movementScaling;
-
+            if (_movement.Length() > 0.01f)
+                _movement = Vector3.Normalize(_movement) * _movementScaling;
 
             if (_inputArgs.Events.HasFlag(InputEventList.Jump) && Jump1 == false)
             {
