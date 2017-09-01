@@ -51,12 +51,12 @@ namespace ReiseZumGrundDesSees
         public void Render(GameFlags _flags, IEffect _effect, GraphicsDevice _grDevice)
         {
             Matrix _worldMatrix =
-                Matrix.CreateScale(0.45f) *
-                Matrix.CreateRotationX(-MathHelper.PiOver2) *
-                Matrix.CreateScale(1, 0.15f, 1) *
-                Matrix.CreateTranslation(Position + new Vector3(0.5f, 0.0f, 0.5f));
+                //Matrix.CreateScale(0.45f) *
+                //Matrix.CreateRotationX(-MathHelper.PiOver2) *
+                //Matrix.CreateScale(1, 0.15f, 1) *
+                Matrix.CreateTranslation(Position + new Vector3(0.5f, 0.5f, 0.5f));
             _effect.WorldMatrix = _worldMatrix;
-            _effect.VertexFormat = VertexFormat.PositionColor;
+            _effect.VertexFormat = VertexFormat.PositionTexture;
 
             foreach (ModelMesh mesh in Model.Meshes)
             {
