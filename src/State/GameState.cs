@@ -36,6 +36,8 @@ namespace ReiseZumGrundDesSees
             f.Nodes["world"] = World.GetState(_idMapper);
             f.Nodes["player"] = Player.GetState(_idMapper);
 
+            f.Nodes["player"].Items["position"] = World.SpawnPos.ToNiceString();
+
 
             //Enemy
             ConfigFile.ConfigNode _enemyNode = new ConfigFile.ConfigNode();
