@@ -95,7 +95,7 @@ namespace ReiseZumGrundDesSees
                     (_block) => true,
                     (_obj) => !(_obj is Geschoss));*/
 
-                Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.5f, 1f, 0.5f, Hitbox.Type.Enemy);
+                Hitbox = new Hitbox(Position.X, Position.Y, Position.Z, 0.5f, 0.8f, 0.5f, Hitbox.Type.Enemy);
 
                 Vector3 _movement = new Vector3(0, 0, 0);
 
