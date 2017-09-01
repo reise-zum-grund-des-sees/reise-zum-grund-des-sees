@@ -737,7 +737,7 @@ namespace ReiseZumGrundDesSees
             {
                 _grDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
-                _effect.WorldMatrix = Matrix.CreateRotationY(Blickrichtung) * Matrix.CreateTranslation(Position);
+                _effect.WorldMatrix = Matrix.CreateRotationY(Blickrichtung) * Matrix.CreateTranslation(Position + new Vector3(0, 0.085f, 0));
                 _effect.VertexFormat = VertexFormat.PositionColor;
 
                 foreach (ModelMesh mesh in model.Meshes)
