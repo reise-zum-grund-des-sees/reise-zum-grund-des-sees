@@ -61,7 +61,7 @@ namespace ReiseZumGrundDesSees
             MaximialDauer = 15000;
             Position = _player.Position;
             LifetimePercentage = 1f;
-            _verbleibenerCD = 2500;
+            _verbleibenerCD = 0250;
             Zustand = (int)State.Bereit;
         }
 
@@ -108,7 +108,7 @@ namespace ReiseZumGrundDesSees
                     }
                     Deletetime += _passedTime;
                     // AktuelleDauer = _view.Player.Blocks.Count * MaximialDauer - 5000 + Deletetime;//!!! Diese Zeile auch ändern, wenn CD verändert wird
-                    if (Deletetime >= 2500)
+                    if (Deletetime >= 0250)
                     {
                         Deletetime = 0;
                         Zustand = (int)State.Bereit;
