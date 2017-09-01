@@ -52,9 +52,6 @@ namespace ReiseZumGrundDesSees
                 else if (value.HasFlag(GameFlags.GameRunning) && GameState.Camera != null)
                     GameState.Camera.Center = GameState.Player;
 
-                if (__GameFlags.HasFlag(GameFlags.Menu) && !value.HasFlag(GameFlags.Menu))
-                    MainMenu.Hide();
-
                 __GameFlags = value;
                 DebugHelper.Log("GameMode changed to " + value);
             }
