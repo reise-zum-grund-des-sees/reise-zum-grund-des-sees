@@ -11,7 +11,7 @@ namespace ReiseZumGrundDesSees
 {
     interface IOverlay
     {
-        void Update(InputEventArgs _inputEvents, GameState _gameState, GameFlags _flags, Point _windowSize);
+        void Update(InputEventArgs _inputEvents, GameState _gameState, GameFlags _flags, Point _windowSize, GameTime _gameTime);
         void Render(SpriteBatch _spriteBatch);
     }
 }

@@ -19,15 +19,18 @@ namespace ReiseZumGrundDesSees
         private bool showSaveGame = false;
 
         public State CurrentState = State.Default;
+        public float AnimationProgress = 0;
+        public readonly float AnimationDuration = 500f;
         public enum State
         {
             Default,
             Load,
-            Save
+            Save,
         }
 
         private Point windowSize;
         private GameFlags flags;
+        private bool hide = false;
 
         private readonly IMenuCallback menuCallback;
         private Vector2 scalingFactor = new Vector2(1f, 1f);
@@ -43,8 +46,35 @@ namespace ReiseZumGrundDesSees
             content = _content;
         }
 
-        public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize)
+        public void Reset()
         {
+            CurrentState = State.Default;
+            AnimationProgress = 0;
+            hide = false;
+        }
+
+        public void Hide()
+        {
+            hide = true;
+        }
+
+        public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize, GameTime _gameTime)
+        {
+            if (hide)
+            {
+                if (AnimationProgress > 0)
+                    AnimationProgress -= (float)(_gameTime.ElapsedGameTime.TotalMilliseconds / AnimationDuration);
+                else
+                    Reset();
+                return;
+            }
+
+            if (!_flags.HasFlag(GameFlags.Menu))
+                return;
+
+            if (AnimationProgress < 1)
+                AnimationProgress += (float)(_gameTime.ElapsedGameTime.TotalMilliseconds / AnimationDuration);
+
             flags = _flags;
             windowSize = _windowSize;
             showSaveGame = _flags.HasFlag(GameFlags.GameLoaded);
@@ -115,7 +145,7 @@ namespace ReiseZumGrundDesSees
         private readonly Rectangle tex_newGame = new Rectangle(213, 440, 330, 79);
         private readonly Rectangle tex_loadGame = new Rectangle(545, 441, 293, 80);
         private readonly Rectangle tex_options = new Rectangle(9, 667, 368, 78);
-        private readonly Rectangle tex_saveGame = new Rectangle(220, 747, 420, 81);
+        private readonly Rectangle tex_saveGame = new Rectangle(9, 748, 424, 79);
         private readonly Rectangle tex_endGame = new Rectangle(206, 521, 238, 67);
         private readonly Rectangle tex_slot1 = new Rectangle(441, 529, 150, 63);
         private readonly Rectangle tex_slot2 = new Rectangle(590, 527, 171, 68);
@@ -139,51 +169,56 @@ namespace ReiseZumGrundDesSees
 
         public void Render(SpriteBatch _spriteBatch)
         {
+            if (AnimationProgress <= 0)
+                return;
+
             _spriteBatch.Begin();
 
             if (CurrentState == State.Default)
             {
-                _spriteBatch.Draw(texture, scale(box_newGameBox, windowSize), tex_box1, Color.White);
-                _spriteBatch.Draw(texture, scale(box_newGameText, windowSize), tex_newGame, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_newGameBox, windowSize), new Vector2(windowSize.X, box_newGameBox.Y)), tex_box1, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_newGameText, windowSize), new Vector2(windowSize.X, box_newGameText.Y)), tex_newGame, Color.White);
 
-                _spriteBatch.Draw(texture, scale(box_loadGameBox, windowSize), tex_box2, Color.White);
-                _spriteBatch.Draw(texture, scale(box_loadGameText, windowSize), tex_loadGame, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_loadGameBox, windowSize), new Vector2(windowSize.X, box_loadGameBox.Y)), tex_box2, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_loadGameText, windowSize), new Vector2(windowSize.X, box_loadGameText.Y)), tex_loadGame, Color.White);
 
-                _spriteBatch.Draw(texture, scale(box_saveGameBox, windowSize), tex_box3, Color.White);
-                _spriteBatch.Draw(texture, scale(box_saveGameText, windowSize), tex_saveGame, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_saveGameBox, windowSize), new Vector2(windowSize.X, box_saveGameBox.Y)), tex_box3, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_saveGameText, windowSize), new Vector2(windowSize.X, box_saveGameText.Y)), tex_saveGame, Color.White);
 
-                _spriteBatch.Draw(texture, scale(box_emptyBox, windowSize), tex_box2, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_emptyBox, windowSize), new Vector2(windowSize.X, box_emptyBox.Y)), tex_box2, Color.White);
 
-                _spriteBatch.Draw(texture, scale(box_endGameBox, windowSize), tex_box1, Color.White);
-                _spriteBatch.Draw(texture, scale(box_endGameText, windowSize), tex_endGame, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_endGameBox, windowSize), new Vector2(windowSize.X, box_endGameBox.Y)), tex_box1, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_endGameText, windowSize), new Vector2(windowSize.X, box_endGameText.Y)), tex_endGame, Color.White);
             }
             else if (CurrentState == State.Load || CurrentState == State.Save)
             {
                 string _path1 = Path.Combine(Environment.CurrentDirectory, "save", "slot1");
                 if (Directory.Exists(_path1))
                 {
-                    _spriteBatch.Draw(texture, scale(box_newGameBox, windowSize), tex_box1, Color.White);
-                    _spriteBatch.Draw(texture, scale(box_slot1, windowSize), tex_slot1, Color.White);
+                    _spriteBatch.Draw(texture, animate(scale(box_newGameBox, windowSize), new Vector2(windowSize.X, box_newGameBox.Y)), tex_box1, Color.White);
+                    _spriteBatch.Draw(texture, animate(scale(box_slot1, windowSize), new Vector2(windowSize.X, box_slot1.Y)), tex_slot1, Color.White);
                     DateTime _lastWriteTime = File.GetLastWriteTime(Path.Combine(_path1, "state.conf"));
                     string _lastWriteString = _lastWriteTime.ToShortDateString() + " - " + _lastWriteTime.ToLongTimeString();
                     Vector2 _size = font.MeasureString(_lastWriteString);
+                    Vector2 _position = new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, 140 / 1000f * windowSize.Y);
                     _spriteBatch.DrawString(font, _lastWriteString,
-                        new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, 140 / 1000f * windowSize.Y), Color.Black);
+                        animate(_position, new Vector2(windowSize.X, _position.Y)), Color.Black);
                 }
                 else
                 {
-                    _spriteBatch.Draw(texture, scale(box_newGameBox, windowSize), tex_box1, new Color(0.8f, 0.8f, 0.8f));
-                    _spriteBatch.Draw(texture, scale(box_slot1, windowSize), tex_slot1, new Color(0.8f, 0.8f, 0.8f));
+                    _spriteBatch.Draw(texture, animate(scale(box_newGameBox, windowSize), new Vector2(windowSize.X, box_newGameBox.Y)), tex_box1, new Color(0.8f, 0.8f, 0.8f));
+                    _spriteBatch.Draw(texture, animate(scale(box_slot1, windowSize), new Vector2(windowSize.X, box_slot1.Y)), tex_slot1, new Color(0.8f, 0.8f, 0.8f));
                     Vector2 _size = font.MeasureString("Leer");
+                    Vector2 _position = new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, 140 / 1000f * windowSize.Y);
                     _spriteBatch.DrawString(font, "Leer",
-                        new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, 140 / 1000f * windowSize.Y), Color.Black);
+                        animate(_position, new Vector2(windowSize.X, _position.Y)), Color.Black);
                 }
 
                 string _path2 = Path.Combine(Environment.CurrentDirectory, "save", "slot2");
                 if (Directory.Exists(_path2))
                 {
-                    _spriteBatch.Draw(texture, scale(box_loadGameBox, windowSize), tex_box2, Color.White);
-                    _spriteBatch.Draw(texture, scale(box_slot2, windowSize), tex_slot2, Color.White);
+                    _spriteBatch.Draw(texture, animate(scale(box_loadGameBox, windowSize), new Vector2(windowSize.X, box_loadGameBox.Y)), tex_box2, Color.White);
+                    _spriteBatch.Draw(texture, animate(scale(box_slot2, windowSize), new Vector2(windowSize.X, box_slot2.Y)), tex_slot2, Color.White);
                     DateTime _lastWriteTime = File.GetLastWriteTime(Path.Combine(_path2, "state.conf"));
                     string _lastWriteString = _lastWriteTime.ToShortDateString() + " - " + _lastWriteTime.ToLongTimeString();
                     Vector2 _size = font.MeasureString(_lastWriteString);
@@ -192,18 +227,19 @@ namespace ReiseZumGrundDesSees
                 }
                 else
                 {
-                    _spriteBatch.Draw(texture, scale(box_loadGameBox, windowSize), tex_box2, new Color(0.8f, 0.8f, 0.8f));
-                    _spriteBatch.Draw(texture, scale(box_slot2, windowSize), tex_slot2, new Color(0.8f, 0.8f, 0.8f));
+                    _spriteBatch.Draw(texture, animate(scale(box_loadGameBox, windowSize), new Vector2(windowSize.X, box_loadGameBox.Y)), tex_box2, new Color(0.8f, 0.8f, 0.8f));
+                    _spriteBatch.Draw(texture, animate(scale(box_slot2, windowSize), new Vector2(windowSize.X, box_slot2.Y)), tex_slot2, new Color(0.8f, 0.8f, 0.8f));
                     Vector2 _size = font.MeasureString("Leer");
+                    Vector2 _position = new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, (200 + 140) / 1000f * windowSize.Y);
                     _spriteBatch.DrawString(font, "Leer",
-                        new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, (200 + 140) / 1000f * windowSize.Y), Color.Black);
+                        animate(_position, new Vector2(windowSize.X, _position.Y)), Color.Black);
                 }
 
                 string _path3 = Path.Combine(Environment.CurrentDirectory, "save", "slot3");
                 if (Directory.Exists(_path3))
                 {
-                    _spriteBatch.Draw(texture, scale(box_saveGameBox, windowSize), tex_box3, Color.White);
-                    _spriteBatch.Draw(texture, scale(box_slot3, windowSize), tex_slot3, Color.White);
+                    _spriteBatch.Draw(texture, animate(scale(box_saveGameBox, windowSize), new Vector2(windowSize.X, box_saveGameBox.Y)), tex_box3, Color.White);
+                    _spriteBatch.Draw(texture, animate(scale(box_slot3, windowSize), new Vector2(windowSize.X, box_slot3.Y)), tex_slot3, Color.White);
                     DateTime _lastWriteTime = File.GetLastWriteTime(Path.Combine(_path3, "state.conf"));
                     string _lastWriteString = _lastWriteTime.ToShortDateString() + " - " + _lastWriteTime.ToLongTimeString();
                     Vector2 _size = font.MeasureString(_lastWriteString);
@@ -212,17 +248,18 @@ namespace ReiseZumGrundDesSees
                 }
                 else
                 {
-                    _spriteBatch.Draw(texture, scale(box_saveGameBox, windowSize), tex_box3, new Color(0.8f, 0.8f, 0.8f));
-                    _spriteBatch.Draw(texture, scale(box_slot3, windowSize), tex_slot3, new Color(0.8f, 0.8f, 0.8f));
+                    _spriteBatch.Draw(texture, animate(scale(box_saveGameBox, windowSize), new Vector2(windowSize.X, box_saveGameBox.Y)), tex_box3, new Color(0.8f, 0.8f, 0.8f));
+                    _spriteBatch.Draw(texture, animate(scale(box_slot3, windowSize), new Vector2(windowSize.X, box_slot3.Y)), tex_slot3, new Color(0.8f, 0.8f, 0.8f));
                     Vector2 _size = font.MeasureString("Leer");
+                    Vector2 _position = new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, (400 + 140) / 1000f * windowSize.Y);
                     _spriteBatch.DrawString(font, "Leer",
-                        new Vector2((618f + 382f / 2f) / 1000f * windowSize.X - _size.X / 2f, (400 + 140) / 1000f * windowSize.Y), Color.Black);
+                        animate(_position, new Vector2(windowSize.X, _position.Y)), Color.Black);
                 }
 
-                _spriteBatch.Draw(texture, scale(box_emptyBox, windowSize), tex_box2, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_emptyBox, windowSize), new Vector2(windowSize.X, box_emptyBox.Y)), tex_box2, Color.White);
 
-                _spriteBatch.Draw(texture, scale(box_endGameBox, windowSize), tex_box1, Color.White);
-                _spriteBatch.Draw(texture, scale(box_endGameText, windowSize), tex_endGame, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_endGameBox, windowSize), new Vector2(windowSize.X, box_endGameBox.Y)), tex_box1, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_endGameText, windowSize), new Vector2(windowSize.X, box_endGameText.Y)), tex_endGame, Color.White);
             }
 
             if (flags.HasFlag(GameFlags.Credits)) //Credits
@@ -239,7 +276,7 @@ namespace ReiseZumGrundDesSees
             }
 
             if (!flags.HasFlag(GameFlags.GameLoaded))
-                _spriteBatch.Draw(texture, scale(box_square, windowSize), tex_square1, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_square, windowSize), new Vector2(windowSize.X, box_square.Y)), tex_square1, Color.White);
 
             _spriteBatch.End();
         }
@@ -250,6 +287,23 @@ namespace ReiseZumGrundDesSees
                                  (int)Math.Round(_box.Y * _size.Y / 1000.0),
                                  (int)Math.Round(_box.Width * _size.X / 1000.0),
                                  (int)Math.Round(_box.Height * _size.Y / 1000.0));
+        }
+
+        private Rectangle animate(Rectangle _box, Vector2 _origin)
+        {
+            float oneMinusAnimationProgress = 1 - AnimationProgress;
+            float animationFactor = 1 - oneMinusAnimationProgress * oneMinusAnimationProgress * oneMinusAnimationProgress * oneMinusAnimationProgress;
+            return new Rectangle((int)Math.Round(_origin.X + (_box.X - _origin.X) * animationFactor),
+                                 (int)Math.Round(_origin.Y + (_box.Y - _origin.Y) * animationFactor),
+                                 _box.Width, _box.Height);
+        }
+        private Vector2 animate(Vector2 _box, Vector2 _origin)
+        {
+            float oneMinusAnimationProgress = 1 - AnimationProgress;
+            float animationFactor = 1 - oneMinusAnimationProgress * oneMinusAnimationProgress * oneMinusAnimationProgress * oneMinusAnimationProgress;
+            return new Vector2(_origin.X + (_box.X - _origin.X) * animationFactor,
+                               _origin.Y + (_box.Y - _origin.Y) * animationFactor);
+
         }
     }
 

@@ -52,8 +52,8 @@ namespace ReiseZumGrundDesSees
                 else if (value.HasFlag(GameFlags.GameRunning) && GameState.Camera != null)
                     GameState.Camera.Center = GameState.Player;
 
-                if (!value.HasFlag(GameFlags.Menu))
-                    MainMenu.CurrentState = MainMenu.State.Default;
+                if (__GameFlags.HasFlag(GameFlags.Menu) && !value.HasFlag(GameFlags.Menu))
+                    MainMenu.Hide();
 
                 __GameFlags = value;
                 DebugHelper.Log("GameMode changed to " + value);
@@ -121,10 +121,6 @@ namespace ReiseZumGrundDesSees
             this.IsMouseVisible = true;
 
             SoundEffect.MasterVolume = 0.1f; //Diesen Paramenter sollte man in den Optionen einstellen Können
-
-           
-           
-     
 
             Truhe = new Treasure(new Vector3(256f, 28f, 256f));
             initializeList.Add(Truhe);
@@ -237,11 +233,10 @@ namespace ReiseZumGrundDesSees
             //foreach (UpdateDelegate u in _updateList)
             //u?.Invoke(ref GameState);
 
-            if (GameFlags.HasFlag(GameFlags.Menu))
-                MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+            MainMenu.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), gameTime);
 
             if (GameFlags.HasFlag(GameFlags.GameRunning))
-                IGamer.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+                IGamer.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), gameTime);
 
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
@@ -259,10 +254,10 @@ namespace ReiseZumGrundDesSees
             {
                 GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning);
             }
-            if (GameFlags.HasFlag(GameFlags.GameRunning)  && kb.IsKeyDown(Keys.E)  && _gameStateView.Dialog == 100 && keyPressedPause)
-            {           
+            if (GameFlags.HasFlag(GameFlags.GameRunning) && kb.IsKeyDown(Keys.E) && _gameStateView.Dialog == 100 && keyPressedPause)
+            {
                 GameFlags ^= (GameFlags.Menu | GameFlags.GameRunning | GameFlags.Credits); // Öffne Menü wenn wenn Spiel gewonnen + neuer Teil
-                
+
             }//kann hier nicht auf den gamestate zugreifen
             //if (Vector3.Distance(_gameStateView.Player.Position, new Vector3(256.5f, 28f, 256f)) < 0.5f)
             //Truhe.ChangeModel();
@@ -545,8 +540,7 @@ namespace ReiseZumGrundDesSees
             //spriteBatch.Draw(realRenderTarget, new Rectangle(0, 0, 1920, 1080), Color.White);
             spriteBatch.End();*/
 
-            if (GameFlags.HasFlag(GameFlags.Menu))
-                MainMenu.Render(spriteBatch);
+            MainMenu.Render(spriteBatch);
 
             stopwatch.Stop();
             DebugHelper.Information.renderTime = stopwatch.Elapsed.TotalSeconds;
@@ -588,7 +582,7 @@ namespace ReiseZumGrundDesSees
                     initializeList.Add(GameState.Enemies[i]);
 
                 for (int i = 0; i < GetPlayerBlock.GetPlayerBlockList.Count; i++)
-                   GetPlayerBlock.GetPlayerBlockList[i].Initialize(GraphicsDevice,Content);
+                    GetPlayerBlock.GetPlayerBlockList[i].Initialize(GraphicsDevice, Content);
 
                 GameFlags |= GameFlags.GameRunning | GameFlags.GameLoaded;
                 GameFlags &= ~GameFlags.Menu;

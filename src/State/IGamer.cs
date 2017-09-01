@@ -72,7 +72,7 @@ namespace ReiseZumGrundDesSees
             S4 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_32);
         }
 
-        public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize)
+        public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize, GameTime _gameTime)
         {
             scalingFactor = _windowSize.ToVector2() * 0.001f;
             Herz1 = vollesHerz;
