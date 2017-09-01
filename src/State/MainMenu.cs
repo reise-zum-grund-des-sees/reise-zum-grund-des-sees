@@ -89,8 +89,12 @@ namespace ReiseZumGrundDesSees
                     else if (scale(box_loadGameBox, windowSize).Contains(_args.MousePosition))
                         CurrentState = State.Load;
                     else if (scale(box_saveGameBox, windowSize).Contains(_args.MousePosition))
+                    {
                         if (_flags.HasFlag(GameFlags.GameLoaded))
                             CurrentState = State.Save;
+                    }
+                    else if (scale(box_endGameBox, windowSize).Contains(_args.MousePosition))
+                        menuCallback.ExitGame();
                 }
                 else if (CurrentState == State.Load)
                 {
@@ -112,6 +116,8 @@ namespace ReiseZumGrundDesSees
                         if (Directory.Exists(_path))
                             menuCallback.LoadGame(_path);
                     }
+                    else if (scale(box_endGameBox, windowSize).Contains(_args.MousePosition))
+                        CurrentState = State.Default;
                 }
                 else if (CurrentState == State.Save)
                 {
@@ -130,10 +136,10 @@ namespace ReiseZumGrundDesSees
                         string _path = Path.Combine(Environment.CurrentDirectory, "save", "slot3");
                         menuCallback.SaveGame(_path);
                     }
+                    else if (scale(box_endGameBox, windowSize).Contains(_args.MousePosition))
+                        CurrentState = State.Default;
                 }
 
-                if (scale(box_endGameBox, windowSize).Contains(_args.MousePosition))
-                    menuCallback.ExitGame();
 
                 scalingFactor = _windowSize.ToVector2() * 0.001f;
             }
@@ -149,6 +155,7 @@ namespace ReiseZumGrundDesSees
         private readonly Rectangle tex_options = new Rectangle(9, 667, 368, 78);
         private readonly Rectangle tex_saveGame = new Rectangle(9, 748, 424, 79);
         private readonly Rectangle tex_endGame = new Rectangle(206, 521, 238, 67);
+        private readonly Rectangle tex_zurueck = new Rectangle(10, 822, 202, 82);
         private readonly Rectangle tex_slot1 = new Rectangle(441, 529, 150, 63);
         private readonly Rectangle tex_slot2 = new Rectangle(590, 527, 171, 68);
         private readonly Rectangle tex_slot3 = new Rectangle(842, 445, 170, 68);
@@ -262,7 +269,7 @@ namespace ReiseZumGrundDesSees
                 _spriteBatch.Draw(texture, animate(scale(box_emptyBox, windowSize), new Vector2(windowSize.X, box_emptyBox.Y / 1000f * windowSize.Y)), tex_box2, Color.White);
 
                 _spriteBatch.Draw(texture, animate(scale(box_endGameBox, windowSize), new Vector2(windowSize.X, box_endGameBox.Y / 1000f * windowSize.Y)), tex_box1, Color.White);
-                _spriteBatch.Draw(texture, animate(scale(box_endGameText, windowSize), new Vector2(windowSize.X, box_endGameText.Y / 1000f * windowSize.Y)), tex_endGame, Color.White);
+                _spriteBatch.Draw(texture, animate(scale(box_endGameText, windowSize), new Vector2(windowSize.X, box_endGameText.Y / 1000f * windowSize.Y)), tex_zurueck, Color.White);
             }
 
             if (flags.HasFlag(GameFlags.Credits)) //Credits
