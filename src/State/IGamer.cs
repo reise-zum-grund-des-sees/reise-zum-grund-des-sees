@@ -22,30 +22,27 @@ namespace ReiseZumGrundDesSees
         private Texture2D skill2;
         private Texture2D skill3;
 
-        private Rectangle RHerz1 = new Rectangle(100, 70, 100, 70);
-        private Rectangle RHerz2 = new Rectangle(200, 70, 100, 70);
-        private Rectangle RHerz3 = new Rectangle(300, 70, 100, 70);
+        private Rectangle RHerz1 = new Rectangle(30, 30, 100, 100);
+        private Rectangle RHerz2 = new Rectangle(130, 30, 100, 100);
+        private Rectangle RHerz3 = new Rectangle(230, 30, 100, 100);
 
-        private Rectangle RSkill1 = new Rectangle(100, 740, 80, 80);
-        private Rectangle RSkill2 = new Rectangle(190, 740, 80, 80);
-        private Rectangle RSkill3 = new Rectangle(280, 740, 80, 80);
+        private Rectangle RSkill1 = new Rectangle(370, 40, 80, 80);
+        private Rectangle RSkill2 = new Rectangle(470, 40, 80, 80);
+        private Rectangle RSkill3 = new Rectangle(570, 40, 80, 80);
 
-        private SpriteFont S1;
-        private SpriteFont S2;
-        private SpriteFont S3;
-        private SpriteFont S4;
+        private SpriteFont arial_12;
+        private SpriteFont arial_32;
 
         private Vector2 VS1 = new Vector2(110, 740);
         private Vector2 VS2 = new Vector2(200, 740);
         private Vector2 VS3 = new Vector2(290, 740);
 
-        private Vector2 CD1 = new Vector2(140, 740);
-        private Vector2 CD2 = new Vector2(230, 740);
-        private Vector2 CD3 = new Vector2(320, 740);
+        private Vector2 CD1 = new Vector2(410, 80);
+        private Vector2 CD2 = new Vector2(510, 80);
+        private Vector2 CD3 = new Vector2(610, 80);
 
         private Rectangle RTextbox = new Rectangle(640, 730, 350, 240);
    
-
         private Vector2 Textboxtext1 = new Vector2(650, 740);
         private Vector2 Textboxtext2 = new Vector2(650, 780);
         private Vector2 Textboxtext3 = new Vector2(650, 820);
@@ -55,6 +52,17 @@ namespace ReiseZumGrundDesSees
 
         private Vector2 scalingFactor = new Vector2(1f, 1f);
 
+        private Rectangle herz1 = new Rectangle(602, 735, 196, 195);
+        private Rectangle herz2 = new Rectangle(808, 746, 193, 179);
+        private Rectangle herz3 = new Rectangle(809, 543, 193, 191);
+
+        private Rectangle block_leicht = new Rectangle(812, 6, 209, 208);
+        private Rectangle block_medium = new Rectangle(810, 208, 206, 207);
+        private Rectangle block_schwer = new Rectangle(203, 203, 206, 212);
+
+        private Texture2D texture;
+
+        private int playerHealth = 0;
        
 
         public IGamer(ContentManager _content)
@@ -66,18 +74,20 @@ namespace ReiseZumGrundDesSees
             skill2 = _content.Load<Texture2D>(ContentRessources.ICON_WUERFEL_GRAU);
             skill3 = _content.Load<Texture2D>(ContentRessources.ICON_WUERFEL_SCHWARZ);
 
-            S1 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
-            S2 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
-            S3 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
-            S4 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_32);
+            texture = _content.Load<Texture2D>(ContentRessources.TEXTURE);
+
+            arial_12 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_12);
+            arial_32 = _content.Load<SpriteFont>(ContentRessources.FONT_ARIAL_32);
         }
 
         public void Update(InputEventArgs _args, GameState _gameState, GameFlags _flags, Point _windowSize, GameTime _gameTime)
         {
             scalingFactor = _windowSize.ToVector2() * 0.001f;
+            playerHealth = _gameState.Player.Health;
             Herz1 = vollesHerz;
             Herz2 = vollesHerz;
             Herz3 = vollesHerz;
+
             //_gameState.Player.Healthcd für Zeit nach dem Leben verloren wurde, also =0 wenn geradde Leben verloren
             if (_gameState.Player.Health < 1)
                 Herz1 = leeresHerz;
@@ -95,21 +105,34 @@ namespace ReiseZumGrundDesSees
         {
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(Herz1, RHerz1.Scale(scalingFactor), Color.White);
+            /*_spriteBatch.Draw(Herz1, RHerz1.Scale(scalingFactor), Color.White);
             _spriteBatch.Draw(Herz2, RHerz2.Scale(scalingFactor), Color.White);
-            _spriteBatch.Draw(Herz3, RHerz3.Scale(scalingFactor), Color.White);
+            _spriteBatch.Draw(Herz3, RHerz3.Scale(scalingFactor), Color.White);*/
 
-            _spriteBatch.Draw(skill1, RSkill1.Scale(scalingFactor), Color.White);
-            _spriteBatch.Draw(skill2, RSkill2.Scale(scalingFactor), Color.White);
-            _spriteBatch.Draw(skill3, RSkill3.Scale(scalingFactor), Color.White);
-            _spriteBatch.DrawString(S1, "1", VS1 * scalingFactor, Color.White);
+            Color _red = new Color(0.9f, 0.5f, 0.5f);
+            Color _transparent = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+            _spriteBatch.Draw(texture, RHerz1.Scale(scalingFactor), herz1, (playerHealth == 0)? _transparent : _red);
+            _spriteBatch.Draw(texture, RHerz2.Scale(scalingFactor), herz2, (playerHealth <= 1)? _transparent : _red);
+            _spriteBatch.Draw(texture, RHerz3.Scale(scalingFactor), herz3, (playerHealth <= 2)? _transparent : _red);
+
+            Color t = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+            _spriteBatch.Draw(texture, RSkill1.Scale(scalingFactor), block_leicht, t);
+            t = new Color(1f, 1f, 1f, 0.5f);
+            _spriteBatch.Draw(texture, RSkill2.Scale(scalingFactor), block_medium, t);
+            _spriteBatch.Draw(texture, RSkill3.Scale(scalingFactor), block_schwer, t);
+            /*_spriteBatch.DrawString(S1, "1", VS1 * scalingFactor, Color.White);
             _spriteBatch.DrawString(S2, "2", VS2 * scalingFactor, Color.White);
-            _spriteBatch.DrawString(S3, "3", VS3 * scalingFactor, Color.White);
+            _spriteBatch.DrawString(S3, "3", VS3 * scalingFactor, Color.White);*/
 
-            //Anzahl Blöcke, die bereit sind
-            _spriteBatch.DrawString(S1, Player.AnzahlBlockReadyL.ToString(), CD1 * scalingFactor, Color.White);
-            _spriteBatch.DrawString(S2, Player.AnzahlBlockReadyM.ToString(), CD2 * scalingFactor, Color.White);
-            _spriteBatch.DrawString(S3, Player.AnzahlBlockReadyS.ToString(), CD3 * scalingFactor, Color.White);
+            //Anzahl Blöcke, die bereit sinod
+            string _count1 = Player.AnzahlBlockReadyL.ToString();
+            _spriteBatch.DrawString(arial_32, _count1, CD1 * scalingFactor - arial_32.MeasureString(_count1) * 0.5f, Color.Black);
+
+            string _count2 = Player.AnzahlBlockReadyM.ToString();
+            _spriteBatch.DrawString(arial_32, _count2, CD2 * scalingFactor - arial_32.MeasureString(_count2) * 0.5f, Color.Black);
+
+            string _count3 = Player.AnzahlBlockReadyS.ToString();
+            _spriteBatch.DrawString(arial_32, _count3, CD3 * scalingFactor - arial_32.MeasureString(_count3) * 0.5f, Color.Black);
 
             //Tipps
             if (Dialog != -1 && Dialog!= 100)
@@ -121,83 +144,83 @@ namespace ReiseZumGrundDesSees
             switch (Dialog)
             {
                 case 0:
-                    _spriteBatch.DrawString(S4, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "2x Spacebar -> Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "2x Spacebar -> Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 1:
-                    _spriteBatch.DrawString(S4, "Dieser Block speichert", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Spawnposition und setzt", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Dieser Block speichert", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Spawnposition und setzt", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Bloecke zurueck", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 2:
-                    _spriteBatch.DrawString(S4, "Springe auf Gegner um", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "sie zu vernichten.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Springe auf Gegner um", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "sie zu vernichten.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 3:
-                    _spriteBatch.DrawString(S4, "Mit 1,2 und 3 koennen gefundene", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Bloecke gesetzt werden.", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Druecke Q um sie aufzusammeln,", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "wenn du davor stehst.", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Mit 1,2 und 3 koennen gefundene", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Bloecke gesetzt werden.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Druecke Q um sie aufzusammeln,", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "wenn du davor stehst.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 4:
-                    _spriteBatch.DrawString(S4, "Bloecke verschwinden auch wenn", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "du Speicherst oder dich zu weit", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "entfernst. Leichte Bloecke (1)", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "schweben in der Luft.", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Bloecke verschwinden auch wenn", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "du Speicherst oder dich zu weit", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "entfernst. Leichte Bloecke (1)", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "schweben in der Luft.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 5:
-                    _spriteBatch.DrawString(S4, "Schalter lassen Bloecke ", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "erscheinen,verschwinden", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "oder bewegen Bloecke.", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Akiviere ihn mit E.", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Schalter lassen Bloecke ", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "erscheinen,verschwinden", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "oder bewegen Bloecke.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Akiviere ihn mit E.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 6:
-                    _spriteBatch.DrawString(S4, "Mittelschwere Bloecke (2)", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "fallen zu Boden und", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "schwimmen im Wasser.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Mittelschwere Bloecke (2)", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "fallen zu Boden und", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "schwimmen im Wasser.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 7:
-                    _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 8:
-                    _spriteBatch.DrawString(S4, "Lasse ein mittelschweren (2)", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "oder schweren (3) Block auf", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "die Bodenplatte fallen um ", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "die Bodenplatte zu aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Lasse ein mittelschweren (2)", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "oder schweren (3) Block auf", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "die Bodenplatte fallen um ", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "die Bodenplatte zu aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 9:
-                    _spriteBatch.DrawString(S4, "Vergiss nicht, dass du mit", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "der Taste Q Bloecke wieder", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "aufsammeln kannst.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Vergiss nicht, dass du mit", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "der Taste Q Bloecke wieder", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "aufsammeln kannst.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 10:
-                    _spriteBatch.DrawString(S4, "Schwere Bloecke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "zu Boden und gehen", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "im Wasser unter.", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Schwere Bloecke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "zu Boden und gehen", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "im Wasser unter.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 11:
-                    _spriteBatch.DrawString(S4, "Diese Schalter senkt den", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Wasserstand. Doch ein weiterer", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Schalter wird fuer Rueckweg", Textboxtext3 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "benoetigt", Textboxtext4 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Diese Schalter senkt den", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Wasserstand. Doch ein weiterer", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Schalter wird fuer Rueckweg", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "benoetigt", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 12:
-                    _spriteBatch.DrawString(S4, "Hier scheint kein Schalter zur", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Wasserstandssenkung zu sein.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Hier scheint kein Schalter zur", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Wasserstandssenkung zu sein.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 13:
-                    _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 14:
-                    _spriteBatch.DrawString(S4, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "Erkunde den Grund des Sees!", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Erkunde den Grund des Sees!", Textboxtext3 * scalingFactor, Color.Black);
                     break;
                 case 15:
-                    _spriteBatch.DrawString(S4, "Glueckwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(S4, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Glueckwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
                     break;
                 case 100:
                     break;
