@@ -90,10 +90,21 @@ namespace ReiseZumGrundDesSees
             AnzahlBlockMaxM = int.Parse(_playerNode.Items["AnzahlBlockMaxM"]);
             AnzahlBlockMaxS = int.Parse(_playerNode.Items["AnzahlBlockMaxS"]);
             }
-            AnzahlBlockL = AnzahlBlockMaxL;
-            AnzahlBlockM = AnzahlBlockMaxM;
-            AnzahlBlockS = AnzahlBlockMaxS;
-            if(_playerNode.Items.Count > 5)
+            if (_playerNode.Items.Count > 8)
+            {
+                AnzahlBlockL = int.Parse(_playerNode.Items["AnzahlBlockL"]);
+                AnzahlBlockM = int.Parse(_playerNode.Items["AnzahlBlockM"]);
+                AnzahlBlockS = int.Parse(_playerNode.Items["AnzahlBlockS"]);
+            }
+            /*
+            else
+            {
+                AnzahlBlockL = AnzahlBlockMaxL;
+                AnzahlBlockM = AnzahlBlockMaxM;
+                AnzahlBlockS = AnzahlBlockMaxS;
+            }
+            */
+            if (_playerNode.Items.Count > 5)
             DialogSave = int.Parse(_playerNode.Items["Dialog"]);
             Dialog = -1;
             //add Aufsammelbare Player Blöcke
@@ -761,6 +772,9 @@ namespace ReiseZumGrundDesSees
             n.Items["AnzahlBlockMaxL"] = AnzahlBlockMaxL.ToString();
             n.Items["AnzahlBlockMaxM"] = AnzahlBlockMaxM.ToString();
             n.Items["AnzahlBlockMaxS"] = AnzahlBlockMaxS.ToString();
+            n.Items["AnzahlBlockL"] = AnzahlBlockL.ToString();
+            n.Items["AnzahlBlockM"] = AnzahlBlockM.ToString();
+            n.Items["AnzahlBlockS"] = AnzahlBlockS.ToString();
             n.Items["Dialog"] = DialogSave.ToString();
             return n;
         }
