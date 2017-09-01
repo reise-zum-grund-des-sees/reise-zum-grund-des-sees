@@ -105,7 +105,7 @@ namespace ReiseZumGrundDesSees
             nearShadowMap = new RenderTarget2D(GraphicsDevice, 512, 512, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
             farShadowMap = new RenderTarget2D(GraphicsDevice, 512, 512, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
 
-            GameFlags = GameFlags.Menu | GameFlags.Debug;
+            GameFlags = GameFlags.Menu; //| GameFlags.Debug;
 
             Window.AllowUserResizing = true;
 
@@ -238,7 +238,7 @@ namespace ReiseZumGrundDesSees
             KeyboardState kb = Keyboard.GetState();
             if (kb.IsKeyDown(Keys.LeftControl))
             {
-                if (kb.IsKeyDown(Keys.E) && keyPressedPause)
+                if (kb.IsKeyDown(Keys.E) && keyPressedPause && GameFlags.HasFlag(GameFlags.Debug))
                 {
                     GameFlags ^= GameFlags.EditorMode;
                 }
