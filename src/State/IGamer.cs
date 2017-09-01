@@ -41,7 +41,7 @@ namespace ReiseZumGrundDesSees
         private Vector2 CD2 = new Vector2(510, 80);
         private Vector2 CD3 = new Vector2(610, 80);
 
-        private Rectangle RTextbox = new Rectangle(640, 730, 350, 240);
+        private Rectangle RTextbox = new Rectangle(640, 730, 360, 240);
    
         private Vector2 Textboxtext1 = new Vector2(650, 740);
         private Vector2 Textboxtext2 = new Vector2(650, 780);
@@ -140,7 +140,6 @@ namespace ReiseZumGrundDesSees
             if (Dialog != -1 && Dialog!= 100)
             {
                 _spriteBatch.Draw(texture, RTextbox.Scale(scalingFactor), tex_box1, Color.White);
-
             }
 
             switch (Dialog)
@@ -168,7 +167,7 @@ namespace ReiseZumGrundDesSees
                 case 4:
                     _spriteBatch.DrawString(arial_32, "Mit 1,2 und 3 koennen gefundene", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "Bloecke gesetzt werden.", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(arial_32, "Druecke Q um sie wieder aufzu-,", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "Druecke Q um sie wieder aufzu-", Textboxtext3 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "sammeln wenn du davor stehst.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 5:
