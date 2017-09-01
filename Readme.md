@@ -6,7 +6,7 @@ Installation:
 2. Entpacken der zip-Datei
 3. Starten der ReiseZumGrundDesSees.exe
 
-Systemvorraussetzung:
+Systemvoraussetzung:
 
 - Windows als Betriebssystem (OpenGL-Version nur zu Testzwecken)
 - DirectX9 oder DirectX11
