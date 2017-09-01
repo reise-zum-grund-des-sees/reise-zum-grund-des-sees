@@ -10,5 +10,6 @@ Systemvorraussetzung:
 
 - vorzugsweise Windows als Betriebssystem
 - DirectX9 oder DirectX11
+- Bildschirm
 - Tastatur
 - Maus
