@@ -90,20 +90,10 @@ namespace ReiseZumGrundDesSees
             AnzahlBlockMaxM = int.Parse(_playerNode.Items["AnzahlBlockMaxM"]);
             AnzahlBlockMaxS = int.Parse(_playerNode.Items["AnzahlBlockMaxS"]);
             }
-            if (_playerNode.Items.Count > 8)
-            {
-                AnzahlBlockL = int.Parse(_playerNode.Items["AnzahlBlockL"]);
-                AnzahlBlockM = int.Parse(_playerNode.Items["AnzahlBlockM"]);
-                AnzahlBlockS = int.Parse(_playerNode.Items["AnzahlBlockS"]);
-            }
-            /*
-            else
-            {
-                AnzahlBlockL = AnzahlBlockMaxL;
-                AnzahlBlockM = AnzahlBlockMaxM;
-                AnzahlBlockS = AnzahlBlockMaxS;
-            }
-            */
+           AnzahlBlockL = AnzahlBlockMaxL;
+           AnzahlBlockM = AnzahlBlockMaxM;
+           AnzahlBlockS = AnzahlBlockMaxS;
+          
             if (_playerNode.Items.Count > 5)
             DialogSave = int.Parse(_playerNode.Items["Dialog"]);
             Dialog = -1;
@@ -165,10 +155,10 @@ namespace ReiseZumGrundDesSees
                 BlickrichtungAdd = MathHelper.PiOver2 * 3;
 
             Blickrichtung += BlickrichtungAdd;
-
+            /*
             if (_inputArgs.Events.HasFlag(InputEventList.Sprint)) //Port zum 2. Level
                 Position = new Vector3(250, 32, 230);
-
+                */
             Vector3 _movement = new Vector3(0, 0, 0);
 
             float _movementScaling;
@@ -402,7 +392,7 @@ namespace ReiseZumGrundDesSees
                     }
             }
          
-
+            /*
             // Löschen mit Taste
             if (_inputArgs.Events.HasFlag(InputEventList.Delete))
             {
@@ -410,6 +400,7 @@ namespace ReiseZumGrundDesSees
                 for (int i = 0; i < Blöcke.Count; i++)
                     (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
             }
+            */
             //Davorstehenden Block loeschen
             Vector3 Blick = Vector3.Transform(new Vector3(0, 0, -1), Matrix.CreateRotationY(Blickrichtung));
             Blick.Normalize();
@@ -772,9 +763,6 @@ namespace ReiseZumGrundDesSees
             n.Items["AnzahlBlockMaxL"] = AnzahlBlockMaxL.ToString();
             n.Items["AnzahlBlockMaxM"] = AnzahlBlockMaxM.ToString();
             n.Items["AnzahlBlockMaxS"] = AnzahlBlockMaxS.ToString();
-            n.Items["AnzahlBlockL"] = AnzahlBlockL.ToString();
-            n.Items["AnzahlBlockM"] = AnzahlBlockM.ToString();
-            n.Items["AnzahlBlockS"] = AnzahlBlockS.ToString();
             n.Items["Dialog"] = DialogSave.ToString();
             return n;
         }

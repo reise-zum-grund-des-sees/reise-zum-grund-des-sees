@@ -143,7 +143,7 @@ namespace ReiseZumGrundDesSees
 
             switch (Dialog)
             {
-             
+
                 case 0:
                     _spriteBatch.DrawString(arial_32, "Bewegen      -> W/A/S/D", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "2x Spacebar -> Doppelsprung", Textboxtext2 * scalingFactor, Color.Black);
@@ -156,7 +156,7 @@ namespace ReiseZumGrundDesSees
                 case 2:
                     _spriteBatch.DrawString(arial_32, "Springe auf Gegner um", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "sie zu vernichten.", Textboxtext2 * scalingFactor, Color.Black);
-                    break;             
+                    break;
                 case 3://neu
                     _spriteBatch.DrawString(arial_32, "Auf dem Grund des Sees", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "soll ein Schatz versteckt", Textboxtext2 * scalingFactor, Color.Black);
@@ -177,7 +177,7 @@ namespace ReiseZumGrundDesSees
                 case 6://neu
                     _spriteBatch.DrawString(arial_32, "Mit ESC wird das Menue", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "geoeffnet. Dort kann", Textboxtext2 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(arial_32, "gespeichert,geladen", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "gespeichert, geladen", Textboxtext3 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "und beendet werden.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 7: //neu
@@ -187,48 +187,64 @@ namespace ReiseZumGrundDesSees
                     _spriteBatch.DrawString(arial_32, "Schalter.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
                 case 8:
+                    _spriteBatch.DrawString(arial_32, "Um Schalter zu aktivieren, ", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "druecke E. Sie starten ", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "bewegene Blocke oder lassen", Textboxtext3 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "neu Bloecke entstehen.", Textboxtext4 * scalingFactor, Color.Black);
+                    break;
+                case 9:
+                    _spriteBatch.DrawString(arial_32, "Mittelschwere Bloecke (2)", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "fallen zu Boden und", Textboxtext2 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "schwimmen im Wasser.", Textboxtext3 * scalingFactor, Color.Black);
+                    break;
+                case 10:
+                    _spriteBatch.DrawString(arial_32, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
+                    _spriteBatch.DrawString(arial_32, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
+                    break;
+
+                case 11:
                     _spriteBatch.DrawString(arial_32, "Lasse ein mittelschweren (2)", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "oder schweren (3) Block auf", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "die Bodenplatte fallen um ", Textboxtext3 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "die Bodenplatte zu aktivieren.", Textboxtext4 * scalingFactor, Color.Black);
                     break;
-                case 9:
+                case 12:
                     _spriteBatch.DrawString(arial_32, "Vergiss nicht, dass du mit", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "der Taste Q Bloecke wieder", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "aufsammeln kannst.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
-                case 10:
+                case 13:
                     _spriteBatch.DrawString(arial_32, "Schwere Bloecke (3) fallen", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "zu Boden und gehen", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "im Wasser unter.", Textboxtext3 * scalingFactor, Color.Black);
                     break;
-                case 11:
+                case 14:
                     _spriteBatch.DrawString(arial_32, "Diese Schalter senkt den", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "Wasserstand. Doch ein weiterer", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "Schalter wird fuer Rueckweg", Textboxtext3 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "benoetigt", Textboxtext4 * scalingFactor, Color.Black);
                     break;
-                case 12:
+                case 15:
                     _spriteBatch.DrawString(arial_32, "Hier scheint kein Schalter zur", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "Wasserstandssenkung zu sein.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
-                case 13:
+                case 16:
                     _spriteBatch.DrawString(arial_32, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
                     break;
-                case 14:
+                case 17:
                     _spriteBatch.DrawString(arial_32, "Diese Schalter senkt", Textboxtext1 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "den Wasserstand.", Textboxtext2 * scalingFactor, Color.Black);
                     _spriteBatch.DrawString(arial_32, "Erkunde den Grund des Sees!", Textboxtext3 * scalingFactor, Color.Black);
                     break;
-                    /*
-                case 15:
-                    _spriteBatch.DrawString(arial_32, "Glueckwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
-                    _spriteBatch.DrawString(arial_32, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
-                    break;
+                /*
+            case 15:
+                _spriteBatch.DrawString(arial_32, "Glueckwunsch! Du hast", Textboxtext1 * scalingFactor, Color.Black);
+                _spriteBatch.DrawString(arial_32, "den Schatz geborgen!", Textboxtext2 * scalingFactor, Color.Black);
+                break;
+                */
                 case 100:
                     break;
-                    */
                 default:
                     break;
             }
