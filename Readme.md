@@ -10,6 +10,7 @@ Systemvorraussetzung:
 
 - vorzugsweise Windows als Betriebssystem
 - DirectX9 oder DirectX11
+- Bildschirmauflösung 1920 x 1080 empfohlen
 - Bildschirm
 - Tastatur
 - Maus
