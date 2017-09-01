@@ -63,8 +63,6 @@ namespace ReiseZumGrundDesSees
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
                     DebugHelper.Information.RenderedOtherVertices += (uint)part.NumVertices;
-                    _effect.Color = new Color((part.Effect as BasicEffect).DiffuseColor);
-                    
 
                     if (part.PrimitiveCount > 0)
                     {

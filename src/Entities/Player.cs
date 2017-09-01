@@ -587,6 +587,9 @@ namespace ReiseZumGrundDesSees
                                         //Reset Blöcke
                                         for (int i = 0; i < Blöcke.Count; i++)
                                             (Blöcke[i] as PlayerBlock).Zustand = (int)PlayerBlock.State.Delete;
+
+                                        // Reset Leben
+                                        Health = MaxHealth;
                                     }
                             }
                         }
