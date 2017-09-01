@@ -613,7 +613,7 @@ namespace ReiseZumGrundDesSees
 
               // Schatz aktivieren 
             
-                    if (Vector3.Distance(Position, new Vector3(256.5f, 28f, 256f)) < 0.5f)
+                    if (Vector3.Distance(Position, new Vector3(256f, 28f, 256f)) < 0.5f)
                         Dialog = 100; //Dialog 100 für Spiel Ende
                
 
