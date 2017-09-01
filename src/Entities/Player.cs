@@ -97,6 +97,7 @@ namespace ReiseZumGrundDesSees
             DialogSave = int.Parse(_playerNode.Items["Dialog"]);
             Dialog = -1;
             //add Aufsammelbare Player Blöcke
+            GetPlayerBlock.GetPlayerBlockList.Clear();
             if(AnzahlBlockMaxL==0)
                 GetPlayerBlock.GetPlayerBlockList.Add(new GetPlayerBlock(new Vector3(169.5f, 34, 216.5f), 0));
             if (AnzahlBlockMaxM == 0)
