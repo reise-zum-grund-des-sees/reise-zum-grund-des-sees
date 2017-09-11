@@ -47,8 +47,6 @@ namespace ReiseZumGrundDesSees
         {
             switch (b)
             {
-                case WorldBlock.Water4:
-                case WorldBlock.Water4Infinite:
                 case WorldBlock.Lever:
                 case WorldBlock.SaveBlock:
                 case WorldBlock.Wall:
@@ -115,13 +113,13 @@ namespace ReiseZumGrundDesSees
                     return new Vector3(1.00f, 1.00f, 1.00f);
                 case WorldBlock.Water4:
                 case WorldBlock.Water4Infinite:
-                    return new Vector3(1.00f, 0.99f, 1.00f);
-                case WorldBlock.Water3:
                     return new Vector3(1.00f, 0.75f, 1.00f);
+                case WorldBlock.Water3:
+                    return new Vector3(1.00f, 0.60f, 1.00f);
                 case WorldBlock.Water2:
-                    return new Vector3(1.00f, 0.50f, 1.00f);
+                    return new Vector3(1.00f, 0.45f, 1.00f);
                 case WorldBlock.Water1:
-                    return new Vector3(1.00f, 0.25f, 1.00f);
+                    return new Vector3(1.00f, 0.30f, 1.00f);
                 case WorldBlock.Spikes:
                     return new Vector3(1.00f, 0.5f, 1.00f);
                 case WorldBlock.Lever:

@@ -90,6 +90,7 @@ namespace ReiseZumGrundDesSees
         {
             this.graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             this.graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            this.graphics.IsFullScreen = true;
             //this.graphics.SynchronizeWithVerticalRetrace = false;
             //this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 1);
 

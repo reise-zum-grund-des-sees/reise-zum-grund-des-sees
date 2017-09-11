@@ -11,6 +11,8 @@ matrix Matrix;
 matrix NearLightMatrix;
 matrix FarLightMatrix;
 
+float AnimationValue;
+
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
@@ -32,7 +34,11 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
 	VertexShaderOutput output = (VertexShaderOutput)0;
 
-	output.Position = mul(input.Position, Matrix);
+	if (input.TextureCoord.x >= 0.5)
+		output.Position = float4(input.Position.x, input.Position.y + 0.5 * 0.125 * sin(input.Position.x * 1.57079633 /* magic number. something with 16 and pi */ + AnimationValue) + 0.5 * 0.125 * cos(input.Position.z * 1.17809725 /* another magic number. something with 16 and pi */ + AnimationValue * 0.23719372 /* third magic number. just random. not a fraction of 1 */), input.Position.z, input.Position.w);
+	else
+		output.Position = input.Position;
+	output.Position = mul(output.Position, Matrix);
 
 	float4 nearPos = mul(input.Position, NearLightMatrix);
 	output.NearShadowCoord = mad(0.5f, nearPos.xy / nearPos.w, float2(0.5f, 0.5f));
