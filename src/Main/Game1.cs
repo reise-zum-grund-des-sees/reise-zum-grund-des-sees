@@ -237,6 +237,11 @@ namespace ReiseZumGrundDesSees
                 IGamer.Update(_args, GameState, GameFlags, new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), gameTime);
 
             KeyboardState kb = Keyboard.GetState();
+            if (kb.IsKeyDown(Keys.Pause))
+            {
+                GameFlags ^= GameFlags.GameRunning;
+            }
+
             if (kb.IsKeyDown(Keys.LeftControl))
             {
                 if (kb.IsKeyDown(Keys.E) && keyPressedPause && GameFlags.HasFlag(GameFlags.Debug))

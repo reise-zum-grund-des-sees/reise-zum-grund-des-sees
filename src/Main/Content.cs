@@ -22,11 +22,11 @@ namespace ReiseZumGrundDesSees
         public const string MODEL_SCHALTER_OBEN = "models/schalter_oben";
         public const string MODEL_SCHALTER_UNTEN = "models/schalter_unten";
         public const string MODEL_STACHELN = "models/stacheln";
-        public const string MODEL_PP_OBEN = "models/Knopf_ungedrueckt";
-        public const string MODEL_PP_UNTEN = "models/Knopf_gedrueckt2";
+        public const string MODEL_PP_OBEN = "models/knopf_ungedrueckt";
+        public const string MODEL_PP_UNTEN = "models/knopf_gedrueckt2";
         public const string MODEL_SAVEPOINT = "models/savepoint";
-        public const string MODEL_TRUHE_OFFEN = "models/Truhe_offen_VK";
-        public const string MODEL_TRUHE_ZU = "models/Truhe_zu_VK";
+        public const string MODEL_TRUHE_OFFEN = "models/truhe_offen_vk";
+        public const string MODEL_TRUHE_ZU = "models/truhe_zu_vk";
 
         public const string EFFECT_PLAYER = "effects/player";
         public const string EFFECT_PRESHADOW = "effects/shadowmap";
