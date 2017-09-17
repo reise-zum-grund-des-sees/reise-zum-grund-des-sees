@@ -58,6 +58,7 @@ namespace ReiseZumGrundDesSees
     class ShadowEffect : IEffect
     {
         private float animationValue = 0f;
+
         public Matrix WorldMatrix { get; set; }
         public Matrix ViewMatrix { get; set; }
         public Matrix ProjectionMatrix { get; set; }
@@ -79,12 +80,16 @@ namespace ReiseZumGrundDesSees
         private Effect textureEffect;
         private Effect worldEffect;
 
+        public void Update(GameTime _time)
+        {
+            animationValue += (float)_time.ElapsedGameTime.TotalMilliseconds * 0.005f;
+        }
+
         private void Apply(Effect _effect)
         {
             if (_effect == worldEffect)
             {
                 _effect.Parameters["AnimationValue"].SetValue(animationValue);
-                animationValue += 0.01f;
             }
 
             _effect.Parameters["Matrix"].SetValue(WorldMatrix * ViewMatrix * ProjectionMatrix);

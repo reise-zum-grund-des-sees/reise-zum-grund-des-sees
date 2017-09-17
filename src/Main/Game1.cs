@@ -164,6 +164,8 @@ namespace ReiseZumGrundDesSees
         bool keyPressedPause = true;
         protected override void Update(GameTime gameTime)
         {
+
+            shadowEffect.Update(gameTime);
             //CollisionDetector.COUNTER = 0;
             if (GameFlags.HasFlag(GameFlags.Debug))
                 stopwatch.Start();
